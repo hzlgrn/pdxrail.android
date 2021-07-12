@@ -5,8 +5,8 @@
     android:viewportHeight="108">
   <path
       android:pathData="M0,58.5l51,0l6,-9l51,0.13l0,-49.63l-108,0l0,58.5z"
-      android:fillColor="@color/trimet_blue"/>
+      android:fillColor="@color/rail_system_primary"/>
   <path
       android:pathData="M108,49.5l-51,0l-6,9l-51,-0.12l0,49.62l108,0l0,-58.5z"
-      android:fillColor="@color/trimet_yellow"/>
+      android:fillColor="@color/rail_system_secondary"/>
 </vector>

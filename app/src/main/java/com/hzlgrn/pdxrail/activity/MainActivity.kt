@@ -7,12 +7,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.databinding.ActivityMainBinding
-import com.hzlgrn.pdxrail.databinding.TrimetStopDrawerBinding
+import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
 import com.hzlgrn.pdxrail.activity.presenter.MainActivityPresenter
 import com.hzlgrn.pdxrail.activity.railsystem.RailSystemStopActivity
 import timber.log.Timber
@@ -20,7 +21,7 @@ import timber.log.Timber
 class MainActivity : RailSystemStopActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
-    override val pDrawerBinding: TrimetStopDrawerBinding by lazy {
+    override val pDrawerBinding: DrawerArrivalsBinding by lazy {
         mBinding.drawerStart
     }
     override val pMapView: MapView by lazy {
@@ -118,6 +119,8 @@ class MainActivity : RailSystemStopActivity() {
             val strLatLng = data.removePrefix(Domain.Intent.GEO).removeSuffix("?$args").split(",")
             val lat = strLatLng[1].toDouble()
             val lon = strLatLng[0].toDouble()
+            val geoPosition = LatLng(lat, lon)
+            moveMapTo(geoPosition)
             Timber.d("lat($lat), lon($lon), args($args)")
         } catch (err: Exception) {
             if (BuildConfig.DEBUG) err.printStackTrace()

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:layout_width="200dp">
+    tools:layout_width="@dimen/tool_item_width">
 
     <com.google.android.material.card.MaterialCardView android:id="@+id/cardAboutMax"
         android:layout_width="match_parent"
@@ -21,7 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:drawableStart="@drawable/marker_max_stop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/vertical_small"
@@ -29,7 +28,8 @@
                 android:gravity="start|center_vertical"
                 android:text="@string/content_description_max_stop_verbose"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="@dimen/text_small" />
+                android:textSize="@dimen/text_small"
+                app:drawableStartCompat="@drawable/marker_max_stop" />
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -46,7 +46,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:drawableStart="@drawable/marker_streetcar_stop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/vertical_small"
@@ -54,7 +53,8 @@
                 android:gravity="start|center_vertical"
                 android:text="@string/content_description_streetcar_stop_verbose"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="@dimen/text_small" />
+                android:textSize="@dimen/text_small"
+                app:drawableStartCompat="@drawable/marker_streetcar_stop" />
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 

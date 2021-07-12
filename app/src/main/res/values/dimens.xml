@@ -39,5 +39,6 @@
     <dimen name="ic_size_large">36dp</dimen>
     <dimen name="max_line_width">4dp</dimen>
     <dimen name="streetcar_line_width">3dp</dimen>
+    <dimen name="tool_item_width">200dp</dimen>
 
 </resources>

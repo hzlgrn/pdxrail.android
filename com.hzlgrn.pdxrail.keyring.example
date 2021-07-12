@@ -3,7 +3,7 @@ UPLOAD_KEYSTORE_ALIAS=alias
 UPLOAD_KEYSTORE_PASSWORD=secret
 
 HOME_URL=https://pdxrail.hzlgrn.com/
-HOME_HOST"pdxrail.hzlgrn.com/
+HOME_HOST=pdxrail.hzlgrn.com
 
 KEY_API_GOOGLE=google-api-key-with-maps-android-enabled
 
