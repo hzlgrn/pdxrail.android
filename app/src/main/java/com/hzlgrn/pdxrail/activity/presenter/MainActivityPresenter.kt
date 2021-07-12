@@ -14,10 +14,10 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.hzlgrn.pdxrail.activity.BuildConfig
+import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.activity.MainActivity
-import com.hzlgrn.pdxrail.activity.R
-import com.hzlgrn.pdxrail.activity.databinding.ActivityMainBinding
+import com.hzlgrn.pdxrail.R
+import com.hzlgrn.pdxrail.databinding.ActivityMainBinding
 import timber.log.Timber
 import java.util.*
 

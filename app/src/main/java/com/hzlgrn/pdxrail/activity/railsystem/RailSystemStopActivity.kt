@@ -8,8 +8,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.App
-import com.hzlgrn.pdxrail.activity.BuildConfig
-import com.hzlgrn.pdxrail.activity.databinding.TrimetStopDrawerBinding
+import com.hzlgrn.pdxrail.BuildConfig
+import com.hzlgrn.pdxrail.databinding.TrimetStopDrawerBinding
 import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
 import com.hzlgrn.pdxrail.data.repository.RailSystemArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel

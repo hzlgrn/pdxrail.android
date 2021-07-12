@@ -2,7 +2,7 @@ package com.hzlgrn.pdxrail
 
 import android.app.Application
 import android.util.Log
-import com.hzlgrn.pdxrail.activity.BuildConfig
+import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.di.component.ApplicationComponent
 import com.hzlgrn.pdxrail.di.component.DaggerForApplicationComponent
 import com.hzlgrn.pdxrail.di.module.ApplicationPreferencesModule

@@ -5,7 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import com.hzlgrn.pdxrail.activity.R
+import com.hzlgrn.pdxrail.R
 
 
 class DrawerIconView @JvmOverloads constructor(

@@ -10,7 +10,7 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
-import com.hzlgrn.pdxrail.activity.R
+import com.hzlgrn.pdxrail.R
 
 class HelpDialog : DialogFragment() {
 

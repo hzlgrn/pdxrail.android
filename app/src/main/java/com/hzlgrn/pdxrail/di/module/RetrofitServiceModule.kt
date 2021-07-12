@@ -1,6 +1,6 @@
 package com.hzlgrn.pdxrail.di.module
 
-import com.hzlgrn.pdxrail.activity.BuildConfig
+import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.data.net.RailSystemService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

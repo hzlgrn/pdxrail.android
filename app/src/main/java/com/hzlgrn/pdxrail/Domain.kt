@@ -1,6 +1,6 @@
 package com.hzlgrn.pdxrail
 
-import com.hzlgrn.pdxrail.activity.BuildConfig
+import com.hzlgrn.pdxrail.BuildConfig
 
 class Domain {
 

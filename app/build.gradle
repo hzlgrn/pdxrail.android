@@ -10,8 +10,8 @@ android {
     buildToolsVersion buildTools
     buildTypes {
         debug {}
-        /*
         release {
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfigs {
                 store_upload_signing {
                     storeFile rootProject.file(keyRing["UPLOAD_KEYSTORE_FILE"])
@@ -20,19 +20,17 @@ android {
                     keyPassword keyRing["UPLOAD_KEYSTORE_PASSWORD"]
                 }
             }
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.store_upload_signing
         }
-         */
     }
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.hzlgrn.pdxrail"
         buildConfigField "long", "BUILD_TIME", "${buildTime}L"
-        buildConfigField "String", "KEY_API_RAIL_SYSTEM", keyRing["KEY_API_RAIL_SYSTEM"]
-        buildConfigField "String", "URL_API_RAIL_SYSTEM", keyRing["URL_API_RAIL_SYSTEM"]
-        buildConfigField "String", "HOME_URL", keyRing["HOME_URL"]
-        buildConfigField "String", "HOME_HOST", keyRing["HOME_HOST"]
+        buildConfigField "String", "KEY_API_RAIL_SYSTEM", "\""+keyRing["KEY_API_RAIL_SYSTEM"]+"\""
+        buildConfigField "String", "URL_API_RAIL_SYSTEM", "\""+keyRing["URL_API_RAIL_SYSTEM"]+"\""
+        buildConfigField "String", "HOME_URL", "\""+keyRing["HOME_URL"]+"\""
+        buildConfigField "String", "HOME_HOST", "\""+keyRing["HOME_HOST"]+"\""
         manifestPlaceholders = [
             APPLICATION_LABEL: "PDX Rail",
             KEY_GEO_ANDROID_GOOGLE  : keyRing["KEY_API_GOOGLE"],
@@ -41,6 +39,7 @@ android {
         ]
         minSdkVersion 23
         resValue "string", "asset_statements", assetStatements
+        resValue "string", "home_url", keyRing["HOME_URL"]
         targetSdkVersion 30
         versionCode buildVersionCode
         versionName buildVersionName

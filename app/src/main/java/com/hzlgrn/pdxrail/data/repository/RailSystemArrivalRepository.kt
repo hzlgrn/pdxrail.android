@@ -4,7 +4,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.Domain
-import com.hzlgrn.pdxrail.activity.R
+import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
 import com.hzlgrn.pdxrail.data.room.dao.TriMetDao
 import kotlinx.coroutines.flow.Flow

@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.gms.maps.model.*
-import com.hzlgrn.pdxrail.activity.R
+import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.activity.common.MapTypeMenuActivity
 import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapViewModel

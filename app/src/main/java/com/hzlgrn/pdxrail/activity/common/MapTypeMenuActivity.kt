@@ -6,7 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.google.android.gms.maps.GoogleMap
 import com.hzlgrn.pdxrail.Domain
-import com.hzlgrn.pdxrail.activity.R
+import com.hzlgrn.pdxrail.R
 
 @SuppressLint("Registered")
 abstract class MapTypeMenuActivity : GoogleMapViewActivity() {

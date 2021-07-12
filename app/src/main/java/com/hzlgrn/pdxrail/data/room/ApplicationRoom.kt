@@ -5,8 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.hzlgrn.pdxrail.Domain
-import com.hzlgrn.pdxrail.activity.BuildConfig
-import com.hzlgrn.pdxrail.activity.R
+import com.hzlgrn.pdxrail.BuildConfig
+import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.json.RailLineJson
 import com.hzlgrn.pdxrail.data.json.RailStopJson
 import com.hzlgrn.pdxrail.data.room.dao.RailSystemDao
