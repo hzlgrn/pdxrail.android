@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerStart"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    tools:background="?attr/colorSurface">
+
+    <View android:id="@+id/drawerBackground"
+        android:layout_width="0dp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintWidth_percent="0.5"
+        android:layout_height="match_parent"
+        android:background="@color/drawer_background"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.google.android.material.card.MaterialCardView android:id="@+id/cardAbout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontal_small"
+        android:layout_marginEnd="@dimen/horizontal_small"
+        android:layout_marginBottom="@dimen/vertical"
+        app:cardBackgroundColor="@color/cardview_background_inverse"
+        app:cardElevation="@dimen/vertical_small"
+        app:layout_constraintEnd_toEndOf="@id/drawerBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/horizontal"
+            android:paddingEnd="@dimen/horizontal"
+            android:paddingBottom="@dimen/vertical_small"
+            android:paddingTop="@dimen/vertical">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/actionRate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="0dp"
+                android:textSize="@dimen/text_forced_micro"
+                android:text="@string/action_play_store"
+                android:textColor="@color/colorWhite"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintWidth_percent="0.5"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+            <TextView
+                android:id="@+id/gratitude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="@dimen/text_forced_small"
+                android:textColor="@color/cardview_inverse_text"
+                android:text="@string/gratitude"
+                app:layout_constraintBottom_toTopOf="@id/actionRate" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="@id/actionRate"
+                app:layout_constraintStart_toEndOf="@id/actionRate"
+                app:layout_constraintEnd_toEndOf="parent">
+                <TextView android:id="@+id/textVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/cardview_inverse_text"
+                    android:textSize="@dimen/text_forced_micro"
+                    tools:text="123.456.789"/>
+                <TextView android:id="@+id/textBuildTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/cardview_inverse_text"
+                    android:textSize="@dimen/text_forced_micro"
+                    tools:text="1234567890"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <View android:id="@+id/divider_bottom"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="@dimen/vertical"
+        android:background="@drawable/gradient_primary"
+        app:layout_constraintEnd_toEndOf="@id/drawerBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cardAbout" />
+
+    <com.google.android.material.card.MaterialCardView android:id="@+id/cardStop"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontal_small"
+        android:layout_marginEnd="@dimen/horizontal_small"
+        android:layout_marginBottom="@dimen/vertical"
+        android:layout_marginTop="@dimen/vertical"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:cardBackgroundColor="@color/cardview_background"
+        app:cardElevation="@dimen/vertical_small"
+        app:layout_constraintEnd_toEndOf="@id/drawerBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/ripple_primary">
+            <TextView android:id="@+id/textDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/horizontal"
+                android:paddingStart="@dimen/horizontal"
+                android:paddingBottom="@dimen/vertical_small"
+                android:paddingTop="@dimen/vertical"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="@dimen/text_small"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Desc"/>
+            <TextView android:id="@+id/textLatLon"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/horizontal"
+                android:paddingStart="@dimen/horizontal"
+                android:paddingBottom="@dimen/vertical"
+                android:paddingTop="@dimen/vertical_small"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/text_micro"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="lat, lon"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <View android:id="@+id/divider_top"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/vertical"
+        android:background="@drawable/gradient_primary"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@id/drawerBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardStop" />
+
+    <ListView android:id="@+id/drawerStartListviewArrivals"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingBottom="@dimen/vertical"
+        android:paddingTop="@dimen/vertical"
+        android:paddingEnd="@dimen/horizontal_small"
+        android:paddingStart="0dp"
+        android:clipToPadding="false"
+        android:scrollbarThumbVertical="@drawable/scrollbar_vertical_thumb_primary"
+        app:layout_constraintTop_toBottomOf="@id/divider_top"
+        app:layout_constraintBottom_toTopOf="@id/divider_bottom"
+        app:layout_constraintEnd_toEndOf="@id/drawerBackground"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

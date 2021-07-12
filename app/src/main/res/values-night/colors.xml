@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorSecondary">@color/cardview_background_inverse</color>
+
+    <color name="cardview_background">#EE000000</color>
+    <color name="cardview_background_inverse">#EE666666</color>
+    <color name="cardview_inverse_text">#EECCCCCC</color>
+    <color name="drawer_background">#CC333333</color>
+
+</resources>

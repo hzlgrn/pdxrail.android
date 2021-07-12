@@ -1,0 +1,21 @@
+{
+	"version": 0,
+	"rail_stops":[
+		{
+			"station": "",
+			"line": "",
+			"type": "",
+			"uniqueid": "",
+			"lat": 0.0,
+			"lon": 0.0
+		}
+	],
+	"rail_lines":[
+		{
+			"line": "",
+			"passage": "",
+			"type": "",
+			"polyline": [{"a": 0.0, "o": 0.0}]
+		}
+	]
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_map_type_normal">Normal</string>
+    <string name="google_map_type_terrain">Terreno</string>
+    <string name="google_map_type_hybrid">Híbrido</string>
+    <string name="google_map_type_satellite">Satélite</string>
+    <string name="menu_google_map">Clase de Mapa</string>
+    <string name="drawer_opened">Abierto</string>
+    <string name="drawer_closed">Cerrado</string>
+    <string name="version">versión %1$s</string>
+    <string name="no_arrival">no llegada programada</string>
+    <string name="no_estimate">no llegada estimada</string>
+    <string name="action_play_store">Tarifa</string>
+    <string name="menu_help">Help</string>
+    <string name="permission_location_reason">Allowing location services will display your current location on the map.</string>
+    <string name="help_arrival">MAX arrivals render current location on the map. Portland Streetcar vehicle locations are unavailable.</string>
+    <string name="help_streetcar_stop">Get real-time arrival information for Portland Streetcar.</string>
+    <string name="help_max_stop">Get real-time vehicle locations and arrival information for MAX Light Rail.</string>
+    <string name="help_title">An interactive map for Portland\'s rail systems.</string>
+</resources>

@@ -1,0 +1,40 @@
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://maven.google.com' }
+    }
+}
+buildscript {
+    Properties keyRingProperties = new Properties()
+    File keyRingFile = rootProject.file('com.hzlgrn.pdxrail.keyring.example')
+    FileInputStream keyRingIn = new FileInputStream(keyRingFile)
+    keyRingProperties.load(keyRingIn)
+    ext {
+
+        buildVersionCode = 1
+        buildVersionName = "1.0"
+
+        assetStatements =
+            "[{ "+
+            "\"relation\": [\"delegate_permission/common.handle_all_urls\"], "+
+            "\"target\": { "+
+            "\"namespace\": \"web\", "+
+            "\"site\": \"" + keyRingProperties["HOME_URL"] + "\" "+
+            "} "+
+            "}]"
+        buildTime = (new Date()).getTime()
+        buildTools = '30.0.3'
+        keyRing = keyRingProperties
+        version_kotlin = '1.5.20'
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$version_kotlin"
+    }
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://maven.google.com' }
+    }
+}

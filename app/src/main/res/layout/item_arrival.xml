@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingEnd="@dimen/horizontal"
+    android:paddingStart="@dimen/horizontal_small"
+    android:paddingBottom="@dimen/vertical_small"
+    android:paddingTop="@dimen/vertical_small">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/cardview_background"
+        app:cardElevation="@dimen/vertical_small">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_primary">
+            <TextView android:id="@+id/textShortSign"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/horizontal"
+                android:paddingStart="@dimen/horizontal"
+                android:paddingTop="@dimen/vertical_small"
+                android:singleLine="true"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/text_small"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Short Sign"/>
+            <ImageView android:id="@+id/icArrival"
+                android:layout_width="@dimen/ic_size_large"
+                android:layout_height="@dimen/ic_size_large"
+                android:importantForAccessibility="no"
+                android:src="@drawable/marker_max_arrival"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textShortSign"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/vertical_small"
+                android:paddingTop="@dimen/vertical_small"
+                app:layout_constraintTop_toTopOf="@id/icArrival"
+                app:layout_constraintBottom_toBottomOf="@id/icArrival"
+                app:layout_constraintStart_toEndOf="@id/icArrival"
+                app:layout_constraintEnd_toEndOf="parent">
+                <TextView android:id="@+id/textScheduled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="@dimen/text_small"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    tools:text="Scheduled"/>
+                <TextView android:id="@+id/textEstimate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="@dimen/text_small"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    tools:text="Estimated"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>
