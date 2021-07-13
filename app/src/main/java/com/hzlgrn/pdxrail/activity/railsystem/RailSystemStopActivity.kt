@@ -9,7 +9,9 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.App
 import com.hzlgrn.pdxrail.BuildConfig
-import com.hzlgrn.pdxrail.databinding.TrimetStopDrawerBinding
+import com.hzlgrn.pdxrail.Domain
+import com.hzlgrn.pdxrail.R
+import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
 import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
 import com.hzlgrn.pdxrail.data.repository.RailSystemArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
@@ -26,22 +28,17 @@ import javax.inject.Inject
 @SuppressLint("Registered")
 abstract class RailSystemStopActivity: RailSystemActivity() {
 
-    protected abstract val pDrawerBinding: TrimetStopDrawerBinding
-
     @Inject
     lateinit var railSystemArrivalRepository: RailSystemArrivalRepository
 
+    protected abstract val pDrawerBinding: DrawerArrivalsBinding
     protected open var pFocusStopUniqueId: String? = null
 
-    private val mArrivalMarkers = ArrayList<Marker>()
     private var mFocusStopPosition: LatLng? = null
 
+    private val mArrivalMarkers = ArrayList<Marker>()
+
     private var observeArrivalsJob: Job? = null
-        set(job) {
-            if (field?.isCancelled == false) field?.cancel()
-            field = job
-        }
-    private var updateArrivalDataJob: Job? = null
         set(job) {
             if (field?.isCancelled == false) field?.cancel()
             field = job
@@ -52,6 +49,11 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
             field = job
         }
     private var observeArrivalMarkers: Job? = null
+        set(job) {
+            if (field?.isCancelled == false) field?.cancel()
+            field = job
+        }
+    private var updateArrivalDataJob: Job? = null
         set(job) {
             if (field?.isCancelled == false) field?.cancel()
             field = job
@@ -89,7 +91,10 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
                 }
                 pDrawerBinding.textDesc.text = it.title
                 val position = it.position
-                pDrawerBinding.textLatLon.text = "${"%.4f".format(position.latitude)}, ${"%.4f".format(position.longitude)}"
+                pDrawerBinding.textLatLon.text = resources.getString(
+                    R.string.lat_lon,
+                    "%.4f".format(position.latitude),
+                    "%.4f".format(position.longitude))
                 pDrawerBinding.dividerTop.visibility = View.VISIBLE
                 pDrawerBinding.cardStop.visibility = View.VISIBLE
                 pDrawerBinding.cardStop.setOnClickListener {
@@ -108,11 +113,12 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     override fun onMapReady() {
         super.onMapReady()
         pGoogleMap?.setOnMarkerClickListener { clickedMarker ->
-            Timber.d("I clicked a marker?")
+            Timber.d("onMarkerClick")
             this.clickedMarker = clickedMarker
             false
         }
         pGoogleMap?.setOnMapClickListener {
+            Timber.d("onMapClick")
             updateArrivalDataJob = null
             observeArrivalItems = null
             observeArrivalMarkers = null
@@ -127,7 +133,7 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     }
 
     private fun fetchArrivalsFor(position: LatLng, isStreetcar: Boolean = false) {
-        Timber.d("position=$position, isStreetCar=$isStreetcar")
+        Timber.d("fetchArrivalsFor position=$position, isStreetCar=$isStreetcar")
         updateArrivalDataJob = null
         observeArrivalItems = null
         observeArrivalMarkers = null
@@ -144,7 +150,7 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     }
 
     private fun onLocationIdUpdated(locid: List<Long>, isStreetcar: Boolean) {
-        Timber.d("onLocationUpdated()")
+        Timber.d("onLocationIdUpdated()")
         updateArrivalDataJob = TaskTrimetWsV2Arrivals().launchJob(locid, isStreetcar)
         observeArrivalMarkers = launch {
             railSystemArrivalRepository.arrivalMarkersViewModel(locid).collect {
@@ -159,7 +165,7 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     }
 
     private fun onArrivalMarkersViewModel(models: List<MarkerOptions> = emptyList()) {
-        Timber.d("onArrivalMapViewModel()")
+        Timber.d("onArrivalMarkersViewModel()")
         for (marker in mArrivalMarkers) marker.remove()
         mArrivalMarkers.clear()
         Timber.d(if (models.isEmpty()) "clear arrival markers" else "placing ${models.size} arrival markers")
@@ -175,21 +181,29 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     private fun onArrivalListViewModel(models: List<ArrivalItemViewModel> = emptyList()) {
         Timber.d("onArrivalListViewModel()")
         pDrawerBinding.drawerStartListviewArrivals.adapter = ArrivalModelArrayAdapter(this, models).apply {
+            Timber.d("onArrivalItemClicked()")
             onItemClickCallback = onArrivalItemClicked
         }
     }
 
     private val onArrivalItemClicked by lazy {
         fun(arrival: ArrivalItemViewModel) {
-            var didAnimateCamera = false
-            if (arrival.latlng.latitude != 0.0 && arrival.latlng.longitude != 0.0) {
-                pGoogleMap?.animateCamera(CameraUpdateFactory.newLatLng(arrival.latlng))
-                didAnimateCamera = true
-            }
-            if (!didAnimateCamera) mFocusStopPosition?.let {
-                pGoogleMap?.animateCamera(
-                        CameraUpdateFactory.newLatLng(arrival.latlng))
-            }
+            moveMapTo(arrival.latlng)
+        }
+
+    }
+
+    protected fun moveMapTo(position: LatLng) {
+        var didAnimateCamera = false
+        if (position.latitude > Domain.RailSystem.REGION_RECT_SE.latitude
+            && position.longitude < Domain.RailSystem.REGION_RECT_SE.longitude
+            && position.latitude < Domain.RailSystem.REGION_RECT_NW.latitude
+            && position.longitude > Domain.RailSystem.REGION_RECT_NW.longitude) {
+            pGoogleMap?.animateCamera(CameraUpdateFactory.newLatLng(position))
+            didAnimateCamera = true
+        }
+        if (!didAnimateCamera) mFocusStopPosition?.let {
+            pGoogleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
         }
     }
 

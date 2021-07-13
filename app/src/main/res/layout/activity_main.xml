@@ -35,7 +35,7 @@
             <!-- The navigation drawer -->
             <include
                 android:id="@+id/drawerStart"
-                layout="@layout/trimet_stop_drawer" />
+                layout="@layout/drawer_arrivals" />
         </androidx.drawerlayout.widget.DrawerLayout>
     </LinearLayout>
 

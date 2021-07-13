@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lat_lon" translatable="false">%1$s, %2$s</string>
+</resources>

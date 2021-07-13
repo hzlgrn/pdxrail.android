@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/hzlgrn_blue</color>
-    <color name="colorSecondary">@color/colorWhite</color>
-    <color name="colorPrimaryDark">@color/hzlgrn_blue_dark</color>
+    <color name="colorPrimary">@color/rail_system_primary</color>
+    <color name="colorSecondary">@color/hzlgrn_purple</color>
+    <color name="colorPrimaryDark">@color/hzlgrn_green_dark</color>
     <color name="colorAccent">@color/hzlgrn_green</color>
     <color name="colorBlack">#000</color>
     <color name="colorWhite">#FFF</color>
+
+    <color name="reviewButtonTextColor">@color/colorWhite</color>
 
     <color name="max_blue_line">#0069aa</color>
     <color name="max_green_line">#008752</color>
@@ -22,10 +24,11 @@
     <color name="hzlgrn_blue">#3399ff</color>
     <color name="hzlgrn_blue_dark">#0066cc</color>
     <color name="hzlgrn_purple">#9933ff</color>
-    <color name="hzlgrn_green">#99ff33</color>
+    <color name="hzlgrn_green">#33ff99</color>
+    <color name="hzlgrn_green_dark">#009933</color>
 
-    <color name="trimet_blue">#004a98</color>
-    <color name="trimet_yellow">#ff6</color>
+    <color name="rail_system_primary">#004a98</color>
+    <color name="rail_system_secondary">#ff6</color>
 
     <color name="cardview_background">#EEFFFFFF</color>
     <color name="cardview_background_inverse">#EE000000</color>

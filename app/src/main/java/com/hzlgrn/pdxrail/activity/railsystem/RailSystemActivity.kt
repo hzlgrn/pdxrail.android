@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.gms.maps.model.*
+import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.activity.common.MapTypeMenuActivity
 import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
@@ -24,7 +25,6 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
     override fun onInfoWindowClick(marker: Marker?) {}
 
     fun selectStop(uniqueId: String) {
-        Timber.d("fetchArrivalsFor($uniqueId)")
         val marker = (stopMarkerMax.firstOrNull {
             val tag = it.tag
             tag != null && tag.toString() == uniqueId
@@ -112,79 +112,81 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
     }
 
     private fun onUpdateRailSystemMapViewModel(viewModel: RailSystemMapViewModel) {
-        renderTMRailLines(viewModel)
-        renderTMRailStops(viewModel)
+        with(viewModel) {
+            renderMapViewModelLines(railLines)
+            renderMapViewModelStops(railStops)
+        }
     }
 
-    private fun renderTMRailLines(viewModel: RailSystemMapViewModel) {
+    private fun renderMapViewModelLines(railLines: List<RailSystemMapViewModel.RailLineMapViewModel>) {
         polylines.forEach { it.remove() }
         polylines.clear()
-        for (railLineViewModel in viewModel.railLines) {
+        for (railLineViewModel in railLines) {
             val polyline = railLineViewModel.polyline
             when(railLineViewModel.line) {
-                "B" ->
+                Domain.RailSystem.MAX_BLUE ->
                     renderLine(maxLineDp,colorMaxBlueLine,polyline)
-                "G" ->
+                Domain.RailSystem.MAX_GREEN ->
                     renderLine(maxLineDp,colorMaxGreenLine,polyline)
-                "O" ->
+                Domain.RailSystem.MAX_ORANGE ->
                     renderLine(maxLineDp,colorMaxOrangeLine,polyline)
-                "R" ->
+                Domain.RailSystem.MAX_RED ->
                     renderLine(maxLineDp,colorMaxRedLine,polyline)
-                "Y" ->
+                Domain.RailSystem.MAX_YELLOW ->
                     renderLine(maxLineDp,colorMaxYellowLine,polyline)
-                "BG" -> {
+                Domain.RailSystem.MAX_BLUE_GREEN -> {
                     renderLine(maxLineDp,colorMaxBlueLine,polyline,lPattern1o2)
                     renderLine(maxLineDp,colorMaxGreenLine,polyline,lPattern2o2)
                 }
-                "BR" -> {
+                Domain.RailSystem.MAX_BLUE_RED -> {
                     renderLine(maxLineDp,colorMaxBlueLine,polyline,lPattern1o2)
                     renderLine(maxLineDp,colorMaxRedLine,polyline,lPattern2o2)
                 }
-                "GO" -> {
+                Domain.RailSystem.MAX_GREEN_ORANGE -> {
                     renderLine(maxLineDp,colorMaxGreenLine,polyline,lPattern1o2)
                     renderLine(maxLineDp,colorMaxOrangeLine,polyline,lPattern2o2)
                 }
-                "GY" -> {
+                Domain.RailSystem.MAX_GREEN_YELLOW -> {
                     renderLine(maxLineDp,colorMaxGreenLine,polyline,lPattern1o2)
                     renderLine(maxLineDp,colorMaxYellowLine,polyline,lPattern2o2)
                 }
-                "BGR" -> {
+                Domain.RailSystem.MAX_BLUE_GREEN_RED -> {
                     renderLine(maxLineDp,colorMaxBlueLine,polyline,lPattern1o3)
                     renderLine(maxLineDp,colorMaxGreenLine,polyline,lPattern2o3)
                     renderLine(maxLineDp,colorMaxRedLine,polyline,lPattern3o3)
                 }
-                "BGRY" -> {
+                Domain.RailSystem.MAX_BLUE_GREEN_RED_YELLOW -> {
                     renderLine(maxLineDp,colorMaxBlueLine,polyline,lPattern1o4)
                     renderLine(maxLineDp,colorMaxGreenLine,polyline,lPattern2o4)
                     renderLine(maxLineDp,colorMaxRedLine,polyline,lPattern3o4)
                     renderLine(maxLineDp,colorMaxYellowLine,polyline,lPattern4o4)
                 }
-                "WES" ->
+                Domain.RailSystem.WES ->
                     renderLine(maxLineDp,colorWesCommuterRail,polyline)
-                "AL" ->
+                Domain.RailSystem.STREETCAR_A_LOOP ->
                     renderLine(streetcarLineDp, colorStreetcarALoop, polyline)
-                "BL" ->
+                Domain.RailSystem.STREETCAR_B_LOOP ->
                     renderLine(streetcarLineDp, colorStreetcarBLoop, polyline)
-                "NS" ->
+                Domain.RailSystem.STREETCAR_NORTH_SOUTH ->
                     renderLine(streetcarLineDp, colorStreetcarNorthSouth, polyline)
-                "AL/BL" -> {
+                Domain.RailSystem.STREETCAR_A_B -> {
                     renderLine(streetcarLineDp,colorStreetcarALoop,polyline,lPattern1o2)
                     renderLine(streetcarLineDp,colorStreetcarBLoop,polyline,lPattern2o2)
                 }
-                "NS/BL" -> {
+                Domain.RailSystem.STREETCAR_NS_B -> {
                     renderLine(streetcarLineDp,colorStreetcarNorthSouth,polyline,lPattern1o2)
                     renderLine(streetcarLineDp,colorStreetcarBLoop,polyline,lPattern2o2)
                 }
-                "NS/AL" -> {
+                Domain.RailSystem.STREETCAR_NS_A -> {
                     renderLine(streetcarLineDp,colorStreetcarNorthSouth,polyline,lPattern1o2)
                     renderLine(streetcarLineDp,colorStreetcarALoop,polyline,lPattern2o2)
                 }
-                "O/AL/BL" -> {
+                Domain.RailSystem.STREETCAR_MAX_A_B_ORANGE -> {
                     renderLine(maxLineDp,colorMaxOrangeLine,polyline,lPattern1o3)
                     renderLine(streetcarLineDp,colorStreetcarALoop,polyline,lPattern2o3)
                     renderLine(streetcarLineDp,colorStreetcarBLoop,polyline,lPattern3o3)
                 }
-                "NS/AL/BL" -> {
+                Domain.RailSystem.STREETCAR_NS_A_B -> {
                     renderLine(streetcarLineDp,colorStreetcarNorthSouth,polyline,lPattern1o3)
                     renderLine(streetcarLineDp,colorStreetcarALoop,polyline,lPattern2o3)
                     renderLine(streetcarLineDp,colorStreetcarBLoop,polyline,lPattern3o3)
@@ -211,15 +213,15 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
             polylines.add(it)
         }
     }
-    private fun renderTMRailStops(viewModel: RailSystemMapViewModel) {
+    private fun renderMapViewModelStops(railStops: List<RailSystemMapViewModel.RailStopMapViewModel>) {
         stopMarkerMax.forEach { it.remove() }
         stopMarkerMax.clear()
         stopMarkerStreetcar.forEach { it.remove() }
         stopMarkerStreetcar.clear()
-        for (stopModel in viewModel.railStops) {
+        for (stopModel in railStops) {
             when (stopModel.type) {
-                "MAX", "CR" -> renderMaxStop(stopModel)
-                "SC" -> renderStreetcarStop(stopModel)
+                Domain.RailSystem.STOP_MAX, Domain.RailSystem.STOP_COMMUTER -> renderMaxStop(stopModel)
+                Domain.RailSystem.STOP_STREETCAR -> renderStreetcarStop(stopModel)
                 else -> {
                     Timber.e("Stop type no recognized: ${stopModel.type}")
                     renderMaxStop(stopModel)

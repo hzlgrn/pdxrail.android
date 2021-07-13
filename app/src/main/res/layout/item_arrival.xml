@@ -8,7 +8,8 @@
     android:paddingEnd="@dimen/horizontal"
     android:paddingStart="@dimen/horizontal_small"
     android:paddingBottom="@dimen/vertical_small"
-    android:paddingTop="@dimen/vertical_small">
+    android:paddingTop="@dimen/vertical_small"
+    tools:layout_width="@dimen/tool_item_width">
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

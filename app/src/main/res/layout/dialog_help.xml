@@ -18,7 +18,6 @@
         android:textSize="@dimen/text_large"
         android:text="@string/help_title"/>
     <TextView
-        android:drawableStart="@drawable/marker_max_stop"
         android:gravity="start|center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,9 +25,9 @@
         android:paddingBottom="@dimen/vertical_small"
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="@dimen/text_medium"
-        android:text="@string/help_max_stop" />
+        android:text="@string/help_max_stop"
+        app:drawableStartCompat="@drawable/marker_max_stop" />
     <TextView
-        android:drawableStart="@drawable/marker_streetcar_stop"
         android:gravity="start|center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +35,8 @@
         android:paddingBottom="@dimen/vertical_small"
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="@dimen/text_medium"
-        android:text="@string/help_streetcar_stop" />
+        android:text="@string/help_streetcar_stop"
+        app:drawableStartCompat="@drawable/marker_streetcar_stop" />
     <androidx.constraintlayout.widget.ConstraintLayout android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             android:layout_marginTop="@dimen/vertical"
             android:layout_gravity="end"
             android:text="@string/dialog_help_action"
-            android:textColor="#fff"
+            android:textColor="@color/reviewButtonTextColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_help_arrival"/>
         <TextView

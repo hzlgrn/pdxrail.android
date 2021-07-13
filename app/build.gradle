@@ -10,6 +10,7 @@ android {
     buildToolsVersion buildTools
     buildTypes {
         debug {}
+        /*
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfigs {
@@ -22,6 +23,7 @@ android {
             }
             signingConfig signingConfigs.store_upload_signing
         }
+         */
     }
     compileSdkVersion 30
     defaultConfig {
@@ -60,6 +62,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
+    implementation "com.google.android.gms:play-services-instantapps:17.0.1"
     implementation "com.google.android.gms:play-services-location:18.0.0"
     implementation "com.google.android.gms:play-services-maps:17.0.1"
     implementation "com.google.android.material:material:1.4.0"
