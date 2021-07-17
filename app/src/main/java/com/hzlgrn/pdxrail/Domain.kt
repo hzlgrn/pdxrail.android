@@ -26,8 +26,12 @@ class Domain {
         const val WsV1Stops = "ws/V1/stops?appID=${BuildConfig.KEY_API_RAIL_SYSTEM}&json=true"
 
         const val PREFIX_PORTLAND_STREETCAR = "Portland Streetcar "
+        const val STREETCAR_IN_FULLSIGN = "streetcar"
 
-        const val STOP_MAX = "MAX"
+        const val MAX = "MAX"
+        const val WES = "WES"
+
+        const val STOP_MAX = MAX
         const val STOP_COMMUTER = "CR"
         const val STOP_STREETCAR = "SC"
 
@@ -46,8 +50,6 @@ class Domain {
 
         const val MAX_BLUE_GREEN_RED_YELLOW = "BGRY"
 
-        const val WES = "WES"
-
         const val STREETCAR_A_LOOP = "AL"
         const val STREETCAR_B_LOOP = "BL"
         const val STREETCAR_NORTH_SOUTH = "NS"
@@ -57,6 +59,21 @@ class Domain {
         const val STREETCAR_NS_A = "NS/AL"
         const val STREETCAR_MAX_A_B_ORANGE = "O/AL/BL"
         const val STREETCAR_NS_A_B = "NS/AL/BL"
+
+        fun isBlue(shortSign: String) = shortSign.contains("blue",true)
+        fun isGreen(shortSign: String) = shortSign.contains("green",true)
+        fun isOrange(shortSign: String) = shortSign.contains("orange",true)
+        fun isRed(shortSign: String) = shortSign.contains("red",true)
+        fun isYellow(shortSign: String) = shortSign.contains("yellow",true)
+        fun isNSLine(shortSign: String) = shortSign.contains("ns_line",true)
+        fun isALoop(shortSign: String): Boolean {
+            return shortSign.contains("a loop",true)
+                || shortSign.contains("loop a",true)
+        }
+        fun isBLoop(shortSign: String): Boolean {
+            return shortSign.contains("b loop",true)
+                    || shortSign.contains("loop b",true)
+        }
     }
 
 }

@@ -20,7 +20,7 @@
     <string name="help_arrival">MAX arrivals render current location on the map. Portland Streetcar vehicle locations are unavailable.</string>
     <string name="help_streetcar_stop">Get real-time arrival information for Portland Streetcar.</string>
     <string name="help_max_stop">Get real-time vehicle locations and arrival information for MAX Light Rail.</string>
-    <string name="help_title">An interactive map for Portland\'s rail systems.</string>
+    <string name="help_title">An interactive map for Portland, Oregon\'s rail-based transit systems.</string>
     
     <!-- Needs localization 🇲🇽 -->
     <string name="back_to">back to: %1$s</string>

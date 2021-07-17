@@ -11,12 +11,12 @@ import com.hzlgrn.pdxrail.App
 import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
-import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
 import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
-import com.hzlgrn.pdxrail.data.repository.RailSystemArrivalRepository
+import com.hzlgrn.pdxrail.data.repository.ArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
+import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
 import com.hzlgrn.pdxrail.task.TaskTrimetWsV1Stops
-import com.hzlgrn.pdxrail.task.TaskTrimetWsV2Arrivals
+import com.hzlgrn.pdxrail.task.TaskWsV2Arrivals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -29,7 +29,7 @@ import javax.inject.Inject
 abstract class RailSystemStopActivity: RailSystemActivity() {
 
     @Inject
-    lateinit var railSystemArrivalRepository: RailSystemArrivalRepository
+    lateinit var arrivalRepository: ArrivalRepository
 
     protected abstract val pDrawerBinding: DrawerArrivalsBinding
     protected open var pFocusStopUniqueId: String? = null
@@ -151,14 +151,14 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
 
     private fun onLocationIdUpdated(locid: List<Long>, isStreetcar: Boolean) {
         Timber.d("onLocationIdUpdated()")
-        updateArrivalDataJob = TaskTrimetWsV2Arrivals().launchJob(locid, isStreetcar)
+        updateArrivalDataJob = TaskWsV2Arrivals().launchJob(locid, isStreetcar)
         observeArrivalMarkers = launch {
-            railSystemArrivalRepository.arrivalMarkersViewModel(locid).collect {
+            arrivalRepository.arrivalMarkersViewModel(locid).collect {
                 onArrivalMarkersViewModel(it)
             }
         }
         observeArrivalItems = launch {
-            railSystemArrivalRepository.arrivalItemsViewModel(locid).collect {
+            arrivalRepository.arrivalItemsViewModel(locid).collect {
                 onArrivalListViewModel(it)
             }
         }

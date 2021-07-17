@@ -11,7 +11,9 @@ data class RailStopEntity(
     var type : String,
     var latitude: Double,
     var longitude: Double) {
+
     companion object {
-        const val TABLE_NAME = "rail_stop"
+        const val TABLE_NAME = "railsystem_rail_stop"
     }
+
 }

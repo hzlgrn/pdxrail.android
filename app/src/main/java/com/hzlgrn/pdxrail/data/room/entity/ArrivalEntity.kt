@@ -67,7 +67,7 @@ data class ArrivalEntity(
     )
 
     companion object {
-        const val TABLE_NAME = "trimet_arrival"
+        const val TABLE_NAME = "railsystem_arrival"
     }
 
 }

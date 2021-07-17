@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.content.res.ResourcesCompat
 import com.hzlgrn.pdxrail.R
-import com.hzlgrn.pdxrail.databinding.ItemArrivalBinding
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
+import com.hzlgrn.pdxrail.databinding.ItemArrivalBinding
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -9,7 +9,10 @@ class ArrivalItem(
         val shortSign: String? = null,
         val blockPositionId: Long) {
 
-    @Relation(parentColumn = "blockPositionId", entityColumn = "id", entity = BlockPositionEntity::class)
+    @Relation(
+        parentColumn = "blockPositionId",
+        entityColumn = "id",
+        entity = BlockPositionEntity::class)
     var blockPosition: List<BlockPositionEntity> = emptyList()
 
 }

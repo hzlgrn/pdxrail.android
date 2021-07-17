@@ -4,13 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.BuildConfig
+import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.json.RailLineJson
 import com.hzlgrn.pdxrail.data.json.RailStopJson
+import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
 import com.hzlgrn.pdxrail.data.room.dao.RailSystemDao
-import com.hzlgrn.pdxrail.data.room.dao.TriMetDao
 import com.hzlgrn.pdxrail.data.room.entity.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -24,7 +24,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 @Database(
-    version = 1,
+    version = 2,
     entities = [
         ArrivalEntity::class,
         BlockPositionEntity::class,
@@ -36,7 +36,7 @@ import java.io.InputStreamReader
 )
 abstract class ApplicationRoom: RoomDatabase() {
 
-    abstract fun triMetDao(): TriMetDao
+    abstract fun arrivalDao(): ArrivalDao
     abstract fun railSystemDao(): RailSystemDao
 
     open class Instance(context: Context, coroutineScope: CoroutineScope) {
@@ -74,7 +74,8 @@ abstract class ApplicationRoom: RoomDatabase() {
                         line = json.line,
                         passage = json.passage,
                         type = json.type,
-                        polylineString = polyline.fold("") { total, item -> total + "${item.latitude},${item.longitude} " }.trimEnd())
+                        polylineString = polyline.fold("")
+                        { total, item -> total + "${item.latitude},${item.longitude} " }.trimEnd())
             } ?: emptyList()
             val dao = applicationRoom.railSystemDao()
             dao.updateRailSystem(railStopEntities, railLineEntities)

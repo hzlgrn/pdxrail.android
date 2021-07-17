@@ -12,10 +12,10 @@ import com.google.android.gms.maps.model.Marker
 import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
-import com.hzlgrn.pdxrail.databinding.ActivityMainBinding
-import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
 import com.hzlgrn.pdxrail.activity.presenter.MainActivityPresenter
 import com.hzlgrn.pdxrail.activity.railsystem.RailSystemStopActivity
+import com.hzlgrn.pdxrail.databinding.ActivityMainBinding
+import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
 import timber.log.Timber
 
 class MainActivity : RailSystemStopActivity() {

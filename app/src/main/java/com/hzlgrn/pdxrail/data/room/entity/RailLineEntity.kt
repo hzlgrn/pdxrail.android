@@ -14,6 +14,7 @@ data class RailLineEntity(
     @PrimaryKey(autoGenerate = true) var id: Int = 0
 
     companion object {
-        const val TABLE_NAME = "rail_line"
+        const val TABLE_NAME = "railsystem_rail_line"
     }
+
 }

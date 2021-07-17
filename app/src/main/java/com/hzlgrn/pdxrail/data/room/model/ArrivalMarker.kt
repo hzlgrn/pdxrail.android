@@ -7,6 +7,9 @@ class ArrivalMarker(
         val shortSign: String?,
         val blockPositionId: Long
 ) {
-    @Relation(parentColumn = "blockPositionId", entityColumn = "id", entity = BlockPositionEntity::class)
+    @Relation(
+        parentColumn = "blockPositionId",
+        entityColumn = "id",
+        entity = BlockPositionEntity::class)
     var blockPosition: List<BlockPositionEntity> = emptyList()
 }

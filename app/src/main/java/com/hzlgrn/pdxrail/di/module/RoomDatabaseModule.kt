@@ -1,8 +1,8 @@
 package com.hzlgrn.pdxrail.di.module
 
 import android.content.Context
+import com.hzlgrn.pdxrail.data.repository.ArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
-import com.hzlgrn.pdxrail.data.repository.RailSystemArrivalRepository
 import com.hzlgrn.pdxrail.data.room.ApplicationRoom
 import dagger.Module
 import dagger.Provides
@@ -23,10 +23,10 @@ class RoomDatabaseModule(
 
     @Singleton
     @Provides
-    fun provideTriMetRepository(): RailSystemArrivalRepository = RailSystemArrivalRepository(pDatabase.triMetDao())
+    fun provideArrivalRepository(): ArrivalRepository = ArrivalRepository(pDatabase.arrivalDao())
 
     @Singleton
     @Provides
-    fun provideRailSystemMapViewRepository(): RailSystemRepository = RailSystemRepository(pDatabase.railSystemDao())
+    fun provideRailSystemRepository(): RailSystemRepository = RailSystemRepository(pDatabase.railSystemDao())
 
 }
