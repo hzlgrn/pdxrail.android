@@ -6,16 +6,18 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
-import com.hzlgrn.pdxrail.data.room.dao.TriMetDao
+import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class RailSystemArrivalRepository(private val dao: TriMetDao) {
+class ArrivalRepository(private val dao: ArrivalDao) {
 
-    fun arrivalItemsViewModel(locIds: List<Long>): Flow<List<ArrivalItemViewModel>> {
-        return dao.arrivalItemsFor(locIds).map { listArrivalItem ->
+    fun arrivalItemsViewModel(listLocId: List<Long>): Flow<List<ArrivalItemViewModel>> {
+        return dao.arrivalItemsFor(listLocId).map { listArrivalItem ->
             listArrivalItem.map {
-                val arrivalPosition = LatLng(it.blockPosition.firstOrNull()?.lat ?: 0.0,it.blockPosition.firstOrNull()?.lng ?: 0.0)
+                val arrivalLat = it.blockPosition.firstOrNull()?.lat ?: 0.0
+                val arrivalLon = it.blockPosition.firstOrNull()?.lng ?: 0.0
+                val arrivalPosition = LatLng(arrivalLat,arrivalLon)
                 ArrivalItemViewModel(
                         textShortSign = (it.shortSign ?: "").removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR),
                         scheduled = it.scheduled,
@@ -28,8 +30,8 @@ class RailSystemArrivalRepository(private val dao: TriMetDao) {
         }
     }
 
-    fun arrivalMarkersViewModel(locIds: List<Long>): Flow<List<MarkerOptions>> {
-        return dao.arrivalMarkersFor(locIds).map { listArrivals ->
+    fun arrivalMarkersViewModel(listLocId: List<Long>): Flow<List<MarkerOptions>> {
+        return dao.arrivalMarkersFor(listLocId).map { listArrivals ->
             listArrivals.filter { it.blockPosition.isNotEmpty() }.map {
                 val blockPosition = it.blockPosition.firstOrNull()!!
                 MarkerOptions()
@@ -47,31 +49,14 @@ class RailSystemArrivalRepository(private val dao: TriMetDao) {
         return when {
             shortSign == null -> R.drawable.marker_max_arrival
 
-            shortSign.contains("blue",true) ->
-                R.drawable.marker_max_arrival_blue
-
-            shortSign.contains("green",true) ->
-                R.drawable.marker_max_arrival_green
-
-            shortSign.contains("orange",true) ->
-                R.drawable.marker_max_arrival_orange
-
-            shortSign.contains("red",true) ->
-                R.drawable.marker_max_arrival_red
-
-            shortSign.contains("yellow",true) ->
-                R.drawable.marker_max_arrival_yellow
-
-            shortSign.contains("ns line",true) ->
-                R.drawable.marker_streetcar_ns_line
-
-            shortSign.contains("a loop",true)
-                    || shortSign.contains("loop a", true) ->
-                R.drawable.marker_streetcar_a_loop
-
-            shortSign.contains("b loop",true)
-                    || shortSign.contains("loop b", true) ->
-                R.drawable.marker_streetcar_b_loop
+            Domain.RailSystem.isBlue(shortSign) -> R.drawable.marker_max_arrival_blue
+            Domain.RailSystem.isGreen(shortSign) -> R.drawable.marker_max_arrival_green
+            Domain.RailSystem.isOrange(shortSign) -> R.drawable.marker_max_arrival_orange
+            Domain.RailSystem.isRed(shortSign) -> R.drawable.marker_max_arrival_red
+            Domain.RailSystem.isYellow(shortSign) -> R.drawable.marker_max_arrival_yellow
+            Domain.RailSystem.isNSLine(shortSign) -> R.drawable.marker_streetcar_ns_line
+            Domain.RailSystem.isALoop(shortSign) -> R.drawable.marker_streetcar_a_loop
+            Domain.RailSystem.isBLoop(shortSign) -> R.drawable.marker_streetcar_b_loop
 
             else -> R.drawable.marker_max_arrival
         }

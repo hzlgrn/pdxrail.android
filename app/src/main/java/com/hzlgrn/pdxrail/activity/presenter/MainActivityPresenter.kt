@@ -1,5 +1,6 @@
 package com.hzlgrn.pdxrail.activity.presenter
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -15,8 +16,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.hzlgrn.pdxrail.BuildConfig
-import com.hzlgrn.pdxrail.activity.MainActivity
 import com.hzlgrn.pdxrail.R
+import com.hzlgrn.pdxrail.activity.MainActivity
 import com.hzlgrn.pdxrail.databinding.ActivityMainBinding
 import timber.log.Timber
 import java.util.*
@@ -112,6 +113,7 @@ class MainActivityPresenter(private val activity: MainActivity, private val mBin
         activity.invalidateOptionsMenu()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     fun onDrawerOpened(drawerView: View) {
         drawerView.setOnTouchListener { _, event -> (event?.rawX?.toInt() ?: Int.MAX_VALUE) < mBinding.drawerStart.drawerBackground.width }
         (activity.getStopMarkerFor(focusOnStopUniqueId)?.position?:googleMap?.cameraPosition?.target)?.let { center ->

@@ -2,7 +2,7 @@ package com.hzlgrn.pdxrail
 
 import android.app.Application
 import android.util.Log
-import com.hzlgrn.pdxrail.BuildConfig
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.hzlgrn.pdxrail.di.component.ApplicationComponent
 import com.hzlgrn.pdxrail.di.component.DaggerForApplicationComponent
 import com.hzlgrn.pdxrail.di.module.ApplicationPreferencesModule
@@ -18,16 +18,26 @@ class App : Application(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
 
-    private val GiantSequoia by lazy(false) { object: Timber.Tree() {
-        override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-            when (priority) { Log.VERBOSE, Log.DEBUG -> return }
-            //Crashlytics.logException(err?:Throwable("$tag: $message"))
+    private val hzlnt by lazy(false) {
+        if (BuildConfig.DEBUG) Timber.DebugTree()
+        else {
+            object: Timber.Tree() {
+                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                    when (priority) {
+                        Log.VERBOSE, Log.DEBUG -> return
+                    }
+                    with(FirebaseCrashlytics.getInstance()) {
+                        t?.let { throwable -> recordException(throwable) }
+                        if (t == null) log(message)
+                    }
+                }
+            }
         }
-    }}
+    }
 
     override fun onCreate() {
         super.onCreate()
-        Timber.plant(if (BuildConfig.DEBUG) Timber.DebugTree() else GiantSequoia)
+        Timber.plant(hzlnt)
 
         applicationComponent = DaggerForApplicationComponent.builder()
             .applicationPreferencesModule(ApplicationPreferencesModule(applicationContext))

@@ -11,24 +11,27 @@ buildscript {
     FileInputStream keyRingIn = new FileInputStream(keyRingFile)
     keyRingProperties.load(keyRingIn)
     ext {
+        keyRing = keyRingProperties
 
+        buildTime = (new Date()).getTime()
+        buildTools = '30.0.3'
         buildVersionCode = 1
-        buildVersionName = "1.0"
+        buildVersionName = "1.1"
 
-        assetStatements ="""[{
+        assetStatements = """[{
             "relation": ["delegate_permission/common.handle_all_urls"], 
             "target": {
                 "namespace": "web", 
-                "site": "${keyRingProperties["HOME_URL"]}" 
+                "site": "${keyRing["HOME_URL"]}" 
             }
         }]"""
-        buildTime = (new Date()).getTime()
-        buildTools = '30.0.3'
-        keyRing = keyRingProperties
+
         version_kotlin = '1.5.21'
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.google.gms:google-services:4.3.8'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$version_kotlin"
     }
     repositories {

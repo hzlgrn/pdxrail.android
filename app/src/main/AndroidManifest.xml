@@ -46,7 +46,7 @@
             </intent-filter>
             <meta-data
                 android:name="default-url"
-                android:value="@string/home_url" />
+                android:value="${HOME_URL}" />
         </activity>
         <meta-data
             android:name="asset_statements"

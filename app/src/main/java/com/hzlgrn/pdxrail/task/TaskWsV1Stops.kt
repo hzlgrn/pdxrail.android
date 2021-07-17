@@ -3,6 +3,7 @@ package com.hzlgrn.pdxrail.task
 import android.annotation.SuppressLint
 import com.google.android.gms.maps.model.LatLng
 import com.hzlgrn.pdxrail.App
+import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.data.net.RailSystemService
 import com.hzlgrn.pdxrail.data.room.ApplicationRoom
 import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
@@ -18,8 +19,11 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 class TaskTrimetWsV1Stops: CoroutineScope {
-    companion object {
-        private const val THROTTLE_LOCID = 86400000L  // a day
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + coroutineExceptionHandler
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Timber.e(throwable)
     }
 
     @Inject
@@ -28,15 +32,7 @@ class TaskTrimetWsV1Stops: CoroutineScope {
     @Inject
     lateinit var railSystemService: RailSystemService
 
-    init {
-        App.applicationComponent.inject(this)
-    }
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + coroutineExceptionHandler
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Timber.e(throwable)
-    }
+    init { App.applicationComponent.inject(this) }
 
     fun flowLocid(latlng: LatLng, isStreetCar: Boolean): Flow<List<Long>> = flow {
         emit(fetchLocIds(latlng, isStreetCar))
@@ -68,13 +64,13 @@ class TaskTrimetWsV1Stops: CoroutineScope {
         }
 
         val now = Date().time
-        val lastUpdated = applicationRoom.triMetDao().getLocIdFor("$lat,$lon")?.updated ?: 0L
+        val lastUpdated = applicationRoom.arrivalDao().getLocIdFor("$lat,$lon")?.updated ?: 0L
         Timber.d("lastsuccess-locids-$lat,$lon: ${now-lastUpdated} > $THROTTLE_LOCID = ${(now-lastUpdated) > THROTTLE_LOCID}")
         if ((now-lastUpdated) > THROTTLE_LOCID) {
-            TriMetWsV1Stops(radiusInFeet, lat, lon, isStreetCar)
+            wsV1Stops(radiusInFeet, lat, lon, isStreetCar)
         }
         val listLocId = mutableListOf<Long>()
-        val latestModel = applicationRoom.triMetDao().getLocIdFor("$lat,$lon")
+        val latestModel = applicationRoom.arrivalDao().getLocIdFor("$lat,$lon")
         val csvLocId = latestModel?.csvlocid
         val split = csvLocId?.split(',') ?: emptyList()
         for (locid in split) {
@@ -87,8 +83,8 @@ class TaskTrimetWsV1Stops: CoroutineScope {
         return listLocId
     }
 
-    private fun TriMetWsV1Stops(radiusInFeet: Long, lat: Double, lon: Double, isStreetCar: Boolean) {
-        Timber.d("TriMetwsV1Stops($radiusInFeet, $lat, $lon, $isStreetCar)")
+    private fun wsV1Stops(radiusInFeet: Long, lat: Double, lon: Double, isStreetCar: Boolean) {
+        Timber.d("wsV1Stops($radiusInFeet, $lat, $lon, $isStreetCar)")
         try {
             railSystemService.wsV1Stops(radiusInFeet, "$lat, $lon", isStreetCar).also {
                 Timber.d(it.request().url.toString())
@@ -120,8 +116,8 @@ class TaskTrimetWsV1Stops: CoroutineScope {
                                     commaSeparatedLocId.append(location.locid)
                                 } else {
                                     location.desc?.let {
-                                        if (it.contains("max", true)
-                                                || it.contains("wes", true)) {
+                                        if (it.contains(Domain.RailSystem.MAX, true)
+                                                || it.contains(Domain.RailSystem.WES, true)) {
                                             if (commaSeparatedLocId.isNotEmpty()) {
                                                 commaSeparatedLocId.append(",")
                                             }
@@ -131,7 +127,7 @@ class TaskTrimetWsV1Stops: CoroutineScope {
                                 }
                             }
 
-                            applicationRoom.triMetDao().updateOrReplace(
+                            applicationRoom.arrivalDao().updateOrReplace(
                                     LocIdEntity(
                                             latlon = "$lat,$lon",
                                             updated = Date().time,
@@ -141,5 +137,9 @@ class TaskTrimetWsV1Stops: CoroutineScope {
                 }
             }
         } catch (err: Exception) { Timber.e(err) }
+    }
+
+    companion object {
+        private const val THROTTLE_LOCID = 86400000L  // a day
     }
 }

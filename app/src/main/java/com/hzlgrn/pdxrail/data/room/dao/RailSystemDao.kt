@@ -8,19 +8,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RailSystemDao {
 
+    // region Rail Lines
+
     @Transaction @Query("SELECT * FROM ${RailLineEntity.TABLE_NAME} WHERE 1=1")
     fun railLines(): Flow<List<RailLineEntity>>
-
-    @Transaction @Query("SELECT * FROM ${RailStopEntity.TABLE_NAME} WHERE 1=1")
-    fun railStops(): Flow<List<RailStopEntity>>
-
-    @Transaction
-    fun updateRailSystem(railStops: List<RailStopEntity>, railLines: List<RailLineEntity>) {
-        updateRailLines(railLines)
-        updateRailStops(railStops)
-    }
-
-    // region Rail Lines
 
     @Query("DELETE FROM ${RailLineEntity.TABLE_NAME} WHERE 1=1")
     fun deleteAllRailLines()
@@ -38,6 +29,9 @@ interface RailSystemDao {
 
     // region Rail Stops
 
+    @Transaction @Query("SELECT * FROM ${RailStopEntity.TABLE_NAME} WHERE 1=1")
+    fun railStops(): Flow<List<RailStopEntity>>
+
     @Query("DELETE FROM ${RailStopEntity.TABLE_NAME} WHERE 1=1")
     fun deleteAllRailStops()
 
@@ -51,5 +45,11 @@ interface RailSystemDao {
     }
 
     // endregion
+
+    @Transaction
+    fun updateRailSystem(railStops: List<RailStopEntity>, railLines: List<RailLineEntity>) {
+        updateRailLines(railLines)
+        updateRailStops(railStops)
+    }
 
 }

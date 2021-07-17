@@ -3,6 +3,7 @@ package com.hzlgrn.pdxrail.task
 import android.os.Bundle
 import android.os.SystemClock
 import com.hzlgrn.pdxrail.App
+import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.data.net.RailSystemService
 import com.hzlgrn.pdxrail.data.room.ApplicationRoom
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
@@ -13,10 +14,12 @@ import java.io.IOException
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class TaskTrimetWsV2Arrivals: CoroutineScope {
-    companion object {
-        const val THROTTLE_ARRIVALS = 10000L // 10 seconds!
-        private val MEMORY = Bundle()
+class TaskWsV2Arrivals: CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + coroutineExceptionHandler
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Timber.e(throwable)
     }
 
     @Inject
@@ -28,20 +31,14 @@ class TaskTrimetWsV2Arrivals: CoroutineScope {
     init { App.applicationComponent.inject(this) }
 
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + coroutineExceptionHandler
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Timber.e(throwable)
-    }
-
     fun launchJob(locid: List<Long>, isStreetCar: Boolean): Job = launch(coroutineContext) {
         while(true) {
-            fetchArrivals(locid, isStreetCar)
+            wsV2Arrivals(locid, isStreetCar)
             delay(THROTTLE_ARRIVALS)
         }
     }
 
-    private fun fetchArrivals(locid: List<Long>, isStreetCar: Boolean): List<ArrivalEntity> {
+    private fun wsV2Arrivals(locid: List<Long>, isStreetCar: Boolean): List<ArrivalEntity> {
         val arrivals = mutableListOf<ArrivalEntity>()
         val memoryKey = "arrivals-$locid-updated"
         val now = SystemClock.elapsedRealtime()
@@ -72,7 +69,7 @@ class TaskTrimetWsV2Arrivals: CoroutineScope {
                             for (arrival in arrivalResults) {
                                 val arrivalModel = ArrivalEntity(arrival)
                                 if (isStreetCar) {
-                                    val isValid = arrival.fullSign.contains("streetcar", true)
+                                    val isValid = arrival.fullSign.contains(Domain.RailSystem.STREETCAR_IN_FULLSIGN, true)
                                     if (isValid) {
                                         arrival.blockPosition?.let { blockPosition ->
                                             arrivalModel.blockPositionId = blockPosition.id
@@ -81,8 +78,8 @@ class TaskTrimetWsV2Arrivals: CoroutineScope {
                                         arrivals.add(arrivalModel)
                                     }
                                 } else {
-                                    val isValid = arrival.fullSign.contains("max", true)
-                                            || arrival.fullSign.contains("wes", true)
+                                    val isValid = arrival.fullSign.contains(Domain.RailSystem.MAX, true)
+                                            || arrival.fullSign.contains(Domain.RailSystem.WES, true)
                                     if (isValid) {
                                         arrival.blockPosition?.let { blockPosition ->
                                             arrivalModel.blockPositionId = blockPosition.id
@@ -95,7 +92,7 @@ class TaskTrimetWsV2Arrivals: CoroutineScope {
 
                         }
 
-                        applicationRoom.triMetDao().apply {
+                        applicationRoom.arrivalDao().apply {
                             updateArrivals(locid.toList(), blockPositions, arrivals)
                         }
                         MEMORY.putLong(memoryKey, SystemClock.elapsedRealtime())
@@ -108,4 +105,9 @@ class TaskTrimetWsV2Arrivals: CoroutineScope {
         return arrivals
     }
 
+
+    companion object {
+        const val THROTTLE_ARRIVALS = 10000L // 10 seconds!
+        private val MEMORY = Bundle()
+    }
 }

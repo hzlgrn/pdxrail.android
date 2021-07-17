@@ -2,8 +2,9 @@ package com.hzlgrn.pdxrail.data.room.entity
 
 import androidx.room.Entity
 import com.hzlgrn.pdxrail.data.net.railsystem.WsV2ArrivalsResponse
+import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity.Companion.TABLE_NAME
 
-@Entity(tableName = "trimet_block_position", primaryKeys = ["id"])
+@Entity(tableName = TABLE_NAME, primaryKeys = ["id"])
 data class BlockPositionEntity (
         val id: Long,
         var routeNumber: Int,
@@ -22,7 +23,7 @@ data class BlockPositionEntity (
 
         var lat: Double, var lng: Double
 ) {
-    constructor(model: WsV2ArrivalsResponse.Arrival.BlockPosition) : this(
+        constructor(model: WsV2ArrivalsResponse.Arrival.BlockPosition) : this(
             model.id,
             model.routeNumber,
             model.signMessage,
@@ -39,8 +40,10 @@ data class BlockPositionEntity (
             model.direction,
             model.lat,
             model.lng
-    )
+        )
 
-
+        companion object {
+            const val TABLE_NAME = "railsystem_block_position"
+        }
 
 }
