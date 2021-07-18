@@ -47,6 +47,7 @@ android {
         minSdkVersion 23
         resValue "string", "asset_statements", assetStatements
         targetSdkVersion 30
+        vectorDrawables.useSupportLibrary = true
         versionCode buildVersionCode
         versionName buildVersionName
 
@@ -75,18 +76,18 @@ dependencies {
     implementation "com.google.firebase:firebase-analytics"
     implementation "com.google.firebase:firebase-crashlytics-ktx"
     implementation "com.google.firebase:firebase-analytics-ktx"
-    implementation "com.google.maps.android:android-maps-utils:2.2.4"
+    implementation 'com.google.maps.android:android-maps-utils:2.2.5'
     implementation "com.jakewharton.timber:timber:4.7.1"
     implementation "com.squareup.okhttp3:okhttp:4.9.1"
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version_kotlin"
 
-    def version_coroutines = '1.4.0'
+    def version_coroutines = '1.5.1-native-mt'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_coroutines"
 
     // Dagger
-    def version_dagger = '2.28.3'
+    def version_dagger = '2.37'
     implementation "com.google.dagger:dagger:$version_dagger"
     kapt "com.google.dagger:dagger-compiler:$version_dagger"
 
@@ -95,10 +96,10 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle"
 
     // Moshi
-    def version_moshi = '1.11.0'
+    def version_moshi = '1.12.0'
     implementation "com.squareup.moshi:moshi:$version_moshi"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
-    implementation "com.squareup.retrofit2:converter-moshi:2.7.1"
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
     // Room
     def version_room = '2.3.0'
