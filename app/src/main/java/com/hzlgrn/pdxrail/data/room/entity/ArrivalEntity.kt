@@ -6,13 +6,16 @@ import androidx.room.Index
 import com.hzlgrn.pdxrail.data.net.railsystem.WsV2ArrivalsResponse
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity.Companion.TABLE_NAME
 
-@Entity(tableName = TABLE_NAME, primaryKeys = ["id"],
-    foreignKeys = [ForeignKey(
-        entity = BlockPositionEntity::class,
-        onDelete = ForeignKey.NO_ACTION,
-        onUpdate = ForeignKey.NO_ACTION,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("blockPositionId"))],
+@Entity(
+    tableName = TABLE_NAME,
+    primaryKeys = ["id"],
+    foreignKeys = [
+        ForeignKey(
+            entity = BlockPositionEntity::class,
+            onDelete = ForeignKey.NO_ACTION,
+            onUpdate = ForeignKey.NO_ACTION,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("blockPositionId"))],
     indices = [Index("blockPositionId")]
 )
 data class ArrivalEntity(
