@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AdaptiveIconView">
+        <attr name="backgroundVector" format="reference" />
+        <attr name="foregroundVector" format="reference" />
+        <attr name="maskVector" format="reference" />
+    </declare-styleable>
+</resources>
