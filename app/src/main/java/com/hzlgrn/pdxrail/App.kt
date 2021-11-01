@@ -20,15 +20,12 @@ class App : Application(), CoroutineScope {
 
     private val hzlnt by lazy(false) {
         if (BuildConfig.DEBUG) Timber.DebugTree()
-        else {
-            object: Timber.Tree() {
-                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-                    when (priority) {
-                        Log.VERBOSE, Log.DEBUG -> return
-                    }
-                    with(FirebaseCrashlytics.getInstance()) {
-                        t?.let { throwable -> recordException(throwable) }
-                        if (t == null) log(message)
+        else object: Timber.Tree() {
+            override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                when (priority) {
+                    Log.ASSERT, Log.ERROR -> with(FirebaseCrashlytics.getInstance()) {
+                        log("$tag: $message")
+                        t?.let { recordException(it) }
                     }
                 }
             }

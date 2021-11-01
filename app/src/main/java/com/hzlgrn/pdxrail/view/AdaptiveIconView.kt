@@ -11,7 +11,8 @@ import com.hzlgrn.pdxrail.R
 class AdaptiveIconView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0): View(context, attrs, defStyleAttr) {
+        defStyleAttr: Int = 0
+): View(context, attrs, defStyleAttr) {
 
     private var bitmapAdaptiveIcon: Bitmap? = null
     private var bitmapMask: Bitmap? = null

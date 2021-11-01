@@ -22,8 +22,8 @@ class Domain {
         val REGION_RECT_NW = LatLng(45.698441, -123.183735)
         val REGION_RECT_SE = LatLng(45.214177, -122.303207)
 
-        const val WsV2Arrivals = "ws/V2/arrivals?appID=${BuildConfig.KEY_API_RAIL_SYSTEM}&json=true&showPosition=true"
         const val WsV1Stops = "ws/V1/stops?appID=${BuildConfig.KEY_API_RAIL_SYSTEM}&json=true"
+        const val WsV2Arrivals = "ws/V2/arrivals?appID=${BuildConfig.KEY_API_RAIL_SYSTEM}&json=true&showPosition=true"
 
         const val PREFIX_PORTLAND_STREETCAR = "Portland Streetcar "
         const val STREETCAR_IN_FULLSIGN = "streetcar"
@@ -65,7 +65,7 @@ class Domain {
         fun isOrange(shortSign: String) = shortSign.contains("orange",true)
         fun isRed(shortSign: String) = shortSign.contains("red",true)
         fun isYellow(shortSign: String) = shortSign.contains("yellow",true)
-        fun isNSLine(shortSign: String) = shortSign.contains("ns_line",true)
+        fun isNSLine(shortSign: String) = shortSign.contains("ns line",true)
         fun isALoop(shortSign: String): Boolean {
             return shortSign.contains("a loop",true)
                 || shortSign.contains("loop a",true)
@@ -74,6 +74,10 @@ class Domain {
             return shortSign.contains("b loop",true)
                     || shortSign.contains("loop b",true)
         }
+
+        fun LatLng.isNWLovejoyAND22nd() = latitude == 45.52974474648903 && longitude == -122.69688015146481
+        fun LatLng.isPioneerPlace() = latitude == 45.51849907171159 && longitude == -122.6777873516982
+        fun LatLng.isInCity() = latitude < 45.536915 && latitude > 45.504861 && longitude > -122.698876 && longitude < -122.667121
     }
 
 }

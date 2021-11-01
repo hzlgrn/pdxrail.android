@@ -10,10 +10,8 @@ import com.hzlgrn.pdxrail.activity.common.MapTypeMenuActivity
 import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 @SuppressLint("Registered")
@@ -21,8 +19,6 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
 
     @Inject
     lateinit var railSystemRepository: RailSystemRepository
-
-    override fun onInfoWindowClick(marker: Marker?) {}
 
     fun selectStop(uniqueId: String) {
         val marker = (stopMarkerMax.firstOrNull {
@@ -69,8 +65,8 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
     private val colorStreetcarBLoop by lazy(false) { ResourcesCompat.getColor(resources,R.color.portland_streetcar_b_loop,theme) }
     private val colorStreetcarNorthSouth by lazy(false) { ResourcesCompat.getColor(resources,R.color.portland_streetcar_north_south_line,theme) }
 
-    private val maxLineDp by lazy { resources.getDimension(R.dimen.max_line_width) }
-    private val streetcarLineDp by lazy { resources.getDimension(R.dimen.streetcar_line_width) }
+    private val maxLineDp by lazy(false) { resources.getDimension(R.dimen.max_line_width) }
+    private val streetcarLineDp by lazy(false) { resources.getDimension(R.dimen.streetcar_line_width) }
 
     private val lPattern1o2 = listOf(Dash(60f),Gap(60f))
     private val lPattern2o2 = listOf(Gap(60f),Dash(60f))
@@ -84,7 +80,7 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
 
     private var collectRailStopMapViewModel: Job? = null
         set(job) {
-            if (field?.isCancelled == false) field?.cancel()
+            if (field?.isActive == true) field?.cancel()
             field = job
         }
 
@@ -195,6 +191,7 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
             }
         }
     }
+
     private fun renderLine(
                 lineWidth: Float,
                 color_code: Int,
@@ -213,6 +210,7 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
             polylines.add(it)
         }
     }
+
     private fun renderMapViewModelStops(railStops: List<RailSystemMapViewModel.RailStopMapViewModel>) {
         stopMarkerMax.forEach { it.remove() }
         stopMarkerMax.clear()
@@ -223,12 +221,13 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
                 Domain.RailSystem.STOP_MAX, Domain.RailSystem.STOP_COMMUTER -> renderMaxStop(stopModel)
                 Domain.RailSystem.STOP_STREETCAR -> renderStreetcarStop(stopModel)
                 else -> {
-                    Timber.e("Stop type no recognized: ${stopModel.type}")
+                    Timber.e("Stop type not recognized: ${stopModel.type}")
                     renderMaxStop(stopModel)
                 }
             }
         }
     }
+
     private fun renderMaxStop(stopModel: RailSystemMapViewModel.RailStopMapViewModel) {
         pGoogleMap?.addMarker(MarkerOptions().apply {
             anchor(0.5f, 0.5f)
@@ -242,6 +241,7 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
             stopMarkerMax.add(marker)
         }
     }
+
     private fun renderStreetcarStop(stopModel: RailSystemMapViewModel.RailStopMapViewModel) {
         pGoogleMap?.addMarker(MarkerOptions().apply {
             anchor(0.5f, 0.5f)

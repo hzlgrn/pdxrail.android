@@ -31,7 +31,7 @@ class ChannelUnitTest {
     @Test
     fun testProduce() {
         runBlocking {
-            val channel = produce<Int> {
+            val channel = produce {
                 (0..10).forEach {
                     send(it)
                 }
@@ -59,7 +59,7 @@ class ChannelUnitTest {
                     }
                 }
 
-            val channel = produce<Int> {
+            val channel = produce {
                 (0..100).forEach {
                     send(it)
                     delay(100)

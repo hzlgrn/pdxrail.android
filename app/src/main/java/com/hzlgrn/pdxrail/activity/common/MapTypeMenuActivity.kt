@@ -11,9 +11,11 @@ import com.hzlgrn.pdxrail.R
 @SuppressLint("Registered")
 abstract class MapTypeMenuActivity : GoogleMapViewActivity() {
 
-    private val preferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+    private val preferenceChangeListener = SharedPreferences
+        .OnSharedPreferenceChangeListener { _, key ->
             if (key == Domain.App.PREFERENCE.MENU_MAP_TYPE.type) invalidateOptionsMenu()
         }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.google_map, menu)
         return super.onCreateOptionsMenu(menu)
@@ -22,10 +24,11 @@ abstract class MapTypeMenuActivity : GoogleMapViewActivity() {
         for (menuItemIndex in 0 until menu.size()) {
             menu.getItem(menuItemIndex).subMenu?.let { subMenu ->
                 for (subMenuIndex in 0 until subMenu.size()) {
-                    subMenu.getItem(subMenuIndex).let {
-                        if (it.groupId == R.id.group_map_type) {
-                            it.isChecked = it.itemId == applicationPreferences.getInt(Domain.App.PREFERENCE.MENU_MAP_TYPE.type, R.id.menu_normal)
-                        }
+                    val menuItem = subMenu.getItem(subMenuIndex)
+                    if (menuItem.groupId == R.id.group_map_type) {
+                        menuItem.isChecked = menuItem.itemId ==
+                            applicationPreferences
+                                .getInt(Domain.App.PREFERENCE.MENU_MAP_TYPE.type, R.id.menu_normal)
                     }
                 }
             }
@@ -44,7 +47,8 @@ abstract class MapTypeMenuActivity : GoogleMapViewActivity() {
 
     override fun onMapReady() {
         super.onMapReady()
-        mapType(applicationPreferences.getInt(Domain.App.PREFERENCE.MENU_MAP_TYPE.type, R.id.menu_normal))?.let {
+        val mapType = applicationPreferences.getInt(Domain.App.PREFERENCE.MENU_MAP_TYPE.type, R.id.menu_normal)
+        mapType(mapType)?.let {
             pGoogleMap?.mapType = it
         }.also {
             if (it == null) invalidateOptionsMenu()
