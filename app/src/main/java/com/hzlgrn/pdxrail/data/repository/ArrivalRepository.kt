@@ -18,13 +18,14 @@ class ArrivalRepository(private val dao: ArrivalDao) {
                 val arrivalLat = it.blockPosition.firstOrNull()?.lat ?: 0.0
                 val arrivalLon = it.blockPosition.firstOrNull()?.lng ?: 0.0
                 val arrivalPosition = LatLng(arrivalLat,arrivalLon)
+                val textShortSign = it.shortSign.orEmpty().removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR)
                 ArrivalItemViewModel(
-                        textShortSign = (it.shortSign ?: "").removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR),
-                        scheduled = it.scheduled,
-                        estimated = it.estimated,
-                        drawableArrivalMarker = drawableFromShortSign(it.shortSign),
-                        drawableRotation = it.blockPosition.firstOrNull()?.heading?.toFloat() ?: 0f,
-                        latlng = arrivalPosition
+                    textShortSign = textShortSign,
+                    scheduled = it.scheduled,
+                    estimated = it.estimated,
+                    drawableArrivalMarker = drawableFromShortSign(it.shortSign),
+                    drawableRotation = it.blockPosition.firstOrNull()?.heading?.toFloat() ?: 0f,
+                    latlng = arrivalPosition
                 )
             }
         }
@@ -35,12 +36,12 @@ class ArrivalRepository(private val dao: ArrivalDao) {
             listArrivals.filter { it.blockPosition.isNotEmpty() }.map {
                 val blockPosition = it.blockPosition.firstOrNull()!!
                 MarkerOptions()
-                        .flat(true)
-                        .icon(BitmapDescriptorFactory.fromResource(drawableFromShortSign(it.shortSign)))
-                        .anchor(0.5f,0.5f)
-                        .position(LatLng(blockPosition.lat,blockPosition.lng))
-                        .rotation(blockPosition.heading.toFloat())
-                        .visible(blockPosition.lat != 0.0 && blockPosition.lng != 0.0)
+                    .flat(true)
+                    .icon(BitmapDescriptorFactory.fromResource(drawableFromShortSign(it.shortSign)))
+                    .anchor(0.5f,0.5f)
+                    .position(LatLng(blockPosition.lat,blockPosition.lng))
+                    .rotation(blockPosition.heading.toFloat())
+                    .visible(blockPosition.lat != 0.0 && blockPosition.lng != 0.0)
             }
         }
     }

@@ -14,27 +14,27 @@ class RailSystemRepository(private val dao: RailSystemDao) {
         return combine(dao.railStops(), dao.railLines()) { stops, lines ->
             val stopsViewModel = stops.map {
                 RailSystemMapViewModel.RailStopMapViewModel(
-                        it.uniqueid,
-                        it.station,
-                        it.line,
-                        it.type,
-                        LatLng(it.latitude, it.longitude)
+                        uniqueid = it.uniqueid,
+                        station = it.station,
+                        line = it.line,
+                        type = it.type,
+                        position = LatLng(it.latitude, it.longitude)
                 )
             }
             val linesViewModel = lines.map { entity ->
-                val polylineBuilder = ArrayList<LatLng>()
+                val polyline = ArrayList<LatLng>()
                 val splits = entity.polylineString.split(" ")
                 splits.forEach {
                     val split = it.split(",")
                     if (split.count() == 2) {
-                        polylineBuilder.add(LatLng(split[0].toDouble(), split[1].toDouble()))
+                        polyline.add(LatLng(split[0].toDouble(), split[1].toDouble()))
                     }
                 }
                 RailSystemMapViewModel.RailLineMapViewModel(
-                        entity.line,
-                        entity.passage,
-                        entity.type,
-                        polylineBuilder
+                        line = entity.line,
+                        passage = entity.passage,
+                        type = entity.type,
+                        polyline = polyline
                 )
             }
             RailSystemMapViewModel(stopsViewModel, linesViewModel)

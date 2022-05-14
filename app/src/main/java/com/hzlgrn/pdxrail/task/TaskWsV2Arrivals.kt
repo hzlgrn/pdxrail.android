@@ -19,8 +19,8 @@ class TaskWsV2Arrivals: CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + coroutineExceptionHandler
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Timber.e(throwable)
-    }
+            Timber.e(throwable)
+        }
 
     @Inject
     lateinit var applicationRoom: ApplicationRoom
@@ -31,74 +31,69 @@ class TaskWsV2Arrivals: CoroutineScope {
     init { App.applicationComponent.inject(this) }
 
 
-    fun launchJob(locid: List<Long>, isStreetCar: Boolean): Job = launch(coroutineContext) {
+    fun launchJob(locId: LongArray, isStreetCar: Boolean): Job = launch(coroutineContext) {
         while(true) {
-            wsV2Arrivals(locid, isStreetCar)
+            wsV2Arrivals(locId, isStreetCar)
             delay(THROTTLE_ARRIVALS)
         }
     }
 
-    private fun wsV2Arrivals(locid: List<Long>, isStreetCar: Boolean): List<ArrivalEntity> {
+    private fun wsV2Arrivals(locId: LongArray, isStreetCar: Boolean): List<ArrivalEntity> {
         val arrivals = mutableListOf<ArrivalEntity>()
-        val memoryKey = "arrivals-$locid-updated"
+        val memoryKey = "arrivals-$locId-updated"
         val now = SystemClock.elapsedRealtime()
         val lastArrivalFetch = MEMORY.getLong(memoryKey, 0L)
         if (now - lastArrivalFetch > THROTTLE_ARRIVALS) {
             try {
+                val csvLocId = locId.joinToString(",")
+                if (csvLocId.isBlank()) {
+                    Timber.e("csvLocId is blank!")
+                } else {
+                    railSystemService.wsV2Arrivals(csvLocId, isStreetCar).also { call ->
+                        Timber.d(call.request().url.toString())
+                    }.execute().also { response ->
 
-                val csvLocId = locid.let {
-                    var buildCsv = ""
-                    for (value in it) {
-                        if (buildCsv.isEmpty()) buildCsv = value.toString()
-                        else buildCsv += ",$value"
-                    }
-                    buildCsv
-                }
-                railSystemService.wsV2Arrivals(csvLocId, isStreetCar).also {
-                    Timber.d(it.request().url.toString())
-                }.execute().also { response ->
+                        if (!response.isSuccessful) {
+                            throw IOException("Unexpected code: ${response.code()} message: ${response.message()}")
+                        } else {
 
-                    if (!response.isSuccessful) {
-                        throw IOException("Unexpected code: ${response.code()} message: ${response.message()}")
-                    } else {
+                            val blockPositions = mutableListOf<BlockPositionEntity>()
 
-                        val blockPositions = mutableListOf<BlockPositionEntity>()
+                            response.body()?.resultSet?.arrival?.let { arrivalResults ->
 
-                        response.body()?.resultSet?.arrival?.let { arrivalResults ->
-
-                            for (arrival in arrivalResults) {
-                                val arrivalModel = ArrivalEntity(arrival)
-                                if (isStreetCar) {
-                                    val isValid = arrival.fullSign.contains(Domain.RailSystem.STREETCAR_IN_FULLSIGN, true)
-                                    if (isValid) {
-                                        arrival.blockPosition?.let { blockPosition ->
-                                            arrivalModel.blockPositionId = blockPosition.id
-                                            blockPositions.add(BlockPositionEntity(blockPosition))
+                                for (arrival in arrivalResults) {
+                                    val arrivalModel = ArrivalEntity(arrival)
+                                    if (isStreetCar) {
+                                        val isValid = arrival.fullSign.contains(Domain.RailSystem.STREETCAR_IN_FULLSIGN, true)
+                                        if (isValid) {
+                                            arrival.blockPosition?.let { blockPosition ->
+                                                arrivalModel.blockPositionId = blockPosition.id
+                                                blockPositions.add(BlockPositionEntity(blockPosition))
+                                            }
+                                            arrivals.add(arrivalModel)
                                         }
-                                        arrivals.add(arrivalModel)
-                                    }
-                                } else {
-                                    val isValid = arrival.fullSign.contains(Domain.RailSystem.MAX, true)
-                                            || arrival.fullSign.contains(Domain.RailSystem.WES, true)
-                                    if (isValid) {
-                                        arrival.blockPosition?.let { blockPosition ->
-                                            arrivalModel.blockPositionId = blockPosition.id
-                                            blockPositions.add(BlockPositionEntity(blockPosition))
+                                    } else {
+                                        val isValid = arrival.fullSign.contains(Domain.RailSystem.MAX, true)
+                                                || arrival.fullSign.contains(Domain.RailSystem.WES, true)
+                                        if (isValid) {
+                                            arrival.blockPosition?.let { blockPosition ->
+                                                arrivalModel.blockPositionId = blockPosition.id
+                                                blockPositions.add(BlockPositionEntity(blockPosition))
+                                            }
+                                            arrivals.add(arrivalModel)
                                         }
-                                        arrivals.add(arrivalModel)
                                     }
                                 }
+
                             }
 
+                            applicationRoom
+                                    .arrivalDao()
+                                    .updateArrivals(locId.toList(), blockPositions, arrivals)
+                            MEMORY.putLong(memoryKey, SystemClock.elapsedRealtime())
                         }
-
-                        applicationRoom.arrivalDao().apply {
-                            updateArrivals(locid.toList(), blockPositions, arrivals)
-                        }
-                        MEMORY.putLong(memoryKey, SystemClock.elapsedRealtime())
                     }
                 }
-
             } catch (err: Exception) { Timber.e(err) }
         }
 
