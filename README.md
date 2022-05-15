@@ -5,8 +5,9 @@ A Google Play Instant Android app for rail-based transit systems. PDX Rail on Go
 ### Tools used
 
 - [Android app links](https://developer.android.com/training/app-links)
- - [Google Play Instant](https://developer.android.com/topic/google-play-instant)
- - [https://pdxrail.hzlgrn.com/](https://pdxrail.hzlgrn.com/) - Links clicked on Android Mobile that have support for Google Play Instant will start the instant app experience.
+- [Google Play Instant](https://developer.android.com/topic/google-play-instant)
+- [https://pdxrail.hzlgrn.com/](https://pdxrail.hzlgrn.com/) - Links clicked on Android Mobile that have support for Google Play Instant will start the instant app experience.
+- [Compose](https://developer.android.com/jetpack/compose)
 - [Dagger](https://github.com/google/dagger)
 - [Google Maps](https://developers.google.com/maps/documentation/android-sdk/intro)
 - [Moshi](https://github.com/square/moshi)

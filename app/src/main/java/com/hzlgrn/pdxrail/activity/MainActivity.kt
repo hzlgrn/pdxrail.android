@@ -76,11 +76,12 @@ class MainActivity : RailSystemStopActivity() {
     override fun onBackPressed() {
         if (!mPresenter.onBackPressed()) super.onBackPressed()
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (mPresenter.onOptionItemSelected(item)) true else super.onOptionsItemSelected(item)
     }
 
-    override fun onInfoWindowClick(marker: Marker?) {
+    override fun onInfoWindowClick(marker: Marker) {
         mPresenter.openDrawer()
     }
 
@@ -122,8 +123,8 @@ class MainActivity : RailSystemStopActivity() {
             val geoPosition = LatLng(lat, lon)
             moveMapTo(geoPosition)
             Timber.d("lat($lat), lon($lon), args($args)")
-        } catch (err: Exception) {
-            if (BuildConfig.DEBUG) err.printStackTrace()
+        } catch (err: Throwable) {
+            Timber.e(err)
         }
     }
 

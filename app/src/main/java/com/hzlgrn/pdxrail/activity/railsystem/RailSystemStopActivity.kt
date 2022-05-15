@@ -8,21 +8,18 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.App
-import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
 import com.hzlgrn.pdxrail.data.repository.ArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
 import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
-import com.hzlgrn.pdxrail.task.TaskTrimetWsV1Stops
+import com.hzlgrn.pdxrail.task.TaskWsV1Stops
 import com.hzlgrn.pdxrail.task.TaskWsV2Arrivals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 @SuppressLint("Registered")
@@ -40,22 +37,22 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
 
     private var observeArrivalsJob: Job? = null
         set(job) {
-            if (field?.isCancelled == false) field?.cancel()
+            if (field?.isActive == true) field?.cancel()
             field = job
         }
     private var observeArrivalItems: Job? = null
         set(job) {
-            if (field?.isCancelled == false) field?.cancel()
+            if (field?.isActive == true) field?.cancel()
             field = job
         }
     private var observeArrivalMarkers: Job? = null
         set(job) {
-            if (field?.isCancelled == false) field?.cancel()
+            if (field?.isActive == true) field?.cancel()
             field = job
         }
     private var updateArrivalDataJob: Job? = null
         set(job) {
-            if (field?.isCancelled == false) field?.cancel()
+            if (field?.isActive == true) field?.cancel()
             field = job
         }
 
@@ -143,22 +140,22 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
         onArrivalMarkersViewModel()
         onArrivalListViewModel()
         observeArrivalsJob = launch(Dispatchers.IO) {
-            TaskTrimetWsV1Stops().flowLocid(position, isStreetcar).collect { locid ->
-                onLocationIdUpdated(locid, isStreetcar)
+            TaskWsV1Stops().flowLocid(position, isStreetcar).collect { locid ->
+                onLocationIdUpdated(locid.toLongArray(), isStreetcar)
             }
         }
     }
 
-    private fun onLocationIdUpdated(locid: List<Long>, isStreetcar: Boolean) {
+    private fun onLocationIdUpdated(locid: LongArray, isStreetcar: Boolean) {
         Timber.d("onLocationIdUpdated()")
         updateArrivalDataJob = TaskWsV2Arrivals().launchJob(locid, isStreetcar)
         observeArrivalMarkers = launch {
-            arrivalRepository.arrivalMarkersViewModel(locid).collect {
+            arrivalRepository.arrivalMarkersViewModel(locid.toList()).collect {
                 onArrivalMarkersViewModel(it)
             }
         }
         observeArrivalItems = launch {
-            arrivalRepository.arrivalItemsViewModel(locid).collect {
+            arrivalRepository.arrivalItemsViewModel(locid.toList()).collect {
                 onArrivalListViewModel(it)
             }
         }
@@ -172,8 +169,8 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
         for (model in models) {
             try {
                 pGoogleMap?.addMarker(model)?.also { mArrivalMarkers.add(it) }
-            } catch( err: Exception ) {
-                if (BuildConfig.DEBUG) err.printStackTrace()
+            } catch (err: Throwable) {
+                Timber.e(err)
             }
         }
     }

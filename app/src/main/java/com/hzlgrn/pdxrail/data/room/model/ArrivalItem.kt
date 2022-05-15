@@ -7,7 +7,8 @@ class ArrivalItem(
         val estimated: Long,
         val scheduled: Long,
         val shortSign: String? = null,
-        val blockPositionId: Long) {
+        val blockPositionId: Long
+) {
 
     @Relation(
         parentColumn = "blockPositionId",

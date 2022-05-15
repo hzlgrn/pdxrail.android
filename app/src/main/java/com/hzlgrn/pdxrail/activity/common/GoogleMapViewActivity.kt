@@ -21,7 +21,7 @@ abstract class GoogleMapViewActivity : ApplicationActivity(), GoogleMap.OnInfoWi
     protected abstract val pMapView: MapView
 
     protected var pGoogleMap: GoogleMap? = null
-        set(googleMap) {
+        private set(googleMap) {
             field = googleMap
             field?.let { onMapReady() }
         }
@@ -33,10 +33,10 @@ abstract class GoogleMapViewActivity : ApplicationActivity(), GoogleMap.OnInfoWi
 
     private var mSavedInstanceState: Bundle? = null
     private val onMapReadyCallback by lazy {
-        OnMapReadyCallback { googleMap -> googleMap.let {
-            pGoogleMap = it
-            showHelpDialog(noMatterWhat = false,shouldCheckPermissionAfter = true)
-        } }
+        OnMapReadyCallback { googleMap ->
+            pGoogleMap = googleMap
+            showHelpDialog(noMatterWhat = false, shouldCheckPermissionAfter = true)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,9 +71,10 @@ abstract class GoogleMapViewActivity : ApplicationActivity(), GoogleMap.OnInfoWi
         pMapView.onLowMemory()
     }
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray) {
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSION_REQUEST_ACCESS_FINE_LOCATION -> {
@@ -85,23 +86,22 @@ abstract class GoogleMapViewActivity : ApplicationActivity(), GoogleMap.OnInfoWi
     }
 
     fun showHelpDialog(noMatterWhat: Boolean = false, shouldCheckPermissionAfter: Boolean = false) {
-        val dialogHelpPermission by lazy(false) { HelpDialog() }
-        val hasDialogShown = applicationPreferences.getBoolean(Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type, false)
+        val hasDialogShown = applicationPreferences
+                .getBoolean(Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type, false)
         if (!hasDialogShown || noMatterWhat) {
             if (!hasDialogShown) {
-                applicationPreferences.edit().apply {
-                    putBoolean(Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type, true)
-                    apply()
-                }
+                applicationPreferences
+                        .edit()
+                        .putBoolean(Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type, true)
+                        .apply()
             }
-            dialogHelpPermission.onDismissListener = {
-                supportFragmentManager.beginTransaction().apply {
-                    remove(dialogHelpPermission)
-                    commit()
+            with (HelpDialog()) {
+                onDismissListener = {
+                    supportFragmentManager.beginTransaction().remove(this).commit()
+                    if (shouldCheckPermissionAfter) requestAccessFineLocation()
                 }
-                if (shouldCheckPermissionAfter) requestAccessFineLocation()
+                show(supportFragmentManager, Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type)
             }
-            dialogHelpPermission.show(supportFragmentManager, Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type)
         } else if (shouldCheckPermissionAfter) {
             requestAccessFineLocation()
         }
@@ -109,20 +109,22 @@ abstract class GoogleMapViewActivity : ApplicationActivity(), GoogleMap.OnInfoWi
 
     @SuppressLint("MissingPermission")
     private fun onRequestForFineLocationGranted(): Boolean {
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED).also { granted ->
-            if (granted) pGoogleMap?.isMyLocationEnabled = true
-        }
+        val granted = PackageManager.PERMISSION_GRANTED ==
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (granted) pGoogleMap?.isMyLocationEnabled = true
+        return granted
     }
+
     private fun requestAccessFineLocation() {
-        if (!onRequestForFineLocationGranted()
-                && !ActivityCompat.shouldShowRequestPermissionRationale(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+        val shouldRequest = !onRequestForFineLocationGranted()
+            && !ActivityCompat
+        .shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)
+
+        if (shouldRequest) {
             ActivityCompat.requestPermissions(
-                    this,
-                    Array(1) { Manifest.permission.ACCESS_FINE_LOCATION },
-                    PERMISSION_REQUEST_ACCESS_FINE_LOCATION
+                this,
+                Array(1) { Manifest.permission.ACCESS_FINE_LOCATION },
+                PERMISSION_REQUEST_ACCESS_FINE_LOCATION
             )
         }
     }

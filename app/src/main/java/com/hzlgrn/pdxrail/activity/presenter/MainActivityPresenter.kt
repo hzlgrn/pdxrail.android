@@ -191,6 +191,4 @@ class MainActivityPresenter(private val activity: MainActivity, private val mBin
         }
     }
 
-
-
 }
