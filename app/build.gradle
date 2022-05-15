@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId 'com.hzlgrn.pdxrail'
         versionCode 1
-        versionName "1.1"
+        versionName "1.2"
         minSdkVersion 23
         targetSdkVersion 31
 
