@@ -74,7 +74,7 @@ class MainActivity : RailSystemStopActivity() {
         pGoogleMap?.let { mPresenter.onMapReady(it) }
     }
     override fun onBackPressed() {
-        if (!mPresenter.onBackPressed()) super.onBackPressed()
+        if (!mPresenter.onBackPressed()) onBackPressedDispatcher.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

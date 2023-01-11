@@ -16,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.DialogFragment
-import com.google.android.material.composethemeadapter.MdcTheme
+import com.google.accompanist.appcompattheme.AppCompatTheme
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.databinding.FramedComposableBinding
 
@@ -32,7 +32,7 @@ class HelpDialog : DialogFragment() {
         dialog?.setCancelable(true)
         dialog?.setCanceledOnTouchOutside(true)
         binding.composable.setContent {
-            MdcTheme {
+            AppCompatTheme {
                 DialogHelpContent()
             }
         }
@@ -94,13 +94,15 @@ class HelpDialog : DialogFragment() {
                 )
             }
             Box(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 3.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp, vertical = 3.dp)
             ) {
                 Text(
                     fontSize = 11.sp,
                     modifier = Modifier
-                            .fillMaxWidth(0.6f)
-                            .align(Alignment.CenterStart),
+                        .fillMaxWidth(0.6f)
+                        .align(Alignment.CenterStart),
                     text = resources.getString(R.string.permission_location_reason),
                 )
                 Button(

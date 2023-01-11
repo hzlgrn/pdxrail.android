@@ -10,7 +10,7 @@ class FlowUnitTest {
 
     // Intentionally using Int to keep things light
     // and lower the risk of using time/date on a delay.
-    fun <T> Flow<T>.delayFlow(delayMs: Int = 0): Flow<T> = flow {
+    private fun <T> Flow<T>.delayFlow(delayMs: Int = 0): Flow<T> = flow {
         collect { upstream ->
             if (delayMs > 0) delay(delayMs.toLong())
             emit(upstream)
@@ -20,7 +20,7 @@ class FlowUnitTest {
 
     // Intentionally using Int to keep things light
     // and lower the risk of using time/date on a delay.
-    fun <T> Flow<T>.delayAfterFlow(delayMs: Int = 0): Flow<T> = flow {
+    private fun <T> Flow<T>.delayAfterFlow(delayMs: Int = 0): Flow<T> = flow {
         collect { upstream ->
             emit(upstream)
             if (delayMs > 0) delay(delayMs.toLong())
@@ -29,7 +29,7 @@ class FlowUnitTest {
 
     // intentionally using Int to keep things light
     // and lower the risk of using time/date for a delay.
-    fun <T> Flow<T>.trickleFlow(upstreamAfterMs: Int): Flow<T> = flow {
+    private fun <T> Flow<T>.trickleFlow(upstreamAfterMs: Int): Flow<T> = flow {
         var lastUpstreamAt = System.currentTimeMillis()
         collect { upstream ->
             val currentTime = System.currentTimeMillis()
@@ -44,7 +44,7 @@ class FlowUnitTest {
 
     // intentionally using Int to keep things light
     // and lower the risk of using time/date for a delay.
-    fun <T> Flow<T>.trickleAfterFlow(upstreamAfterMs: Int): Flow<T> = flow {
+    private fun <T> Flow<T>.trickleAfterFlow(upstreamAfterMs: Int): Flow<T> = flow {
         var lastUpstreamAt = 0L
         collect { upstream ->
             lastUpstreamAt = if (lastUpstreamAt == 0L) {

@@ -16,14 +16,14 @@ if (keyRingFile.canRead()) {
 android {
     namespace 'com.hzlgrn.pdxrail'
     buildToolsVersion '30.0.3'
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId 'com.hzlgrn.pdxrail'
         versionCode 1
         versionName "1.2"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
 
         buildConfigField "long", "BUILD_TIME", "${buildTime}L"
         buildConfigField "String", "KEY_API_RAIL_SYSTEM", "\"${keyRing["KEY_API_RAIL_SYSTEM"]}\""
@@ -92,16 +92,16 @@ android {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:28.2.1')
 
-    implementation "androidx.appcompat:appcompat:1.4.1"
+    implementation "androidx.appcompat:appcompat:1.6.0"
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0"
-    implementation "androidx.core:core-ktx:1.7.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    implementation "androidx.core:core-ktx:1.9.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "com.google.android.gms:play-services-instantapps:18.0.1"
-    implementation "com.google.android.gms:play-services-location:19.0.1"
-    implementation "com.google.android.gms:play-services-maps:18.0.2"
-    implementation "com.google.android.material:material:1.6.0"
+    implementation "com.google.android.gms:play-services-location:21.0.1"
+    implementation "com.google.android.gms:play-services-maps:18.1.0"
+    implementation "com.google.android.material:material:1.7.0"
     implementation "com.google.firebase:firebase-analytics"
     implementation "com.google.firebase:firebase-crashlytics-ktx"
     implementation "com.google.firebase:firebase-analytics-ktx"
@@ -112,12 +112,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version_kotlin"
 
     // Compose
-    implementation "androidx.activity:activity-compose:1.4.0"
+    implementation 'androidx.activity:activity-compose:1.6.1'
     implementation "androidx.compose.animation:animation:$version_compose"
-    implementation "androidx.compose.material:material:$version_compose"
+    implementation 'androidx.compose.material:material:1.3.1'
     implementation "androidx.compose.ui:ui-tooling:$version_compose"
     // When using a MDC theme
-    implementation "com.google.android.material:compose-theme-adapter:1.1.9"
+    implementation "com.google.android.material:compose-theme-adapter:1.2.1"
     // When using a AppCompat theme
     implementation "com.google.accompanist:accompanist-appcompat-theme:0.16.0"
 
@@ -136,7 +136,7 @@ dependencies {
     // Lifecycle
     def version_lifecycle = '2.2.0'
     implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
 
     // Moshi
     def version_moshi = '1.12.0'
@@ -145,7 +145,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
     // Room
-    def version_room = '2.4.2'
+    def version_room = '2.5.0'
     implementation "androidx.room:room-runtime:$version_room"
     implementation "androidx.room:room-ktx:$version_room"
     kapt "androidx.room:room-compiler:$version_room"
@@ -153,6 +153,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version_coroutines"
 
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
