@@ -11,6 +11,7 @@ import com.hzlgrn.pdxrail.App
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
+import com.hzlgrn.pdxrail.adapter.ArrivalsRecyclerViewAdapter
 import com.hzlgrn.pdxrail.data.repository.ArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
 import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
@@ -29,6 +30,8 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     lateinit var arrivalRepository: ArrivalRepository
 
     protected abstract val pDrawerBinding: DrawerArrivalsBinding
+    var arrivalsAdapter: ArrivalsRecyclerViewAdapter? = null
+
     protected open var pFocusStopUniqueId: String? = null
 
     private var mFocusStopPosition: LatLng? = null
@@ -123,10 +126,13 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
             mArrivalMarkers.clear()
             pFocusStopUniqueId = null
             clickedMarker = null
-            pDrawerBinding.drawerStartListviewArrivals.adapter = ArrivalModelArrayAdapter(this, emptyList())
+            arrivalsAdapter?.content = null
         }
-        pDrawerBinding.drawerStartListviewArrivals.divider = null
-        pDrawerBinding.drawerStartListviewArrivals.adapter = ArrivalModelArrayAdapter(this, emptyList())
+        if (arrivalsAdapter == null) {
+            arrivalsAdapter = ArrivalsRecyclerViewAdapter()
+            pDrawerBinding.drawerStartListviewArrivals.adapter = arrivalsAdapter
+            arrivalsAdapter?.content = null
+        }
     }
 
     private fun fetchArrivalsFor(position: LatLng, isStreetcar: Boolean = false) {
@@ -177,10 +183,8 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
 
     private fun onArrivalListViewModel(models: List<ArrivalItemViewModel> = emptyList()) {
         Timber.d("onArrivalListViewModel()")
-        pDrawerBinding.drawerStartListviewArrivals.adapter = ArrivalModelArrayAdapter(this, models).apply {
-            Timber.d("onArrivalItemClicked()")
-            onItemClickCallback = onArrivalItemClicked
-        }
+        arrivalsAdapter?.onClick = onArrivalItemClicked
+        arrivalsAdapter?.content = models
     }
 
     private val onArrivalItemClicked by lazy {

@@ -94,7 +94,7 @@ class MainActivityPresenter(private val activity: MainActivity, private val mBin
     }
 
     fun onBackPressed(): Boolean {
-        return if (mBinding.drawerLayout.isDrawerOpen(mBinding.drawerStart.drawerStart)) {
+        return if (isDrawerOpen) {
             mBinding.drawerLayout.closeDrawer(mBinding.drawerStart.drawerStart, true)
             true
         } else {
@@ -103,25 +103,21 @@ class MainActivityPresenter(private val activity: MainActivity, private val mBin
     }
 
     fun onDrawerClosed() {
+        drawerAdjust()
+        googleMap?.setPadding(0, 0, 0, 0)
         (activity.getStopMarkerFor(focusOnStopUniqueId)?.position?:googleMap?.cameraPosition?.target)?.let { center ->
-            drawerAdjust()
-            googleMap?.apply {
-                setPadding(0, 0, 0, 0)
-                animateCamera(CameraUpdateFactory.newLatLng(center))
-            }
+            googleMap?.animateCamera(CameraUpdateFactory.newLatLng(center))
         }
         activity.invalidateOptionsMenu()
     }
 
     @SuppressLint("ClickableViewAccessibility")
     fun onDrawerOpened(drawerView: View) {
+        googleMap?.setPadding(mBinding.drawerStart.drawerBackground.width, 0, 0, 0)
         drawerView.setOnTouchListener { _, event -> (event?.rawX?.toInt() ?: Int.MAX_VALUE) < mBinding.drawerStart.drawerBackground.width }
+        drawerAdjust(mBinding.drawerStart.drawerBackground.width)
         (activity.getStopMarkerFor(focusOnStopUniqueId)?.position?:googleMap?.cameraPosition?.target)?.let { center ->
-            drawerAdjust(mBinding.drawerStart.drawerBackground.width)
-            googleMap?.apply {
-                setPadding(mBinding.drawerStart.drawerBackground.width, 0, 0, 0)
-                animateCamera(CameraUpdateFactory.newLatLng(center))
-            }
+            googleMap?.animateCamera(CameraUpdateFactory.newLatLng(center))
         }
         activity.invalidateOptionsMenu()
     }

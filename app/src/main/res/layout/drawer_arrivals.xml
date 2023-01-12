@@ -149,7 +149,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardStop" />
 
-    <ListView android:id="@+id/drawerStartListviewArrivals"
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/drawerStartListviewArrivals"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:paddingBottom="@dimen/vertical"
@@ -158,6 +158,7 @@
         android:paddingStart="0dp"
         android:clipToPadding="false"
         android:scrollbarThumbVertical="@drawable/scrollbar_vertical_thumb_primary"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/divider_top"
         app:layout_constraintBottom_toTopOf="@id/divider_bottom"
         app:layout_constraintEnd_toEndOf="@id/drawerBackground"
