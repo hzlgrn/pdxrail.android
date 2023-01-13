@@ -1,17 +1,24 @@
 package com.hzlgrn.pdxrail.data.repository
 
+import android.content.res.Resources
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
+import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
 import com.hzlgrn.pdxrail.data.repository.viewmodel.RecyclerViewItemModel
 import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.text.SimpleDateFormat
+import java.util.*
 
-class ArrivalRepository(private val dao: ArrivalDao) {
+class ArrivalRepository(
+    private val applicationResources: Resources,
+    private val dao: ArrivalDao
+) {
 
     fun arrivalItemsViewModel(listLocId: List<Long>): Flow<List<RecyclerViewItemModel>> {
         return dao.arrivalItemsFor(listLocId).map { listPkArrival ->
@@ -24,36 +31,45 @@ class ArrivalRepository(private val dao: ArrivalDao) {
             val arrivalLon = it.blockPosition?.lng ?: 0.0
             val arrivalPosition = LatLng(arrivalLat,arrivalLon)
             val textShortSign = it.shortSign.orEmpty().removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR)
+
+            val textEstimate = if (it.estimated == 0L
+                || (it.scheduled > 0L
+                        && it.estimated > 0L
+                        && it.scheduled in (it.estimated - ArrivalModelArrayAdapter.RANGE_ON_TIME_MS) .. (it.estimated + ArrivalModelArrayAdapter.RANGE_ON_TIME_MS))) {
+                // NO TEXT ESTIMATE
+                " "
+            } else {
+                applicationResources
+                    .getString(R.string.estimated_at)
+                    .format(
+                        SimpleDateFormat("h:mm:ss", Locale.US)
+                            .format(Date(it.estimated)))
+            }
+            val textScheduled = if (it.scheduled == 0L) {
+                applicationResources.getString(R.string.no_arrival)
+            } else {
+                SimpleDateFormat("h:mma", Locale.US)
+                    .format(Date(it.scheduled)).let { formattedString ->
+                        applicationResources.getString(R.string.arriving_at).format(formattedString)
+                    }
+            }
+            val isLate = it.estimated > it.scheduled
+            val textEstimateColor = applicationResources.getColor(if (isLate)
+                R.color.max_red_line
+            else
+                R.color.max_green_line, applicationResources.newTheme())
+
             ArrivalItemViewModel(
                 textShortSign = textShortSign,
-                scheduled = it.scheduled,
-                estimated = it.estimated,
+                textScheduled = textScheduled,
+                textEstimated = textEstimate,
+                colorTextEstimated = textEstimateColor,
                 drawableArrivalMarker = drawableFromShortSign(it.shortSign),
                 drawableRotation = it.blockPosition?.heading?.toFloat() ?: 0f,
                 latlng = arrivalPosition
             )
         }
     }
-    /*
-    fun arrivalItemsViewModel(listLocId: List<Long>): Flow<List<ArrivalItemViewModel>> {
-        return dao.arrivalItemsFor(listLocId).map { listArrivalItem ->
-            listArrivalItem.map {
-                val arrivalLat = it.blockPosition.firstOrNull()?.lat ?: 0.0
-                val arrivalLon = it.blockPosition.firstOrNull()?.lng ?: 0.0
-                val arrivalPosition = LatLng(arrivalLat,arrivalLon)
-                val textShortSign = it.shortSign.orEmpty().removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR)
-                ArrivalItemViewModel(
-                    textShortSign = textShortSign,
-                    scheduled = it.scheduled,
-                    estimated = it.estimated,
-                    drawableArrivalMarker = drawableFromShortSign(it.shortSign),
-                    drawableRotation = it.blockPosition.firstOrNull()?.heading?.toFloat() ?: 0f,
-                    latlng = arrivalPosition
-                )
-            }
-        }
-    }
-     */
 
     fun arrivalMarkersViewModel(listLocId: List<Long>): Flow<List<MarkerOptions>> {
         return dao.arrivalMarkersFor(listLocId).map { listArrivals ->

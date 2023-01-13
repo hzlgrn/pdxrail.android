@@ -1,6 +1,8 @@
 package com.hzlgrn.pdxrail.di.component
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Resources
 import com.hzlgrn.pdxrail.data.net.RailSystemService
 import com.hzlgrn.pdxrail.data.repository.ArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.RailSystemRepository

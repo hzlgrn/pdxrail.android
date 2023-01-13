@@ -127,14 +127,13 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
             mArrivalMarkers.clear()
             pFocusStopUniqueId = null
             clickedMarker = null
-            arrivalsAdapter?.content = null
+            arrivalsAdapter?.setData(emptyList())
         }
         if (arrivalsAdapter == null) {
             arrivalsAdapter = ArrivalsRecyclerViewAdapter(coroutineContext) { uniqueId ->
                 arrivalRepository.getArrivalItemViewModel(uniqueId)
             }
             pDrawerBinding.drawerStartListviewArrivals.adapter = arrivalsAdapter
-            arrivalsAdapter?.content = null
         }
     }
 
@@ -187,14 +186,13 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     private fun onArrivalListViewModel(models: List<RecyclerViewItemModel> = emptyList()) {
         Timber.d("onArrivalListViewModel()")
         arrivalsAdapter?.onClick = onArrivalItemClicked
-        arrivalsAdapter?.content = models
+        arrivalsAdapter?.setData(models)
     }
 
     private val onArrivalItemClicked by lazy {
         fun(arrival: ArrivalItemViewModel) {
             moveMapTo(arrival.latlng)
         }
-
     }
 
     protected fun moveMapTo(position: LatLng) {

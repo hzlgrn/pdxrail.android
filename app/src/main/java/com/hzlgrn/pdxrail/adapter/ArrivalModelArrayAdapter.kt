@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -80,7 +81,7 @@ class ArrivalModelArrayAdapter(context: Context, viewModel: List<ArrivalItemView
 
     private fun bind(binding: FramedComposableBinding) {
        binding.composable.setContent {
-           AppCompatTheme {
+           MaterialTheme {
                ComposableItems.ArrivalEmptyViewCard()
            }
        }
@@ -89,8 +90,8 @@ class ArrivalModelArrayAdapter(context: Context, viewModel: List<ArrivalItemView
     private fun bind(binding: FramedComposableBinding, position: Int) {
         getItem(position)?.let { viewModel ->
             binding.composable.setContent {
-                AppCompatTheme {
-                    ComposableItems.ArrivalItemViewCard(context, viewModel, onItemClickCallback)
+                MaterialTheme {
+                    // ComposableItems.ArrivalItemViewCard(context, viewModel, onItemClickCallback)
                 }
             }
         }

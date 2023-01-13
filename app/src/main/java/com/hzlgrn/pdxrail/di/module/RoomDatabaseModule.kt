@@ -23,7 +23,7 @@ class RoomDatabaseModule(
 
     @Singleton
     @Provides
-    fun provideArrivalRepository(): ArrivalRepository = ArrivalRepository(pDatabase.arrivalDao())
+    fun provideArrivalRepository(): ArrivalRepository = ArrivalRepository(pResources, pDatabase.arrivalDao())
 
     @Singleton
     @Provides

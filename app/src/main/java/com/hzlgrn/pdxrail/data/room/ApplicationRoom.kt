@@ -1,6 +1,7 @@
 package com.hzlgrn.pdxrail.data.room
 
 import android.content.Context
+import android.content.res.Resources
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -40,6 +41,7 @@ abstract class ApplicationRoom: RoomDatabase() {
     abstract fun railSystemDao(): RailSystemDao
 
     open class Instance(context: Context, coroutineScope: CoroutineScope) {
+        protected val pResources: Resources = context.resources
         protected val pDatabase: ApplicationRoom =
             if (BuildConfig.DEBUG) {
                 Room

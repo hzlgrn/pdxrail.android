@@ -1,5 +1,7 @@
 package com.hzlgrn.pdxrail.adapter
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +10,16 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.view.isInvisible
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
 import com.hzlgrn.pdxrail.data.repository.viewmodel.RecyclerViewItemModel
 import com.hzlgrn.pdxrail.data.room.model.ArrivalItem
+import com.hzlgrn.pdxrail.databinding.ItemArrivalBinding
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -25,69 +32,54 @@ class ArrivalsRecyclerViewAdapter(
     override val coroutineContext: CoroutineContext
         get() = parentCC + Dispatchers.IO
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        var binding: ItemArrivalBinding = ItemArrivalBinding.bind(view)
         var dataJob: Job? = null
             set(newJob) {
                 field?.cancel()
                 field = newJob
             }
-        val composable: ComposeView = view.findViewById(R.id.composable)
     }
 
-    var content: List<RecyclerViewItemModel>? = null
-        set(newContent) {
-            field = newContent
-            notifyDataSetChanged() // DiffUtils!
-            // It will always be more efficient to use more specific change events if you can.
-            // Rely on notifyDataSetChanged as a last resort.
-        }
+    private val content = mutableListOf<RecyclerViewItemModel>()
+    fun setData(newData: List<RecyclerViewItemModel>) {
+        val diffCallback = DiffUtilCallback(content, newData)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        content.clear()
+        content.addAll(newData)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
     var onClick = fun(_: ArrivalItemViewModel) {}
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater
             .from(viewGroup.context)
-            .inflate(R.layout.framed_composable, viewGroup, false)
+            .inflate(R.layout.item_arrival, viewGroup, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.composable.disposeComposition()
-        content?.get(position)?.let { recyclerViewItemModel ->
-            holder.composable.setContent {
-                MaterialTheme(
-                    colors = if (isSystemInDarkTheme()) darkColors() else lightColors()
-                ) {
-                    ComposableItems.ArrivalItemLoadingViewCard(holder.itemView.context)
-                }
-            }
+        onBindItemViewModel(holder.binding, null)
+        content?.get(position)?.let { contentData ->
             holder.dataJob = launch {
-                flowData(recyclerViewItemModel.uniqueId).collect { arrivalItem ->
+                flowData(contentData.uniqueId).collect { arrivalItemViewModel ->
                     withContext(Dispatchers.Main) {
-                        bind(holder, arrivalItem)
+                        onBindItemViewModel(holder.binding, arrivalItemViewModel)
                     }
-                }
-            }
-        } ?: run {
-            holder.composable.setContent {
-                MaterialTheme(
-                    colors = if (isSystemInDarkTheme()) darkColors() else lightColors()
-                ) {
-                    ComposableItems.ArrivalEmptyViewCard()
                 }
             }
         }
     }
 
-    private fun bind(holder: ViewHolder, arrivalItem: ArrivalItemViewModel) {
-        holder.composable.disposeComposition()
-        holder.composable.setContent {
-            MaterialTheme(
-                colors = if (isSystemInDarkTheme()) darkColors() else lightColors()
-            ) {
-                ComposableItems.ArrivalItemViewCard(
-                    context = holder.itemView.context,
-                    viewModel = arrivalItem,
-                    onClick = onClick)
-            }
+    private fun onBindItemViewModel(binding: ItemArrivalBinding, itemViewModel: ArrivalItemViewModel?) {
+        with (binding) {
+            textShortSign.text = itemViewModel?.textShortSign ?: " "
+            textScheduled.text = itemViewModel?.textScheduled ?: " "
+            textEstimate.text = itemViewModel?.textEstimated ?: " "
+            textEstimate.setTextColor(itemViewModel?.colorTextEstimated ?: Color.YELLOW)
+            icArrival.isInvisible = itemViewModel == null
+            icArrival.setImageResource(itemViewModel?.drawableArrivalMarker ?: R.drawable.marker_max_arrival)
+            icArrival.rotation = itemViewModel?.drawableRotation ?: 0f
         }
     }
 
@@ -100,5 +92,29 @@ class ArrivalsRecyclerViewAdapter(
         return content?.size ?: 0
     }
 
+    class DiffUtilCallback(private val oldList: List<RecyclerViewItemModel>, private val newList: List<RecyclerViewItemModel>) :
+        DiffUtil.Callback() {
+
+        // old size
+        override fun getOldListSize(): Int = oldList.size
+
+        // new list size
+        override fun getNewListSize(): Int = newList.size
+
+        // if items are same
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+            return oldItem.javaClass == newItem.javaClass
+        }
+
+        // check if contents are same
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+
+            return oldItem.uniqueId == newItem.uniqueId
+        }
+    }
 
 }

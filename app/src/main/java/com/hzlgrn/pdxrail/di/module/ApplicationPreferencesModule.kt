@@ -2,6 +2,7 @@ package com.hzlgrn.pdxrail.di.module
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Resources
 import com.hzlgrn.pdxrail.Domain
 import dagger.Module
 import dagger.Provides
