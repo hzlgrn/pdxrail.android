@@ -14,6 +14,6 @@ class ArrivalItem(
         parentColumn = "blockPositionId",
         entityColumn = "id",
         entity = BlockPositionEntity::class)
-    var blockPosition: List<BlockPositionEntity> = emptyList()
+    var blockPosition: BlockPositionEntity? = null
 
 }

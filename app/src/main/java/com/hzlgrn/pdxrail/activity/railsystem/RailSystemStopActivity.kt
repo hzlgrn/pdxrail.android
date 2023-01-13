@@ -14,6 +14,7 @@ import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
 import com.hzlgrn.pdxrail.adapter.ArrivalsRecyclerViewAdapter
 import com.hzlgrn.pdxrail.data.repository.ArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
+import com.hzlgrn.pdxrail.data.repository.viewmodel.RecyclerViewItemModel
 import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
 import com.hzlgrn.pdxrail.task.TaskWsV1Stops
 import com.hzlgrn.pdxrail.task.TaskWsV2Arrivals
@@ -129,7 +130,9 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
             arrivalsAdapter?.content = null
         }
         if (arrivalsAdapter == null) {
-            arrivalsAdapter = ArrivalsRecyclerViewAdapter()
+            arrivalsAdapter = ArrivalsRecyclerViewAdapter(coroutineContext) { uniqueId ->
+                arrivalRepository.getArrivalItemViewModel(uniqueId)
+            }
             pDrawerBinding.drawerStartListviewArrivals.adapter = arrivalsAdapter
             arrivalsAdapter?.content = null
         }
@@ -181,7 +184,7 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
         }
     }
 
-    private fun onArrivalListViewModel(models: List<ArrivalItemViewModel> = emptyList()) {
+    private fun onArrivalListViewModel(models: List<RecyclerViewItemModel> = emptyList()) {
         Timber.d("onArrivalListViewModel()")
         arrivalsAdapter?.onClick = onArrivalItemClicked
         arrivalsAdapter?.content = models

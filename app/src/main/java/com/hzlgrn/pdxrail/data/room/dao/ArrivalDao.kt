@@ -6,6 +6,7 @@ import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
 import com.hzlgrn.pdxrail.data.room.model.ArrivalItem
 import com.hzlgrn.pdxrail.data.room.model.ArrivalMarker
+import com.hzlgrn.pdxrail.data.room.model.PkArrival
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,6 +21,7 @@ interface ArrivalDao {
     """)
     fun arrivalMarkersFor(listLocId: List<Long>): Flow<List<ArrivalMarker>>
 
+    /*
     @Transaction @Query("""
         SELECT * FROM ${ArrivalEntity.TABLE_NAME}
         WHERE locid IN (:listLocId)
@@ -28,6 +30,25 @@ interface ArrivalDao {
             estimated ASC limit 100
     """)
     fun arrivalItemsFor(listLocId: List<Long>): Flow<List<ArrivalItem>>
+     */
+
+    @Transaction @Query("""
+        SELECT id FROM ${ArrivalEntity.TABLE_NAME}
+        WHERE locid IN (:listLocId)
+        ORDER BY
+            scheduled ASC,
+            estimated ASC limit 100
+    """)
+    fun arrivalItemsFor(listLocId: List<Long>): Flow<List<PkArrival>>
+
+    @Transaction @Query("""
+        SELECT * FROM ${ArrivalEntity.TABLE_NAME}
+        WHERE id = :uniqueId
+        ORDER BY
+            scheduled ASC,
+            estimated ASC limit 100
+    """)
+    fun arrivalItemFor(uniqueId: String): Flow<ArrivalItem>
 
 
     @Query("SELECT * FROM ${LocIdEntity.TABLE_NAME} WHERE latlon = :latlon")

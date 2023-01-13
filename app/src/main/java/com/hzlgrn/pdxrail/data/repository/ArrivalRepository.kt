@@ -6,12 +6,35 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
+import com.hzlgrn.pdxrail.data.repository.viewmodel.RecyclerViewItemModel
 import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ArrivalRepository(private val dao: ArrivalDao) {
 
+    fun arrivalItemsViewModel(listLocId: List<Long>): Flow<List<RecyclerViewItemModel>> {
+        return dao.arrivalItemsFor(listLocId).map { listPkArrival ->
+            listPkArrival.map { RecyclerViewItemModel(it.id) }
+        }
+    }
+    fun getArrivalItemViewModel(uniqueId: String): Flow<ArrivalItemViewModel> {
+        return dao.arrivalItemFor(uniqueId).map {
+            val arrivalLat = it.blockPosition?.lat ?: 0.0
+            val arrivalLon = it.blockPosition?.lng ?: 0.0
+            val arrivalPosition = LatLng(arrivalLat,arrivalLon)
+            val textShortSign = it.shortSign.orEmpty().removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR)
+            ArrivalItemViewModel(
+                textShortSign = textShortSign,
+                scheduled = it.scheduled,
+                estimated = it.estimated,
+                drawableArrivalMarker = drawableFromShortSign(it.shortSign),
+                drawableRotation = it.blockPosition?.heading?.toFloat() ?: 0f,
+                latlng = arrivalPosition
+            )
+        }
+    }
+    /*
     fun arrivalItemsViewModel(listLocId: List<Long>): Flow<List<ArrivalItemViewModel>> {
         return dao.arrivalItemsFor(listLocId).map { listArrivalItem ->
             listArrivalItem.map {
@@ -30,6 +53,7 @@ class ArrivalRepository(private val dao: ArrivalDao) {
             }
         }
     }
+     */
 
     fun arrivalMarkersViewModel(listLocId: List<Long>): Flow<List<MarkerOptions>> {
         return dao.arrivalMarkersFor(listLocId).map { listArrivals ->

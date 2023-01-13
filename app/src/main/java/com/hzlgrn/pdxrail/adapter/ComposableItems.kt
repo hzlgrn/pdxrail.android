@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.colorResource
@@ -95,7 +96,7 @@ object ComposableItems {
     }
 
     @Composable
-    fun ArrivalItemViewCard(context: Context, viewModel: ArrivalItemViewModel, onClick: (ArrivalItemViewModel)->Unit) {
+    fun ArrivalItemLoadingViewCard(context: Context) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -104,8 +105,65 @@ object ComposableItems {
             Card(
                 elevation = 3.dp,
                 modifier = Modifier
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(6.dp)
+            ) {
+                BoxWithConstraints {
+                    val constraints = cardContentConstraints()
+                    ConstraintLayout(constraints) {
+                        Text(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .layoutId("textShortSign")
+                                .padding(start = 8.dp, top = 3.dp, end = 8.dp),
+                            overflow = TextOverflow.Ellipsis,
+                            text = " ",
+                        )
+
+                        Image(
+                            painter = painterResource(
+                                id = R.drawable.marker_max_arrival
+                            ),
+                            contentDescription = "Arrival",
+                            modifier = Modifier
+                                .height(36.dp)
+                                .layoutId("icArrival")
+                                .rotate(0f)
+                                .width(36.dp)
+                                .alpha(0f)
+                        )
+
+                        Text(
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .layoutId("textScheduled")
+                                .padding(top = 3.dp),
+                            overflow = TextOverflow.Ellipsis,
+                            text = " ",
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun ArrivalItemViewCard(context: Context, viewModel: ArrivalItemViewModel, onClick: (ArrivalItemViewModel)->Unit?) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 4.dp, top = 3.dp, bottom = 3.dp, end = 8.dp)
+        ) {
+
+            Card(
+                elevation = 3.dp,
+                modifier = Modifier
+                    .layoutId("cardArrival")
                     .clickable {
-                        onClick(viewModel)
+                        onClick?.invoke(viewModel)
                     }
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(6.dp)
