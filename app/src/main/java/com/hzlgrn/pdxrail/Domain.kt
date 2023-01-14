@@ -19,6 +19,8 @@ class Domain {
     }
 
     object RailSystem {
+        val RANGE_ON_TIME_MS = 30000L // within 30 seconds before and after scheduled
+
         val REGION_RECT_NW = LatLng(45.698441, -123.183735)
         val REGION_RECT_SE = LatLng(45.214177, -122.303207)
 

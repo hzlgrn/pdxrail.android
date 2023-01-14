@@ -2,6 +2,7 @@ package com.hzlgrn.pdxrail.activity.railsystem
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
@@ -10,17 +11,16 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.App
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
-import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
 import com.hzlgrn.pdxrail.adapter.ArrivalsRecyclerViewAdapter
 import com.hzlgrn.pdxrail.data.repository.ArrivalRepository
-import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
-import com.hzlgrn.pdxrail.data.repository.viewmodel.RecyclerViewItemModel
+import com.hzlgrn.pdxrail.data.repository.viewmodel.UniqueIdModel
 import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
 import com.hzlgrn.pdxrail.task.TaskWsV1Stops
 import com.hzlgrn.pdxrail.task.TaskWsV2Arrivals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -31,7 +31,12 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     lateinit var arrivalRepository: ArrivalRepository
 
     protected abstract val pDrawerBinding: DrawerArrivalsBinding
-    var arrivalsAdapter: ArrivalsRecyclerViewAdapter? = null
+
+    private val arrivalsAdapter: ArrivalsRecyclerViewAdapter by lazy {
+        ArrivalsRecyclerViewAdapter(coroutineContext) { uniqueId ->
+            arrivalRepository.collectArrivalItemViewModel(uniqueId)
+        }
+    }
 
     protected open var pFocusStopUniqueId: String? = null
 
@@ -68,6 +73,8 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     override fun onStart() {
         super.onStart()
         clickedMarker = clickedMarker
+        pDrawerBinding.drawerStartListviewArrivals.adapter = arrivalsAdapter
+        arrivalsAdapter.onClick = onArrivalItemClicked
     }
 
     override fun onStop() {
@@ -76,6 +83,8 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
         observeArrivalsJob = null
         observeArrivalItems = null
         observeArrivalMarkers = null
+        pDrawerBinding.drawerStartListviewArrivals.adapter = null
+        arrivalsAdapter.onClick = { _ -> }
     }
 
     private var clickedMarker: Marker? = null
@@ -127,18 +136,12 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
             mArrivalMarkers.clear()
             pFocusStopUniqueId = null
             clickedMarker = null
-            arrivalsAdapter?.setData(emptyList())
-        }
-        if (arrivalsAdapter == null) {
-            arrivalsAdapter = ArrivalsRecyclerViewAdapter(coroutineContext) { uniqueId ->
-                arrivalRepository.getArrivalItemViewModel(uniqueId)
-            }
-            pDrawerBinding.drawerStartListviewArrivals.adapter = arrivalsAdapter
+            arrivalsAdapter.setData(emptyList())
         }
     }
 
     private fun fetchArrivalsFor(position: LatLng, isStreetcar: Boolean = false) {
-        Timber.d("fetchArrivalsFor position=$position, isStreetCar=$isStreetcar")
+        Timber.d("fetchArrivalsFor($position, $isStreetcar")
         updateArrivalDataJob = null
         observeArrivalItems = null
         observeArrivalMarkers = null
@@ -155,7 +158,7 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     }
 
     private fun onLocationIdUpdated(locid: LongArray, isStreetcar: Boolean) {
-        Timber.d("onLocationIdUpdated()")
+        Timber.d("onLocationIdUpdated($locid, $isStreetcar)")
         updateArrivalDataJob = TaskWsV2Arrivals().launchJob(locid, isStreetcar)
         observeArrivalMarkers = launch {
             arrivalRepository.arrivalMarkersViewModel(locid.toList()).collect {
@@ -170,7 +173,7 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
     }
 
     private fun onArrivalMarkersViewModel(models: List<MarkerOptions> = emptyList()) {
-        Timber.d("onArrivalMarkersViewModel()")
+        Timber.d("onArrivalMarkersViewModel(${models.size})")
         for (marker in mArrivalMarkers) marker.remove()
         mArrivalMarkers.clear()
         Timber.d(if (models.isEmpty()) "clear arrival markers" else "placing ${models.size} arrival markers")
@@ -183,15 +186,14 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
         }
     }
 
-    private fun onArrivalListViewModel(models: List<RecyclerViewItemModel> = emptyList()) {
-        Timber.d("onArrivalListViewModel()")
-        arrivalsAdapter?.onClick = onArrivalItemClicked
-        arrivalsAdapter?.setData(models)
+    private fun onArrivalListViewModel(models: List<UniqueIdModel> = emptyList()) {
+        Timber.d("onArrivalListViewModel(${models.size})")
+        arrivalsAdapter.setData(models)
     }
 
     private val onArrivalItemClicked by lazy {
-        fun(arrival: ArrivalItemViewModel) {
-            moveMapTo(arrival.latlng)
+        fun(latlng: LatLng) {
+            moveMapTo(latlng)
         }
     }
 

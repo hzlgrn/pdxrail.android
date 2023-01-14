@@ -1,15 +1,16 @@
 package com.hzlgrn.pdxrail.data.repository
 
 import android.content.res.Resources
+import android.graphics.Color
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
-import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
-import com.hzlgrn.pdxrail.data.repository.viewmodel.RecyclerViewItemModel
+import com.hzlgrn.pdxrail.data.repository.viewmodel.UniqueIdModel
 import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
+import com.hzlgrn.pdxrail.data.room.model.ArrivalItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.text.SimpleDateFormat
@@ -20,22 +21,39 @@ class ArrivalRepository(
     private val dao: ArrivalDao
 ) {
 
-    fun arrivalItemsViewModel(listLocId: List<Long>): Flow<List<RecyclerViewItemModel>> {
+    fun arrivalItemsViewModel(listLocId: List<Long>): Flow<List<UniqueIdModel>> {
         return dao.arrivalItemsFor(listLocId).map { listPkArrival ->
-            listPkArrival.map { RecyclerViewItemModel(it.id) }
+            listPkArrival.map { UniqueIdModel(it.id) }
         }
     }
-    fun getArrivalItemViewModel(uniqueId: String): Flow<ArrivalItemViewModel> {
-        return dao.arrivalItemFor(uniqueId).map {
-            val arrivalLat = it.blockPosition?.lat ?: 0.0
-            val arrivalLon = it.blockPosition?.lng ?: 0.0
-            val arrivalPosition = LatLng(arrivalLat,arrivalLon)
-            val textShortSign = it.shortSign.orEmpty().removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR)
+    fun collectArrivalItemViewModel(uniqueId: String): Flow<ArrivalItemViewModel> {
+        return dao.collectArrivalItemFor(uniqueId).map {
+            toArrivalItemViewModel(it)
+        }
+    }
+    fun getArrivalItemViewModel(uniqueId: String): ArrivalItemViewModel {
+        return toArrivalItemViewModel(dao.getArrivalItemFor(uniqueId))
+    }
 
-            val textEstimate = if (it.estimated == 0L
-                || (it.scheduled > 0L
-                        && it.estimated > 0L
-                        && it.scheduled in (it.estimated - ArrivalModelArrayAdapter.RANGE_ON_TIME_MS) .. (it.estimated + ArrivalModelArrayAdapter.RANGE_ON_TIME_MS))) {
+    private fun toArrivalItemViewModel(item: ArrivalItem?): ArrivalItemViewModel {
+        return if (item == null) {
+            ArrivalItemViewModel(
+                textShortSign = " ",
+                textScheduled = " ",
+                textEstimated = " ",
+                colorTextEstimated = Color.YELLOW,
+                drawableArrivalMarker = R.drawable.marker_max_arrival,
+                drawableRotation = 180f
+            )
+        } else {
+            val arrivalLat = item.blockPosition?.lat ?: 0.0
+            val arrivalLon = item.blockPosition?.lng ?: 0.0
+            val arrivalPosition = LatLng(arrivalLat,arrivalLon)
+            val textShortSign = item.shortSign.orEmpty().removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR)
+            val textEstimate = if (item.estimated == 0L
+                || (item.scheduled > 0L
+                        && item.estimated > 0L
+                        && item.scheduled in (item.estimated - Domain.RailSystem.RANGE_ON_TIME_MS) .. (item.estimated + Domain.RailSystem.RANGE_ON_TIME_MS))) {
                 // NO TEXT ESTIMATE
                 " "
             } else {
@@ -43,17 +61,17 @@ class ArrivalRepository(
                     .getString(R.string.estimated_at)
                     .format(
                         SimpleDateFormat("h:mm:ss", Locale.US)
-                            .format(Date(it.estimated)))
+                            .format(Date(item.estimated)))
             }
-            val textScheduled = if (it.scheduled == 0L) {
+            val textScheduled = if (item.scheduled == 0L) {
                 applicationResources.getString(R.string.no_arrival)
             } else {
                 SimpleDateFormat("h:mma", Locale.US)
-                    .format(Date(it.scheduled)).let { formattedString ->
+                    .format(Date(item.scheduled)).let { formattedString ->
                         applicationResources.getString(R.string.arriving_at).format(formattedString)
                     }
             }
-            val isLate = it.estimated > it.scheduled
+            val isLate = item.estimated > item.scheduled
             val textEstimateColor = applicationResources.getColor(if (isLate)
                 R.color.max_red_line
             else
@@ -64,8 +82,8 @@ class ArrivalRepository(
                 textScheduled = textScheduled,
                 textEstimated = textEstimate,
                 colorTextEstimated = textEstimateColor,
-                drawableArrivalMarker = drawableFromShortSign(it.shortSign),
-                drawableRotation = it.blockPosition?.heading?.toFloat() ?: 0f,
+                drawableArrivalMarker = drawableFromShortSign(item.shortSign),
+                drawableRotation = item.blockPosition?.heading?.toFloat() ?: 0f,
                 latlng = arrivalPosition
             )
         }

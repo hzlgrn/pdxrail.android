@@ -21,17 +21,6 @@ interface ArrivalDao {
     """)
     fun arrivalMarkersFor(listLocId: List<Long>): Flow<List<ArrivalMarker>>
 
-    /*
-    @Transaction @Query("""
-        SELECT * FROM ${ArrivalEntity.TABLE_NAME}
-        WHERE locid IN (:listLocId)
-        ORDER BY
-            scheduled ASC,
-            estimated ASC limit 100
-    """)
-    fun arrivalItemsFor(listLocId: List<Long>): Flow<List<ArrivalItem>>
-     */
-
     @Transaction @Query("""
         SELECT id FROM ${ArrivalEntity.TABLE_NAME}
         WHERE locid IN (:listLocId)
@@ -48,7 +37,16 @@ interface ArrivalDao {
             scheduled ASC,
             estimated ASC limit 100
     """)
-    fun arrivalItemFor(uniqueId: String): Flow<ArrivalItem>
+    fun collectArrivalItemFor(uniqueId: String): Flow<ArrivalItem>
+
+    @Transaction @Query("""
+        SELECT * FROM ${ArrivalEntity.TABLE_NAME}
+        WHERE id = :uniqueId
+        ORDER BY
+            scheduled ASC,
+            estimated ASC limit 100
+    """)
+    fun getArrivalItemFor(uniqueId: String): ArrivalItem
 
 
     @Query("SELECT * FROM ${LocIdEntity.TABLE_NAME} WHERE latlon = :latlon")
@@ -59,14 +57,15 @@ interface ArrivalDao {
 
 
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun createArrivalEntities(models: List<ArrivalEntity>): List<Long>
+    @Upsert
+    fun upsertArrivalEntities(models: List<ArrivalEntity>): List<Long>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Query("DELETE FROM ${ArrivalEntity.TABLE_NAME} WHERE locid IN (:listLocId) AND id NOT IN (:listArrivalId)")
+    fun deleteArrivals(listLocId: List<Long>, listArrivalId: List<String>)
+
+
+    @Upsert
     fun createBlockPositions(entities: List<BlockPositionEntity>): List<Long>
-
-    @Query("DELETE FROM ${ArrivalEntity.TABLE_NAME} WHERE locid IN (:listLocId)")
-    fun deleteArrivals(listLocId: List<Long>)
 
 
 
@@ -76,9 +75,10 @@ interface ArrivalDao {
         blockPositionEntities: List<BlockPositionEntity>,
         arrivalEntities: List<ArrivalEntity>) {
 
-        deleteArrivals(csvLocIds)
         createBlockPositions(blockPositionEntities)
-        createArrivalEntities(arrivalEntities)
+        val listArrivalId = arrivalEntities.map { it.id }
+        deleteArrivals(csvLocIds, listArrivalId)
+        upsertArrivalEntities(arrivalEntities)
     }
 
 }

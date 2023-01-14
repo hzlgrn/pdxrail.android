@@ -12,10 +12,11 @@ import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity.Companion.TABLE_NAME
     foreignKeys = [
         ForeignKey(
             entity = BlockPositionEntity::class,
-            onDelete = ForeignKey.NO_ACTION,
+            onDelete = ForeignKey.SET_NULL,
             onUpdate = ForeignKey.NO_ACTION,
             parentColumns = arrayOf("id"),
-            childColumns = arrayOf("blockPositionId"))],
+            childColumns = arrayOf("blockPositionId"),
+            deferred = true)],
     indices = [Index("blockPositionId")]
 )
 data class ArrivalEntity(
