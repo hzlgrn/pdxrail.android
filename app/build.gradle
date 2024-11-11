@@ -26,13 +26,13 @@ android {
         targetSdkVersion 33
 
         buildConfigField "long", "BUILD_TIME", "${buildTime}L"
-        buildConfigField "String", "KEY_API_RAIL_SYSTEM", "\"${keyRing["KEY_API_RAIL_SYSTEM"]}\""
-        buildConfigField "String", "URL_API_RAIL_SYSTEM", "\"${keyRing["URL_API_RAIL_SYSTEM"]}\""
+        buildConfigField "String", "API_RAIL_SYSTEM_KEY", "\"${keyRing["API_RAIL_SYSTEM_KEY"]}\""
+        buildConfigField "String", "API_RAIL_SYSTEM_URL", "\"${keyRing["API_RAIL_SYSTEM_URL"]}\""
         buildConfigField "String", "HOME_URL", "\"https://${keyRing["HOME_HOST"]}/\""
         buildConfigField "String", "HOME_HOST", "\"${keyRing["HOME_HOST"]}\""
         manifestPlaceholders = [
             APPLICATION_LABEL: "PDX Rail",
-            KEY_GEO_ANDROID_GOOGLE  : keyRing["KEY_API_GOOGLE"],
+            API_GOOGLE_KEY  : keyRing["API_GOOGLE_KEY"],
             HOME_HOST: keyRing["HOME_HOST"],
             HOME_URL: "https://${keyRing["HOME_HOST"]}/"
         ]
@@ -67,10 +67,10 @@ android {
             if (keyRing != null) {
                 signingConfigs {
                     from_key_ring {
-                        keyAlias keyRing["KEYSTORE_KEY_ALIAS"]
-                        keyPassword keyRing["KEYSTORE_PASSWORD"]
-                        storeFile rootProject.file(keyRing["KEYSTORE_FILE"])
-                        storePassword keyRing["KEYSTORE_PASSWORD"]
+                        keyAlias keyRing["UPLOAD_KEYSTORE_KEY_ALIAS"]
+                        keyPassword keyRing["UPLOAD_KEYSTORE_PASSWORD"]
+                        storeFile rootProject.file(keyRing["UPLOAD_KEYSTORE_FILE"])
+                        storePassword keyRing["UPLOAD_KEYSTORE_PASSWORD"]
                     }
                 }
                 signingConfig signingConfigs.from_key_ring

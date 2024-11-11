@@ -22,8 +22,8 @@ class Domain {
         val REGION_RECT_NW = LatLng(45.698441, -123.183735)
         val REGION_RECT_SE = LatLng(45.214177, -122.303207)
 
-        const val WsV1Stops = "ws/V1/stops?appID=${BuildConfig.KEY_API_RAIL_SYSTEM}&json=true"
-        const val WsV2Arrivals = "ws/V2/arrivals?appID=${BuildConfig.KEY_API_RAIL_SYSTEM}&json=true&showPosition=true"
+        const val PATH_WS_V1_STOPS = "ws/V1/stops?appID=${BuildConfig.API_RAIL_SYSTEM_KEY}&json=true"
+        const val PATH_WS_V2_ARRIVALS = "ws/V2/arrivals?appID=${BuildConfig.API_RAIL_SYSTEM_KEY}&json=true&showPosition=true"
 
         const val PREFIX_PORTLAND_STREETCAR = "Portland Streetcar "
         const val STREETCAR_IN_FULLSIGN = "streetcar"

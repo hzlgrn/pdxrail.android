@@ -40,7 +40,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http" android:host="${HOME_HOST}" />
+                <data android:host="${HOME_HOST}"/>
                 <data android:scheme="https" />
             </intent-filter>
             <meta-data
@@ -52,6 +52,6 @@
             android:resource="@string/asset_statements" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${KEY_GEO_ANDROID_GOOGLE}" />
+            android:value="${API_GOOGLE_KEY}" />
     </application>
 </manifest>

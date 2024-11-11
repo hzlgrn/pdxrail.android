@@ -23,7 +23,7 @@ class RetrofitServiceModule {
     fun provideRailSystemService(): RailSystemService {
         return Retrofit.Builder()
             .addConverterFactory(moshiConverter)
-            .baseUrl(BuildConfig.URL_API_RAIL_SYSTEM)
+            .baseUrl(BuildConfig.API_RAIL_SYSTEM_URL)
             .client(okHttpClient)
             .build()
             .create(RailSystemService::class.java)

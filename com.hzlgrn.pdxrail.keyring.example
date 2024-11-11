@@ -1,10 +1,11 @@
-KEYSTORE_FILE=com.hzlgrn.pdxrail.jks
-KEYSTORE_KEY_ALIAS=alias
-KEYSTORE_PASSWORD=secret
+UPLOAD_KEYSTORE_FILE=com.hzlgrn.pdxrail.jks
+UPLOAD_KEYSTORE_ALIAS=alias
+UPLOAD_KEYSTORE_PASSWORD=secret
 
+HOME_URL=https://pdxrail.hzlgrn.com
 HOME_HOST=pdxrail.hzlgrn.com
 
-KEY_API_GOOGLE=google-api-key-with-maps-android-enabled
+API_GOOGLE_KEY=google-api-key-with-maps-android-enabled
 
-KEY_API_RAIL_SYSTEM=rail-system-api-key
-URL_API_RAIL_SYSTEM=https://pdxrail.hzlgrn.com/
+API_RAIL_SYSTEM_KEY=rail-system-api-key
+API_RAIL_SYSTEM_URL=https://pdxrail.hzlgrn.com/
