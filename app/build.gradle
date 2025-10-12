@@ -16,14 +16,14 @@ if (keyRingFile.canRead()) {
 android {
     namespace 'com.hzlgrn.pdxrail'
     buildToolsVersion '30.0.3'
-    compileSdkVersion 33
+    compileSdkVersion 36
 
     defaultConfig {
         applicationId 'com.hzlgrn.pdxrail'
         versionCode 1
         versionName "1.2"
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 36
 
         buildConfigField "long", "BUILD_TIME", "${buildTime}L"
         buildConfigField "String", "API_RAIL_SYSTEM_KEY", "\"${keyRing["API_RAIL_SYSTEM_KEY"]}\""
