@@ -14,21 +14,14 @@ if (keyRingFile.canRead()) {
     keyRing.load(new FileInputStream(keyRingFile))
 }
 
-def buildTime = (new Date()).getTime()
-def keyRing = new Properties()
-def keyRingFile = file('../com.hzlgrn.pdxrail.keyring')
-if (keyRingFile.canRead()) {
-    keyRing.load(new FileInputStream(keyRingFile))
-}
-
 android {
     namespace 'com.hzlgrn.pdxrail'
     compileSdkVersion 36
 
     defaultConfig {
         applicationId 'com.hzlgrn.pdxrail'
-        versionCode 1
-        versionName "1.2"
+        versionCode 10
+        versionName "1.3"
         minSdkVersion 24
         targetSdkVersion 36
 

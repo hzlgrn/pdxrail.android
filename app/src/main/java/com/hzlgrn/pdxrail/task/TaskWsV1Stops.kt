@@ -15,7 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.internal.toImmutableList
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
@@ -84,7 +83,7 @@ class TaskWsV1Stops: CoroutineScope {
             } catch(err: NumberFormatException) { Timber.e(err) }
         }
 
-        return listLocId.toImmutableList()
+        return listLocId
     }
 
     private fun wsV1Stops(radiusInFeet: Long, lat: Double, lon: Double, isStreetCar: Boolean) {
