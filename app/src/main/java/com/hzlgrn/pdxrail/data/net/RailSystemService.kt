@@ -9,13 +9,13 @@ import retrofit2.http.Query
 
 interface RailSystemService {
 
-    @GET(Domain.RailSystem.WsV2Arrivals)
+    @GET(Domain.RailSystem.PATH_WS_V2_ARRIVALS)
     fun wsV2Arrivals(
         @Query("locIDs") csvLocId: String,
         @Query("streetcar") isStreetCar: Boolean
     ): Call<WsV2ArrivalsResponse>
 
-    @GET(Domain.RailSystem.WsV1Stops)
+    @GET(Domain.RailSystem.PATH_WS_V1_STOPS)
     fun wsV1Stops(
         @Query("feet") radiusInFeet: Long,
         @Query("ll") latlon: String,

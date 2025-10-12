@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
-import com.google.android.material.composethemeadapter.MdcTheme
+import com.google.accompanist.appcompattheme.AppCompatTheme
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
 import com.hzlgrn.pdxrail.databinding.FramedComposableBinding
@@ -82,7 +82,7 @@ class ArrivalModelArrayAdapter(context: Context, viewModel: List<ArrivalItemView
 
     private fun bind(binding: FramedComposableBinding) {
        binding.composable.setContent {
-           MdcTheme {
+           AppCompatTheme {
                ArrivalEmptyViewCard()
            }
        }
@@ -91,7 +91,7 @@ class ArrivalModelArrayAdapter(context: Context, viewModel: List<ArrivalItemView
     private fun bind(binding: FramedComposableBinding, position: Int) {
         getItem(position)?.let { viewModel ->
             binding.composable.setContent {
-                MdcTheme {
+                AppCompatTheme {
                     ArrivalItemViewCard(viewModel)
                 }
             }
@@ -169,8 +169,8 @@ class ArrivalModelArrayAdapter(context: Context, viewModel: List<ArrivalItemView
     private fun ArrivalItemViewCard(viewModel: ArrivalItemViewModel) {
         Box(
             modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 4.dp, top = 3.dp, bottom = 3.dp, end = 8.dp)
+                .fillMaxWidth()
+                .padding(start = 4.dp, top = 3.dp, bottom = 3.dp, end = 8.dp)
         ) {
             Card(
                 elevation = 3.dp,

@@ -5,6 +5,7 @@ import android.util.Log
 import org.json.JSONObject
 import kotlin.math.floor
 
+@Suppress("unused")
 object Lumber {
 
     @SuppressLint("LogNotTimber")

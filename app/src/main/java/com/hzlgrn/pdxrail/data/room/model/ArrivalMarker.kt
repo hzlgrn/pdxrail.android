@@ -4,8 +4,8 @@ import androidx.room.Relation
 import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 
 class ArrivalMarker(
-        val shortSign: String?,
-        val blockPositionId: Long
+    val shortSign: String?,
+    @Suppress("unused") val blockPositionId: Long
 ) {
     @Relation(
         parentColumn = "blockPositionId",

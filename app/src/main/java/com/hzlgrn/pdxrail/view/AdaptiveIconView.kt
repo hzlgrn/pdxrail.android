@@ -56,7 +56,7 @@ class AdaptiveIconView @JvmOverloads constructor(
         shouldRefreshMask = true
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (width == 0 || height == 0) return
         canvas?.run {

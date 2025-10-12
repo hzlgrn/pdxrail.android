@@ -4,10 +4,10 @@ import androidx.room.Relation
 import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 
 class ArrivalItem(
-        val estimated: Long,
-        val scheduled: Long,
-        val shortSign: String? = null,
-        val blockPositionId: Long
+    val estimated: Long,
+    val scheduled: Long,
+    val shortSign: String? = null,
+    @Suppress("unused") val blockPositionId: Long
 ) {
 
     @Relation(

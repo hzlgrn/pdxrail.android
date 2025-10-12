@@ -18,8 +18,8 @@ class App : Application(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
 
-    private val hzlnt by lazy(false) {
-        if (BuildConfig.DEBUG) Timber.DebugTree()
+    private fun growTree(): Timber.Tree {
+        return if (BuildConfig.DEBUG) Timber.DebugTree()
         else object: Timber.Tree() {
             override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
                 when (priority) {
@@ -34,7 +34,7 @@ class App : Application(), CoroutineScope {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.plant(hzlnt)
+        Timber.plant(growTree())
 
         applicationComponent = DaggerForApplicationComponent.builder()
             .applicationPreferencesModule(ApplicationPreferencesModule(applicationContext))
