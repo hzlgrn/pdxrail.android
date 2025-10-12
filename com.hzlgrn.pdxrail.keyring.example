@@ -1,6 +1,6 @@
-UPLOAD_KEYSTORE_FILE=com.hzlgrn.pdxrail.jks
-UPLOAD_KEYSTORE_ALIAS=alias
-UPLOAD_KEYSTORE_PASSWORD=secret
+KEYSTORE_FILE=com.hzlgrn.pdxrail.jks
+KEYSTORE_KEY_ALIAS=alias
+KEYSTORE_PASSWORD=secret
 
 HOME_URL=https://pdxrail.hzlgrn.com
 HOME_HOST=pdxrail.hzlgrn.com
