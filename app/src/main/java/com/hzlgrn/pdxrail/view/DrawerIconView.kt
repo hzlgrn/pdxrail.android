@@ -40,7 +40,7 @@ class DrawerIconView @JvmOverloads constructor(
         resultBitmap = null
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas?.run {
             if (resultBitmap == null && width > 0 && height > 0) {

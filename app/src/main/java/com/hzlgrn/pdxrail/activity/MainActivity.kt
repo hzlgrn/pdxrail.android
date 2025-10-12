@@ -47,7 +47,7 @@ class MainActivity : RailSystemStopActivity() {
         Timber.d("didHandleIntent = $didHandleIntent")
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         val didHandleIntent = handleIntent(intent)
         Timber.d("didHandleIntent = $didHandleIntent")
