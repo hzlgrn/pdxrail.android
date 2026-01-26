@@ -1,12 +1,12 @@
 import java.util.Date
 import java.util.Properties
 
-val versionCompose = "1.9.3"
-val versionKotlin = "2.2.20"
+val versionCompose = "1.10.1"
+val versionKotlin = "2.2.21"
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.3.0"
     id("com.google.devtools.ksp")
 }
 
@@ -17,17 +17,14 @@ val keyRing = file("../com.hzlgrn.pdxrail.keyring")
             keyRingFile.inputStream().use { load(it) }
         }
     } ?: Properties().apply {
-        setProperty("UPLOAD_KEYSTORE_FILE", "")
-        setProperty("UPLOAD_KEYSTORE_ALIAS", "")
-        setProperty("UPLOAD_KEYSTORE_PASSWORD", "")
-
-        setProperty("HOME_URL", "")
-        setProperty("HOME_HOST", "")
-
-        setProperty("API_GOOGLE_KEY", "")
-
-        setProperty("API_RAIL_SYSTEM_KEY", "")
-        setProperty("API_RAIL_SYSTEM_URL", "")
+        setProperty("UPLOAD_KEYSTORE_FILE", "com.hzlgrn.pdxrail.jks")
+        setProperty("UPLOAD_KEYSTORE_ALIAS", "alias")
+        setProperty("UPLOAD_KEYSTORE_PASSWORD", "secret")
+        setProperty("HOME_URL", "https://pdxrail.hzlgrn.com")
+        setProperty("HOME_HOST", "pdxrail.hzlgrn.com")
+        setProperty("API_GOOGLE_KEY", "google-api-key-with-maps-android-enabled")
+        setProperty("API_RAIL_SYSTEM_KEY", "rail-system-api-key")
+        setProperty("API_RAIL_SYSTEM_URL", "https://pdxrail.hzlgrn.com/")
     }
 
 android {
@@ -36,10 +33,10 @@ android {
 
     defaultConfig {
         applicationId = "com.hzlgrn.pdxrail"
-        versionCode = 10
-        versionName = "1.3"
         minSdk = 24
         targetSdk = 36
+        versionCode = 10
+        versionName = "1.3"
 
         buildConfigField("long", "BUILD_TIME", "${buildTime}L")
         buildConfigField("String", "API_RAIL_SYSTEM_KEY", "\"${keyRing["API_RAIL_SYSTEM_KEY"] as String}\"")
@@ -59,7 +56,6 @@ android {
                 "site": "https://${keyRing["HOME_HOST"] as String}/"
             }
         }]""")
-        vectorDrawables.useSupportLibrary = true
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -70,6 +66,8 @@ android {
                 )
             }
         }
+
+        vectorDrawables.useSupportLibrary = true
     }
     buildFeatures {
         buildConfig = true
@@ -90,14 +88,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_24
     }
 
-    /*
-    composeCompiler {
-        enableStrongSkippingMode = true
-    }
-     */
-
     signingConfigs {
-        // todo: make conditional if release?
         create("release") {
             keyAlias = keyRing["UPLOAD_KEYSTORE_ALIAS"] as String
             keyPassword = keyRing["UPLOAD_KEYSTORE_PASSWORD"] as String
@@ -108,7 +99,7 @@ android {
 
 }
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.8.0"))
 
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.cardview:cardview:1.0.0")
@@ -117,40 +108,42 @@ dependencies {
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.android.gms:play-services-maps:19.2.0")
+    implementation("com.google.android.gms:play-services-maps:20.0.0")
+    implementation("com.google.maps.android:maps-compose:7.0.0")
     implementation("com.google.android.material:material:1.13.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics-ndk")
-    implementation("com.google.maps.android:android-maps-utils:3.19.0")
+    implementation("com.google.maps.android:android-maps-utils:4.0.0")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation("com.squareup.okhttp3:okhttp:5.2.1")
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versionKotlin")
 
     // Compose
-    implementation("androidx.activity:activity-compose:1.11.0")
+    implementation("androidx.activity:activity-compose:1.12.2")
     implementation("androidx.compose.animation:animation:$versionCompose")
-    implementation("androidx.compose.material:material:1.9.3")
+    implementation("androidx.compose.material:material:$versionCompose")
     implementation("androidx.compose.ui:ui-tooling:$versionCompose")
+
     // When using a AppCompat theme
     implementation("com.google.accompanist:accompanist-appcompat-theme:0.36.0")
 
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$versionCompose")
 
     // Coroutines
-    val versionCoroutines = "1.5.2"
+    val versionCoroutines = "1.10.2"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versionCoroutines")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$versionCoroutines")
 
     // Dagger
-    val versionDagger = "2.57.2"
+    val versionDagger = "2.59"
     implementation("com.google.dagger:dagger:$versionDagger")
     ksp("com.google.dagger:dagger-compiler:$versionDagger")
 
     // Lifecycle
     val versionLifecycle = "2.2.0"
     implementation("androidx.lifecycle:lifecycle-extensions:$versionLifecycle")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
     // Moshi
     val versionMoshi = "1.15.2"
@@ -159,7 +152,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:3.0.0")
 
     // Room
-    val versionRoom = "2.8.2"
+    val versionRoom = "2.8.4"
     implementation("androidx.room:room-runtime:$versionRoom")
     implementation("androidx.room:room-ktx:$versionRoom")
     ksp("androidx.room:room-compiler:$versionRoom")
