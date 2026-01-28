@@ -6,8 +6,10 @@ val versionKotlin = "2.2.21"
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.plugin.compose") version "2.3.0"
+    id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 val buildTime = Date().time
@@ -123,12 +125,15 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.12.2")
     implementation("androidx.compose.animation:animation:$versionCompose")
     implementation("androidx.compose.material:material:$versionCompose")
+    implementation("androidx.compose.material3:material3:1.4.0")
     implementation("androidx.compose.ui:ui-tooling:$versionCompose")
+    implementation("androidx.compose.ui:ui-viewbinding:$versionCompose")
+    implementation("androidx.compose.ui:ui-unit:1.10.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$versionCompose")
 
     // When using a AppCompat theme
     implementation("com.google.accompanist:accompanist-appcompat-theme:0.36.0")
 
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$versionCompose")
 
     // Coroutines
     val versionCoroutines = "1.10.2"
@@ -140,10 +145,17 @@ dependencies {
     implementation("com.google.dagger:dagger:$versionDagger")
     ksp("com.google.dagger:dagger-compiler:$versionDagger")
 
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.59")
+    ksp("com.google.dagger:hilt-android-compiler:2.59")
+    implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")
+
     // Lifecycle
     val versionLifecycle = "2.2.0"
     implementation("androidx.lifecycle:lifecycle-extensions:$versionLifecycle")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.10.0")
 
     // Moshi
     val versionMoshi = "1.15.2"
@@ -156,6 +168,24 @@ dependencies {
     implementation("androidx.room:room-runtime:$versionRoom")
     implementation("androidx.room:room-ktx:$versionRoom")
     ksp("androidx.room:room-compiler:$versionRoom")
+
+    // Navigation
+    val versionNavigation = "2.9.6"
+    // Jetpack Compose Integration
+    implementation("androidx.navigation:navigation-compose:$versionNavigation")
+
+    // Views/Fragments Integration
+    implementation("androidx.navigation:navigation-fragment:$versionNavigation")
+    implementation("androidx.navigation:navigation-ui:$versionNavigation")
+
+    // Feature module support for Fragments
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$versionNavigation")
+
+    // Testing Navigation
+    androidTestImplementation("androidx.navigation:navigation-testing:$versionNavigation")
+
+    // JSON serialization library, works with the Kotlin serialization plugin.
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$versionCoroutines")
