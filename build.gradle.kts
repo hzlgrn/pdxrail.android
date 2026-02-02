@@ -1,5 +1,5 @@
 buildscript {
-    val versionKotlin = "2.0.21"
+    val versionKotlin = "2.3.0"
     dependencies {
         classpath("com.android.tools.build:gradle:8.9.1")
         classpath("com.google.gms:google-services:4.4.4")

@@ -3,6 +3,7 @@ import java.util.Properties
 
 val javaVersion = JavaVersion.VERSION_18
 val kotlinJvmTarget = javaVersion.majorVersion
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(javaVersion.majorVersion))
@@ -10,7 +11,7 @@ java {
 }
 
 val versionCompose = "1.10.3"
-val versionKotlin = "2.0.21"
+val versionKotlin = "2.3.0"
 
 plugins {
     id("com.android.application")
@@ -157,16 +158,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versionCoroutines")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$versionCoroutines")
 
-    // Dagger
-    val versionDagger = "2.58"
-    //implementation("com.google.dagger:dagger:$versionDagger")
-    //ksp("com.google.dagger:dagger-compiler:$versionDagger")
-
     // Hilt
+    val versionHilt = "2.58"
     implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")
-    implementation("com.google.dagger:hilt-android:$versionDagger")
-    ksp("com.google.dagger:hilt-compiler:$versionDagger")
-    ksp("com.google.dagger:hilt-android-compiler:$versionDagger")
+    implementation("com.google.dagger:hilt-android:$versionHilt")
+    ksp("com.google.dagger:hilt-compiler:$versionHilt")
+    ksp("com.google.dagger:hilt-android-compiler:$versionHilt")
 
     // Lifecycle
     val versionLifecycle = "2.2.0"
