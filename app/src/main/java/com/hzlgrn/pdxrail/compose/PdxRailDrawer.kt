@@ -65,26 +65,33 @@ fun PdxRailDrawer(
 }
 
 @Composable
-fun PdxRailDrawerContent(onArrivalClick: (String) -> Unit, onReviewClick: () -> Unit, selectedMenu: String = "composers") {
+fun PdxRailDrawerContent(onArrivalClick: (String) -> Unit, onReviewClick: () -> Unit, selectedMenu: String = "redline-00") {
     // Use windowInsetsTopHeight() to add a spacer which pushes the drawer content
     // below the status bar (y-axis)
     Column {
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
         DrawerHeader()
+
         DividerItem()
-        DrawerItemHeader("Chats")
-        ChatItem("composers", selectedMenu == "composers") {
-            onArrivalClick("composers")
+        DrawerItemHeader("Arrivals")
+        ChatItem("Red Line 00", selectedMenu == "redline-00") {
+            onArrivalClick("redline-00")
         }
-        ChatItem("droidcon-nyc", selectedMenu == "droidcon-nyc") {
-            onArrivalClick("droidcon-nyc")
+        ChatItem("Red Line 01", selectedMenu == "redline-01") {
+            onArrivalClick("redline-01")
         }
+        ChatItem("Red Line 02", selectedMenu == "redline-02") {
+            onArrivalClick("redline-02")
+        }
+
         DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
-        DrawerItemHeader("Recent Profiles")
-
-        // item
-
-        // item
+        DrawerItemHeader("Departures")
+        ChatItem("Red Line 03", selectedMenu == "redline-03") {
+            onArrivalClick("redline-03")
+        }
+        ChatItem("Red Line 04", selectedMenu == "redline-04") {
+            onArrivalClick("redline-04")
+        }
 
         /*
         if (widgetAddingIsSupported(LocalContext.current)) {

@@ -39,7 +39,7 @@ class PdxRailActivity : AppCompatActivity() {
             ComposeView(this).apply {
                 consumeWindowInsets = false
                 setContent {
-                    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
+                    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val drawerOpen by pdxRailViewModel.drawerShouldBeOpened
                         .collectAsStateWithLifecycle()
 

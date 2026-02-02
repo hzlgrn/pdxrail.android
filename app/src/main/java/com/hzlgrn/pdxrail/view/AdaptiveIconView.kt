@@ -10,6 +10,8 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.hzlgrn.pdxrail.R
+import androidx.core.content.withStyledAttributes
+import androidx.core.graphics.createBitmap
 
 
 class AdaptiveIconView @JvmOverloads constructor(
@@ -33,19 +35,28 @@ class AdaptiveIconView @JvmOverloads constructor(
 
     init {
         if (attrs != null) {
-            with (context.obtainStyledAttributes(attrs, R.styleable.AdaptiveIconView)) {
+            context.withStyledAttributes(attrs, R.styleable.AdaptiveIconView) {
                 val bg = if (hasValue(R.styleable.AdaptiveIconView_backgroundVector)) {
-                    getResourceId(R.styleable.AdaptiveIconView_backgroundVector, 0).takeIf { it != 0 }
+                    getResourceId(
+                        R.styleable.AdaptiveIconView_backgroundVector,
+                        0
+                    ).takeIf { it != 0 }
                 } else null
                 val fg = if (hasValue(R.styleable.AdaptiveIconView_foregroundVector)) {
-                    getResourceId(R.styleable.AdaptiveIconView_foregroundVector, 0).takeIf { it != 0 }
+                    getResourceId(
+                        R.styleable.AdaptiveIconView_foregroundVector,
+                        0
+                    ).takeIf { it != 0 }
                 } else null
                 val msk = if (hasValue(R.styleable.AdaptiveIconView_maskVector)) {
                     getResourceId(R.styleable.AdaptiveIconView_maskVector, 0).takeIf { it != 0 }
                 } else null
-                vectorBackground = bg?.let { VectorDrawableCompat.create(context.resources, it, context.theme) }
-                vectorForeground = fg?.let { VectorDrawableCompat.create(context.resources, it, context.theme) }
-                vectorMask = msk?.let { VectorDrawableCompat.create(context.resources, it, context.theme) }
+                vectorBackground =
+                    bg?.let { VectorDrawableCompat.create(context.resources, it, context.theme) }
+                vectorForeground =
+                    fg?.let { VectorDrawableCompat.create(context.resources, it, context.theme) }
+                vectorMask =
+                    msk?.let { VectorDrawableCompat.create(context.resources, it, context.theme) }
             }
         }
     }
@@ -73,7 +84,7 @@ class AdaptiveIconView @JvmOverloads constructor(
 
     private fun createAdaptiveIconBitmap(): Bitmap? {
         if (width == 0 || height == 0) return null
-        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also { bitmap ->
+        return createBitmap(width, height).also { bitmap ->
             val canvas = Canvas(bitmap)
             vectorBackground?.setBounds(0, 0, width, height)
             vectorBackground?.draw(canvas)
@@ -92,7 +103,7 @@ class AdaptiveIconView @JvmOverloads constructor(
 
     private fun createMaskBitmap(vector: VectorDrawableCompat): Bitmap? {
         if (width == 0 || height == 0) return null
-        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also {
+        return createBitmap(width, height).also {
             val maskCanvas = Canvas(it)
             vector.setBounds(0, 0, width, height)
             vector.draw(maskCanvas)
