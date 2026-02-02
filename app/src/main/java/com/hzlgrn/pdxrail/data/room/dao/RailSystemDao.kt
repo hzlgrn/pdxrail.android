@@ -1,6 +1,10 @@
 package com.hzlgrn.pdxrail.data.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import com.hzlgrn.pdxrail.data.room.entity.RailLineEntity
 import com.hzlgrn.pdxrail.data.room.entity.RailStopEntity
 import kotlinx.coroutines.flow.Flow

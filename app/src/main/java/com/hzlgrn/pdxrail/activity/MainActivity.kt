@@ -91,7 +91,9 @@ class MainActivity : RailSystemStopActivity() {
         return when (intent?.action) {
             Intent.ACTION_VIEW -> {
                 val data = intent.data?.toString()
-                if (data.isNullOrEmpty()) false else {
+                if (data.isNullOrEmpty()) {
+                    false
+                } else {
                     handleActionViewIntent(data)
                 }
             }

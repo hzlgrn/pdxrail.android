@@ -10,7 +10,7 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="${APPLICATION_LABEL}"
-        android:name="com.hzlgrn.pdxrail.App"
+        android:name=".PdxRailApp"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PdxRail.NoActionBar">
@@ -19,7 +19,7 @@
             android:configChanges="uiMode"
             android:exported="true"
             android:launchMode="singleTop"
-            android:name="com.hzlgrn.pdxrail.activity.MainActivity"
+            android:name=".activity.PdxRailActivity"
             android:theme="@style/Theme.PdxRail.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

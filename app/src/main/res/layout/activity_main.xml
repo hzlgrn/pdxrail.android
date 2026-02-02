@@ -68,16 +68,20 @@
         app:layout_constraintBottom_toBottomOf="@id/drawerIconView"
         android:background="@drawable/ripple_accent"/>
 
-    <com.hzlgrn.pdxrail.view.AdaptiveIconView
+
+    <ImageView
         android:id="@+id/drawerIconView"
         android:layout_width="@dimen/google_map_logo_height"
         android:layout_height="@dimen/google_map_logo_height"
-        app:backgroundVector="@drawable/ic_launcher_background"
-        app:foregroundVector="@drawable/ic_launcher_foreground"
-        app:maskVector="@drawable/mask_oregon"
         app:layout_constraintBottom_toTopOf="@id/guideGoogleMapLogoWidthFromStart"
         app:layout_constraintStart_toStartOf="@id/guideGoogleMapLogoWidthFromStart"
         app:layout_constraintEnd_toEndOf="@id/guideGoogleMapLogoWidthFromStart"/>
+
+    <!--
+app:backgroundVector="@drawable/ic_launcher_background"
+app:foregroundVector="@drawable/ic_launcher_foreground"
+app:maskVector="@drawable/mask_oregon"
+-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

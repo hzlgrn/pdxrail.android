@@ -7,26 +7,17 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.hzlgrn.pdxrail.App
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
-import com.hzlgrn.pdxrail.data.repository.ArrivalRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
 import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
-import com.hzlgrn.pdxrail.task.TaskWsV1Stops
 import com.hzlgrn.pdxrail.task.TaskWsV2Arrivals
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 @SuppressLint("Registered")
 abstract class RailSystemStopActivity: RailSystemActivity() {
-
-    @Inject
-    lateinit var arrivalRepository: ArrivalRepository
 
     protected abstract val pDrawerBinding: DrawerArrivalsBinding
     protected open var pFocusStopUniqueId: String? = null
@@ -58,7 +49,6 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        App.applicationComponent.inject(this)
     }
 
     override fun onStart() {
@@ -139,16 +129,19 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
         }
         onArrivalMarkersViewModel()
         onArrivalListViewModel()
+        /*
         observeArrivalsJob = launch(Dispatchers.IO) {
             TaskWsV1Stops().flowLocid(position, isStreetcar).collect { locid ->
                 onLocationIdUpdated(locid.toLongArray(), isStreetcar)
             }
         }
+         */
     }
 
     private fun onLocationIdUpdated(locid: LongArray, isStreetcar: Boolean) {
         Timber.d("onLocationIdUpdated()")
         updateArrivalDataJob = TaskWsV2Arrivals().launchJob(locid, isStreetcar)
+        /*
         observeArrivalMarkers = launch {
             arrivalRepository.arrivalMarkersViewModel(locid.toList()).collect {
                 onArrivalMarkersViewModel(it)
@@ -159,6 +152,7 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
                 onArrivalListViewModel(it)
             }
         }
+         */
     }
 
     private fun onArrivalMarkersViewModel(models: List<MarkerOptions> = emptyList()) {

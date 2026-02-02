@@ -26,9 +26,11 @@ abstract class MapTypeMenuActivity : GoogleMapViewActivity() {
                 for (subMenuIndex in 0 until subMenu.size()) {
                     val menuItem = subMenu.getItem(subMenuIndex)
                     if (menuItem.groupId == R.id.group_map_type) {
+                        /*
                         menuItem.isChecked = menuItem.itemId ==
                             applicationPreferences
                                 .getInt(Domain.App.PREFERENCE.MENU_MAP_TYPE.type, R.id.menu_normal)
+                         */
                     }
                 }
             }
@@ -38,24 +40,28 @@ abstract class MapTypeMenuActivity : GoogleMapViewActivity() {
 
     override fun onPause() {
         super.onPause()
-        applicationPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
+        //applicationPreferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
     }
     override fun onResume() {
         super.onResume()
-        applicationPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener)
+        //applicationPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener)
     }
 
     override fun onMapReady() {
         super.onMapReady()
+        /*
         val mapType = applicationPreferences.getInt(Domain.App.PREFERENCE.MENU_MAP_TYPE.type, R.id.menu_normal)
         mapType(mapType)?.let {
             pGoogleMap?.mapType = it
         }.also {
             if (it == null) invalidateOptionsMenu()
         }
+         */
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val mapType = mapType(item.itemId)
+        return super.onOptionsItemSelected(item)
+        /*
         return if (mapType == null) super.onOptionsItemSelected(item) else true.also {
             pGoogleMap?.mapType = mapType
             applicationPreferences.edit().apply {
@@ -63,6 +69,7 @@ abstract class MapTypeMenuActivity : GoogleMapViewActivity() {
                 apply()
             }
         }
+         */
     }
     private fun mapType(itemId: Int): Int? {
         return when (itemId) {

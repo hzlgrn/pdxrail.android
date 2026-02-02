@@ -17,9 +17,6 @@ import javax.inject.Inject
 @SuppressLint("Registered")
 abstract class RailSystemActivity : MapTypeMenuActivity() {
 
-    @Inject
-    lateinit var railSystemRepository: RailSystemRepository
-
     fun selectStop(uniqueId: String) {
         val marker = (stopMarkerMax.firstOrNull {
             val tag = it.tag
@@ -92,11 +89,13 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
     override fun onMapReady() {
         super.onMapReady()
         configMap(resources.configuration)
+        /*
         collectRailStopMapViewModel = launch {
-            railSystemRepository.mapViewModel().collect {
+            railSystemRepository.flowRailSystemMap().collect {
                 onUpdateRailSystemMapViewModel(it)
             }
         }
+         */
     }
 
     private fun configMap(newConfig: Configuration) {

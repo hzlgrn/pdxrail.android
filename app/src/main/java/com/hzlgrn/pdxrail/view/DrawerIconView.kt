@@ -1,7 +1,11 @@
 package com.hzlgrn.pdxrail.view
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.util.AttributeSet
 import android.view.View
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat

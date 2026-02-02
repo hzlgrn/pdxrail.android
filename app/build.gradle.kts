@@ -1,8 +1,16 @@
 import java.util.Date
 import java.util.Properties
 
-val versionCompose = "1.10.1"
-val versionKotlin = "2.2.21"
+val javaVersion = JavaVersion.VERSION_18
+val kotlinJvmTarget = javaVersion.majorVersion
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion.majorVersion))
+    }
+}
+
+val versionCompose = "1.10.3"
+val versionKotlin = "2.0.21"
 
 plugins {
     id("com.android.application")
@@ -10,6 +18,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("org.jetbrains.kotlin.android")
 }
 
 val buildTime = Date().time
@@ -64,30 +73,38 @@ android {
                 arguments += mapOf(
                     "room.schemaLocation" to "${projectDir}/schemas",
                     "room.incremental" to "true",
-                    "toom.expandProjection" to "true",
+                    "room.expandProjection" to "true",
+                    "dagger.hilt.disableCrossCompilationRootValidation" to "true",
                 )
             }
         }
 
         vectorDrawables.useSupportLibrary = true
     }
+    viewBinding {
+        enable = true
+    }
+
     buildFeatures {
         buildConfig = true
         compose = true
         resValues = true
         viewBinding = true
+        dataBinding = true
     }
     buildTypes {
+        /*
         getByName("debug") {
             applicationIdSuffix = ".dbg"
         }
+         */
         getByName("release") {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_24
-        targetCompatibility = JavaVersion.VERSION_24
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
 
     signingConfigs {
@@ -98,7 +115,6 @@ android {
             storePassword = keyRing["UPLOAD_KEYSTORE_PASSWORD"] as String
         }
     }
-
 }
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.8.0"))
@@ -122,14 +138,15 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versionKotlin")
 
     // Compose
-    implementation("androidx.activity:activity-compose:1.12.2")
-    implementation("androidx.compose.animation:animation:$versionCompose")
-    implementation("androidx.compose.material:material:$versionCompose")
+    implementation("androidx.activity:activity-compose:1.12.3")
+    implementation("androidx.compose.animation:animation:1.10.2")
+    implementation("androidx.compose.material:material:1.10.2")
     implementation("androidx.compose.material3:material3:1.4.0")
-    implementation("androidx.compose.ui:ui-tooling:$versionCompose")
-    implementation("androidx.compose.ui:ui-viewbinding:$versionCompose")
-    implementation("androidx.compose.ui:ui-unit:1.10.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$versionCompose")
+    implementation("androidx.compose.ui:ui-tooling:1.10.2")
+    implementation("androidx.compose.ui:ui-viewbinding:1.10.2")
+    implementation("androidx.compose.ui:ui-unit:1.10.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.10.2")
 
     // When using a AppCompat theme
     implementation("com.google.accompanist:accompanist-appcompat-theme:0.36.0")
@@ -141,14 +158,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$versionCoroutines")
 
     // Dagger
-    val versionDagger = "2.59"
-    implementation("com.google.dagger:dagger:$versionDagger")
-    ksp("com.google.dagger:dagger-compiler:$versionDagger")
+    val versionDagger = "2.58"
+    //implementation("com.google.dagger:dagger:$versionDagger")
+    //ksp("com.google.dagger:dagger-compiler:$versionDagger")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.59")
-    ksp("com.google.dagger:hilt-android-compiler:2.59")
     implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")
+    implementation("com.google.dagger:hilt-android:$versionDagger")
+    ksp("com.google.dagger:hilt-compiler:$versionDagger")
+    ksp("com.google.dagger:hilt-android-compiler:$versionDagger")
 
     // Lifecycle
     val versionLifecycle = "2.2.0"
@@ -170,7 +188,7 @@ dependencies {
     ksp("androidx.room:room-compiler:$versionRoom")
 
     // Navigation
-    val versionNavigation = "2.9.6"
+    val versionNavigation = "2.9.7"
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$versionNavigation")
 

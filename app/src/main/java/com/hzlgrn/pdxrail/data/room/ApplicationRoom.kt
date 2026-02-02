@@ -11,7 +11,11 @@ import com.hzlgrn.pdxrail.data.json.RailLineJson
 import com.hzlgrn.pdxrail.data.json.RailStopJson
 import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
 import com.hzlgrn.pdxrail.data.room.dao.RailSystemDao
-import com.hzlgrn.pdxrail.data.room.entity.*
+import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
+import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
+import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
+import com.hzlgrn.pdxrail.data.room.entity.RailLineEntity
+import com.hzlgrn.pdxrail.data.room.entity.RailStopEntity
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -48,7 +52,7 @@ abstract class ApplicationRoom: RoomDatabase() {
             } else {
                 Room
                 .databaseBuilder(context, ApplicationRoom::class.java, Domain.App.DB_NAME)
-                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
             }.also { applicationRoom ->
                 coroutineScope.launch {

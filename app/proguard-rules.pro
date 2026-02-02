@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# App Module: proguard-rules.pro
+-keep class com.hzlgrn.pdxrail.PdxRailApp {
+    public <init>();
+    void onCreate();
+ }  # Keep your app's Application class

@@ -2,13 +2,17 @@ package com.hzlgrn.pdxrail.task
 
 import android.os.Bundle
 import android.os.SystemClock
-import com.hzlgrn.pdxrail.App
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.data.net.RailSystemService
 import com.hzlgrn.pdxrail.data.room.ApplicationRoom
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
 import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
@@ -22,22 +26,23 @@ class TaskWsV2Arrivals: CoroutineScope {
             Timber.e(throwable)
         }
 
+    /*
     @Inject
     lateinit var applicationRoom: ApplicationRoom
 
     @Inject
     lateinit var railSystemService: RailSystemService
-
-    init { App.applicationComponent.inject(this) }
+     */
 
 
     fun launchJob(locId: LongArray, isStreetCar: Boolean): Job = launch(coroutineContext) {
         while(true) {
-            wsV2Arrivals(locId, isStreetCar)
+            //wsV2Arrivals(locId, isStreetCar)
             delay(THROTTLE_ARRIVALS)
         }
     }
 
+    /*
     private fun wsV2Arrivals(locId: LongArray, isStreetCar: Boolean): List<ArrivalEntity> {
         val arrivals = mutableListOf<ArrivalEntity>()
         val memoryKey = "arrivals-$locId-updated"
@@ -99,6 +104,8 @@ class TaskWsV2Arrivals: CoroutineScope {
 
         return arrivals
     }
+
+     */
 
 
     companion object {

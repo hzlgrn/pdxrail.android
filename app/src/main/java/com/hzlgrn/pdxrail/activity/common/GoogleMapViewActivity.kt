@@ -86,6 +86,7 @@ abstract class GoogleMapViewActivity : ApplicationActivity(), GoogleMap.OnInfoWi
     }
 
     fun showHelpDialog(noMatterWhat: Boolean = false, shouldCheckPermissionAfter: Boolean = false) {
+        /*
         val hasDialogShown = applicationPreferences
                 .getBoolean(Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type, false)
         if (!hasDialogShown || noMatterWhat) {
@@ -105,6 +106,7 @@ abstract class GoogleMapViewActivity : ApplicationActivity(), GoogleMap.OnInfoWi
         } else if (shouldCheckPermissionAfter) {
             requestAccessFineLocation()
         }
+         */
     }
 
     @SuppressLint("MissingPermission")
