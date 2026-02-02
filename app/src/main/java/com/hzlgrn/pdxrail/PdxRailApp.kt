@@ -8,6 +8,7 @@ import timber.log.Timber
 
 @HiltAndroidApp
 public class PdxRailApp : Application() {
+
     private fun growTree(): Timber.Tree {
         return if (BuildConfig.DEBUG) Timber.DebugTree()
         else object: Timber.Tree() {

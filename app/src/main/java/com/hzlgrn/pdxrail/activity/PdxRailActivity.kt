@@ -17,17 +17,26 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.compose.PdxRailDrawer
+import com.hzlgrn.pdxrail.data.room.ApplicationRoomLoader
 import com.hzlgrn.pdxrail.databinding.ActivityPdxRailBinding
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PdxRailActivity : AppCompatActivity() {
-
+    @Inject
+    lateinit var applicationRoomLoader: ApplicationRoomLoader
     private val pdxRailViewModel: PdxRailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +79,11 @@ class PdxRailActivity : AppCompatActivity() {
         )
     }
 
+    override fun onStart() {
+        super.onStart()
+        launchLoadData()
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         return findNavController().navigateUp() || super.onSupportNavigateUp()
     }
@@ -81,5 +95,13 @@ class PdxRailActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         return navHostFragment.navController
+    }
+
+    private fun launchLoadData() {
+        pdxRailViewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                applicationRoomLoader.load()
+            }
+        }
     }
 }

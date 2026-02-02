@@ -94,11 +94,9 @@ android {
         dataBinding = true
     }
     buildTypes {
-        /*
         getByName("debug") {
             applicationIdSuffix = ".dbg"
         }
-         */
         getByName("release") {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -147,6 +145,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-viewbinding:1.10.2")
     implementation("androidx.compose.ui:ui-unit:1.10.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.10.2")
 
     // When using a AppCompat theme

@@ -29,6 +29,12 @@ class PdxRailViewModel @Inject constructor(
 
     fun buildMap() {
         viewModelScope.launch(Dispatchers.IO) {
+            // Translate map features from storage to the Database
+        }
+    }
+
+    fun flowMap() {
+        viewModelScope.launch(Dispatchers.IO) {
             railSystemRepository.flowRailSystemMapItems().collect { mapItems ->
                 Timber.d("collected ${mapItems.size} map items")
             }

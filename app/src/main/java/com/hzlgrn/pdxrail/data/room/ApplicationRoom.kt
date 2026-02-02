@@ -43,81 +43,59 @@ abstract class ApplicationRoom: RoomDatabase() {
     abstract fun arrivalDao(): ArrivalDao
     abstract fun railSystemDao(): RailSystemDao
 
-    open class Instance(context: Context, coroutineScope: CoroutineScope) {
-        protected val pDatabase: ApplicationRoom =
-            if (BuildConfig.DEBUG) {
-                Room
-                .inMemoryDatabaseBuilder(context, ApplicationRoom::class.java)
-                .build()
-            } else {
-                Room
-                .databaseBuilder(context, ApplicationRoom::class.java, Domain.App.DB_NAME)
-                .fallbackToDestructiveMigration(dropAllTables = true)
-                .build()
-            }.also { applicationRoom ->
-                coroutineScope.launch {
-                    withContext(Dispatchers.IO) {
-                        loadRailSystemData(context, applicationRoom)
-                    }
-                }
-            }
-
-        private fun loadRailSystemData(context: Context, applicationRoom: ApplicationRoom) {
-            val railStopEntities = readRailStopJson(context)?.rail_stops?.map { json ->
-                RailStopEntity(
-                        uniqueid = json.uniqueid,
-                        station = json.station,
-                        line = json.line,
-                        type = json.type,
-                        latitude = json.lat,
-                        longitude = json.lon)
-            } ?: emptyList()
-            val railLineEntities = readRailLineJson(context)?.rail_lines?.map { json ->
-                val polyline = json.polyline
-                RailLineEntity(
-                        line = json.line,
-                        passage = json.passage,
-                        type = json.type,
-                        polylineString = polyline.fold("")
-                        { total, item -> total + "${item.latitude},${item.longitude} " }.trimEnd())
-            } ?: emptyList()
-            val dao = applicationRoom.railSystemDao()
-            dao.updateRailSystem(railStopEntities, railLineEntities)
-            Timber.d("Saved ${railStopEntities.count()} rail stops and ${railLineEntities.count()} rail lines.")
-        }
-
-        private fun readRailStopJson(context: Context): RailStopJson? {
-            val kotlinJsonAdapterFactory = KotlinJsonAdapterFactory()
-            val moshi = Moshi.Builder()
-                .add(kotlinJsonAdapterFactory)
-                .build()
-
-            val railStopsInputStream = context.resources.openRawResource(R.raw.init_data_rail_stops)
-            val railStopsReader = BufferedReader(InputStreamReader(railStopsInputStream, "UTF8"))
-            val railStopAdapter: JsonAdapter<RailStopJson> = moshi.adapter(RailStopJson::class.java)
-            val railStopJsonString = railStopsReader.readText()
-            val railStopJsonModel = railStopAdapter.fromJson(railStopJsonString)
-            Timber.d("version: ${railStopJsonModel?.version} with ${railStopJsonModel?.rail_stops?.count() ?: 0} rail_stops")
-
-            return railStopJsonModel
-        }
-
-        private fun readRailLineJson(context: Context): RailLineJson? {
-            val kotlinJsonAdapterFactory = KotlinJsonAdapterFactory()
-            val moshi = Moshi.Builder()
-                .add(kotlinJsonAdapterFactory)
-                .build()
-
-            val railLineInputStream = context.resources.openRawResource(R.raw.init_data_rail_lines)
-            val railLineReader = BufferedReader(InputStreamReader(railLineInputStream, "UTF8"))
-            val railLineAdapter: JsonAdapter<RailLineJson> = moshi.adapter(RailLineJson::class.java)
-            val railLineJsonString = railLineReader.readText()
-            val railLineJsonModel = railLineAdapter.fromJson(railLineJsonString)
-            Timber.d("version: ${railLineJsonModel?.version} with ${railLineJsonModel?.rail_lines?.count() ?: 0} rail_lines")
-
-            return railLineJsonModel
-        }
-
+    fun loadRailSystemData(context: Context, applicationRoom: ApplicationRoom) {
+        val railStopEntities = readRailStopJson(context)?.rail_stops?.map { json ->
+            RailStopEntity(
+                    uniqueid = json.uniqueid,
+                    station = json.station,
+                    line = json.line,
+                    type = json.type,
+                    latitude = json.lat,
+                    longitude = json.lon)
+        } ?: emptyList()
+        val railLineEntities = readRailLineJson(context)?.rail_lines?.map { json ->
+            val polyline = json.polyline
+            RailLineEntity(
+                    line = json.line,
+                    passage = json.passage,
+                    type = json.type,
+                    polylineString = polyline.fold("")
+                    { total, item -> total + "${item.latitude},${item.longitude} " }.trimEnd())
+        } ?: emptyList()
+        val dao = applicationRoom.railSystemDao()
+        dao.updateRailSystem(railStopEntities, railLineEntities)
+        Timber.d("Saved ${railStopEntities.count()} rail stops and ${railLineEntities.count()} rail lines.")
     }
 
+    private fun readRailStopJson(context: Context): RailStopJson? {
+        val kotlinJsonAdapterFactory = KotlinJsonAdapterFactory()
+        val moshi = Moshi.Builder()
+            .add(kotlinJsonAdapterFactory)
+            .build()
+
+        val railStopsInputStream = context.resources.openRawResource(R.raw.init_data_rail_stops)
+        val railStopsReader = BufferedReader(InputStreamReader(railStopsInputStream, "UTF8"))
+        val railStopAdapter: JsonAdapter<RailStopJson> = moshi.adapter(RailStopJson::class.java)
+        val railStopJsonString = railStopsReader.readText()
+        val railStopJsonModel = railStopAdapter.fromJson(railStopJsonString)
+        Timber.d("version: ${railStopJsonModel?.version} with ${railStopJsonModel?.rail_stops?.count() ?: 0} rail_stops")
+
+        return railStopJsonModel
+    }
+
+    private fun readRailLineJson(context: Context): RailLineJson? {
+        val kotlinJsonAdapterFactory = KotlinJsonAdapterFactory()
+        val moshi = Moshi.Builder()
+            .add(kotlinJsonAdapterFactory)
+            .build()
+
+        val railLineInputStream = context.resources.openRawResource(R.raw.init_data_rail_lines)
+        val railLineReader = BufferedReader(InputStreamReader(railLineInputStream, "UTF8"))
+        val railLineAdapter: JsonAdapter<RailLineJson> = moshi.adapter(RailLineJson::class.java)
+        val railLineJsonString = railLineReader.readText()
+        val railLineJsonModel = railLineAdapter.fromJson(railLineJsonString)
+        Timber.d("version: ${railLineJsonModel?.version} with ${railLineJsonModel?.rail_lines?.count() ?: 0} rail_lines")
+
+        return railLineJsonModel
+    }
 }
