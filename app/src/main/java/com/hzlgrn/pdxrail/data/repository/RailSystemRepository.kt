@@ -16,6 +16,7 @@ import com.hzlgrn.pdxrail.data.room.dao.RailSystemDao
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
 import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
+import com.hzlgrn.pdxrail.data.room.entity.toRailSystemMapItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -69,40 +70,7 @@ class RailSystemRepositoryImpl @Inject constructor(
 
     override fun flowRailSystemMapItems(): Flow<List<RailSystemMapItem>> {
         return combine(railSystemDao.railStops(), railSystemDao.railLines()) { stops, lines ->
-            val stops = stops.map {
-                RailSystemMapItem.Stop(
-                    uniqueId = it.uniqueid,
-                    station = it.station,
-                    line = it.line,
-                    type = it.type,
-                    position = LatLng(it.latitude, it.longitude)
-                )
-            }
-            val lines = lines.map { entity ->
-                val polyline = ArrayList<LatLng>()
-                val splits = entity.polylineString.split(" ")
-                splits.forEach {
-                    val split = it.split(",")
-                    if (split.count() == 2) {
-                        try {
-                            val lat = split[0].toDouble()
-                            val lng = split[1].toDouble()
-                            val latLng = LatLng(lat, lng)
-                            polyline.add(latLng)
-                        } catch(err: NumberFormatException) {
-                            Timber.e(err)
-                        }
-                    }
-                }
-                RailSystemMapItem.Line(
-                    line = entity.line,
-                    passage = entity.passage,
-                    type = entity.type,
-                    polyline = polyline
-                )
-            }
-
-            stops + lines
+            stops.map { it.toRailSystemMapItem() } + lines.map { it.toRailSystemMapItem() }
         }
     }
 

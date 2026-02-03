@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -27,6 +28,9 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.hzlgrn.pdxrail.Domain
+import com.hzlgrn.pdxrail.compose.DisplayGoogleMapLine
+import com.hzlgrn.pdxrail.compose.DisplayGoogleMapMarker
+import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapItem
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,7 +42,7 @@ class PdxRailMapFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        pdxRailViewModel.buildMap()
+        pdxRailViewModel.flowRailSystemMap()
     }
 
     override fun onCreateView(
@@ -52,37 +56,51 @@ class PdxRailMapFragment : Fragment() {
 
                 // PdxRailMapScreen()
 
-                val mapCameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(
-                        Domain.PdxRail.CAMERA_TARGET,
-                        Domain.PdxRail.CAMERA_ZOOM
-                    )
-                }
-                var mapUiSettings by remember { mutableStateOf(MapUiSettings()) }
-                var mapProperties by remember {
-                    mutableStateOf(MapProperties(mapType = MapType.NORMAL))
-                }
-
+                val railSystemMap by pdxRailViewModel.railSystemMap.collectAsStateWithLifecycle()
                 Box(modifier = Modifier.fillMaxSize()) {
-                    GoogleMap(
-                        modifier = Modifier.matchParentSize(),
-                        cameraPositionState = mapCameraPositionState,
-                        uiSettings = mapUiSettings,
-                        properties = mapProperties
-                    ) {
-                        // Lines
+                    when (railSystemMap) {
+                        is PdxRailViewModel.RailSystemMapState.Idle -> {
 
+                        }
+                        is PdxRailViewModel.RailSystemMapState.Loading -> {
 
-                        // Markers
-
+                        }
+                        is PdxRailViewModel.RailSystemMapState.Display -> {
+                            val mapItems = (railSystemMap as PdxRailViewModel.RailSystemMapState.Display).mapItems
+                            val mapCameraPositionState = rememberCameraPositionState {
+                                position = CameraPosition.fromLatLngZoom(
+                                    Domain.PdxRail.CAMERA_TARGET,
+                                    Domain.PdxRail.CAMERA_ZOOM
+                                )
+                            }
+                            var mapUiSettings by remember { mutableStateOf(MapUiSettings()) }
+                            var mapProperties by remember {
+                                mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+                            }
+                            GoogleMap(
+                                modifier = Modifier.matchParentSize(),
+                                cameraPositionState = mapCameraPositionState,
+                                uiSettings = mapUiSettings,
+                                properties = mapProperties
+                            ) {
+                                mapItems.forEach { mapItem ->
+                                    when (mapItem) {
+                                        is RailSystemMapItem.Marker ->
+                                            mapItem.DisplayGoogleMapMarker()
+                                        is RailSystemMapItem.Line ->
+                                            mapItem.DisplayGoogleMapLine()
+                                    }
+                                }
+                            }
+                            Switch(
+                                checked = mapUiSettings.zoomControlsEnabled,
+                                onCheckedChange = {
+                                    mapUiSettings = mapUiSettings.copy(zoomControlsEnabled = it)
+                                },
+                                modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 32.dp, end = 64.dp)
+                            )
+                        }
                     }
-                    Switch(
-                        checked = mapUiSettings.zoomControlsEnabled,
-                        onCheckedChange = {
-                            mapUiSettings = mapUiSettings.copy(zoomControlsEnabled = it)
-                        },
-                        modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 32.dp, end = 64.dp)
-                    )
                 }
 
             }

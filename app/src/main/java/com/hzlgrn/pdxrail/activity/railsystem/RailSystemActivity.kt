@@ -67,9 +67,11 @@ abstract class RailSystemActivity : MapTypeMenuActivity() {
 
     private val lPattern1o2 = listOf(Dash(60f),Gap(60f))
     private val lPattern2o2 = listOf(Gap(60f),Dash(60f))
+
     private val lPattern1o3 = listOf(Dash(60f),Gap(120f))
     private val lPattern2o3 = listOf(Gap(60f),Dash(60f),Gap(60f))
     private val lPattern3o3 = listOf(Gap(120f),Dash(60f))
+
     private val lPattern1o4 = listOf(Dash(60f),Gap(180f))
     private val lPattern2o4 = listOf(Gap(60f),Dash(60f),Gap(120f))
     private val lPattern3o4 = listOf(Gap(120f),Dash(60f),Gap(60f))

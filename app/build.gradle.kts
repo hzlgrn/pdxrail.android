@@ -136,6 +136,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versionKotlin")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0")
+
     // Compose
     implementation("androidx.activity:activity-compose:1.12.3")
     implementation("androidx.compose.animation:animation:1.10.2")
