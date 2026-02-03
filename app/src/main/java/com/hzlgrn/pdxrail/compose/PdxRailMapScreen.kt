@@ -12,9 +12,10 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapItem
+import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
 
 @Composable
-fun RailSystemMapItem.Marker.DisplayGoogleMapMarker() {
+fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailViewModel) {
     when (this) {
         is RailSystemMapItem.Marker.Stop.MaxStop ->
             Marker(
@@ -24,7 +25,11 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker() {
                 flat = true,
                 infoWindowAnchor = Offset(0.5f, 0.5f),
                 title = this.stationText,
-                tag = this.uniqueId.uniqueIdString
+                tag = this.uniqueId.uniqueIdString,
+                onClick = {
+                    pdxRailViewModel.onClickMaxStop(this.position, this.uniqueId)
+                    true
+                }
             )
         is RailSystemMapItem.Marker.Stop.StreetcarStop ->
             Marker(
@@ -34,7 +39,12 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker() {
                 flat = true,
                 infoWindowAnchor = Offset(0.5f, 0.5f),
                 title = this.stationText,
-                tag = this.uniqueId.uniqueIdString
+                tag = this.uniqueId.uniqueIdString,
+                onClick = {
+                    pdxRailViewModel.onClickStreetcarStop(this.position, this.uniqueId)
+                    true
+                }
+
             )
         // Undefined render the same as Max but with no title or Id?
         // Looks to be only WES stops. Investigate later.
@@ -45,6 +55,10 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker() {
                 icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_stop),
                 flat = true,
                 infoWindowAnchor = Offset(0.5f, 0.5f),
+                onClick = {
+                    pdxRailViewModel.onClickMaxStop(this.position)
+                    true
+                }
             )
 
     }

@@ -3,6 +3,7 @@ package com.hzlgrn.pdxrail.data.repository
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.SystemClock
+import androidx.collection.LruCache
 import com.google.android.gms.maps.model.LatLng
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.Domain.RailSystem.isInCity
@@ -17,6 +18,7 @@ import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
 import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
 import com.hzlgrn.pdxrail.data.room.entity.toRailSystemMapItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -28,7 +30,8 @@ import javax.inject.Inject
 interface RailSystemRepository {
     fun flowRailSystemMap(): Flow<RailSystemMapViewModel>
     fun flowRailSystemMapItems(): Flow<List<RailSystemMapItem>>
-    fun flowLocIdsAt(latlng: LatLng, isStreetCar: Boolean): Flow<List<Long>>
+    fun getLocIds(latLng: LatLng, isStreetCar: Boolean): List<Long>
+    fun flowArrivals(locIds: LongArray, isStreetcar: Boolean): Flow<List<ArrivalEntity>>
 }
 
 class RailSystemRepositoryImpl @Inject constructor(
@@ -74,10 +77,6 @@ class RailSystemRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun flowLocIdsAt(latlng: LatLng, isStreetCar: Boolean): Flow<List<Long>> = flow {
-        emit(fetchLocIds(latlng, isStreetCar))
-    }
-
     // tighten radial search for deep downtown areas where stops are close to each other
     // top left: 45.536915, -122.698876
     // bottom right: 45.504861, -122.667121
@@ -87,7 +86,7 @@ class RailSystemRepositoryImpl @Inject constructor(
     // val is5thAndMill = lat == 45.511739755453917 && lon == -122.68145937416968
 
     @SuppressLint("ApplySharedPref")
-    private fun fetchLocIds(latLng: LatLng, isStreetCar: Boolean): List<Long> {
+    override fun getLocIds(latLng: LatLng, isStreetCar: Boolean): List<Long> {
         val now = Date().time
         val lat = latLng.latitude
         val lon = latLng.longitude
@@ -167,21 +166,18 @@ class RailSystemRepositoryImpl @Inject constructor(
         }
     }
 
-    /*
-    fun launchJob(locId: LongArray, isStreetCar: Boolean): Job = launch(coroutineContext) {
+    override fun flowArrivals(locIds: LongArray, isStreetcar: Boolean): Flow<List<ArrivalEntity>> = flow {
         while(true) {
-            wsV2Arrivals(locId, isStreetCar)
+            emit(wsV2Arrivals(locIds, isStreetcar))
             delay(THROTTLE_ARRIVALS)
         }
     }
-
-     */
 
     private fun wsV2Arrivals(locId: LongArray, isStreetCar: Boolean): List<ArrivalEntity> {
         val arrivals = mutableListOf<ArrivalEntity>()
         val memoryKey = "arrivals-$locId-updated"
         val now = SystemClock.elapsedRealtime()
-        val lastArrivalFetch = MEMORY.getLong(memoryKey, 0L)
+        val lastArrivalFetch = MEMORY[memoryKey] ?: 0L
         if (now - lastArrivalFetch > THROTTLE_ARRIVALS) {
             try {
                 val csvLocId = locId.joinToString(",")
@@ -195,6 +191,8 @@ class RailSystemRepositoryImpl @Inject constructor(
                         if (!response.isSuccessful) {
                             throw IOException("Unexpected code: ${response.code()} message: ${response.message()}")
                         } else {
+
+                            // TODO: Expand List<ArrivalEntity> to a display model.
 
                             val blockPositions = mutableListOf<BlockPositionEntity>()
 
@@ -228,7 +226,7 @@ class RailSystemRepositoryImpl @Inject constructor(
 
                             arrivalDao
                                 .updateArrivals(locId.toList(), blockPositions, arrivals)
-                            MEMORY.putLong(memoryKey, SystemClock.elapsedRealtime())
+                            MEMORY.put(memoryKey, SystemClock.elapsedRealtime())
                         }
                     }
                 }
@@ -241,8 +239,8 @@ class RailSystemRepositoryImpl @Inject constructor(
 
     companion object {
         private const val THROTTLE_LOCID = 86400000L  // a day
-        const val THROTTLE_ARRIVALS = 10000L // 10 seconds!
-        private val MEMORY = Bundle()
+        const val THROTTLE_ARRIVALS = 10000L // 10 seconds
+        private val MEMORY = LruCache<String, Long>(10)
     }
 
 }

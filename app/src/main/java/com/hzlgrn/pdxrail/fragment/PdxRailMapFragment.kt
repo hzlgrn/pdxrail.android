@@ -27,6 +27,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapLine
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapMarker
@@ -34,6 +35,7 @@ import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapItem
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class PdxRailMapFragment : Fragment() {
@@ -57,6 +59,7 @@ class PdxRailMapFragment : Fragment() {
                 // PdxRailMapScreen()
 
                 val railSystemMap by pdxRailViewModel.railSystemMap.collectAsStateWithLifecycle()
+                val railSystemArrivals by pdxRailViewModel.railSystemArrivals.collectAsStateWithLifecycle()
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (railSystemMap) {
                         is PdxRailViewModel.RailSystemMapState.Idle -> {
@@ -86,10 +89,13 @@ class PdxRailMapFragment : Fragment() {
                                 mapItems.forEach { mapItem ->
                                     when (mapItem) {
                                         is RailSystemMapItem.Marker ->
-                                            mapItem.DisplayGoogleMapMarker()
+                                            mapItem.DisplayGoogleMapMarker(pdxRailViewModel)
                                         is RailSystemMapItem.Line ->
                                             mapItem.DisplayGoogleMapLine()
                                     }
+                                }
+                                (railSystemArrivals as? PdxRailViewModel.RailSystemArrivals.Display)?.let {
+                                    Timber.d("There are ${it.arrivals.size} arrivals")
                                 }
                             }
                             Switch(
