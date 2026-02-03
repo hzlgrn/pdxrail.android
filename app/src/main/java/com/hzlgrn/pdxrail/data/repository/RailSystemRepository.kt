@@ -191,13 +191,9 @@ class RailSystemRepositoryImpl @Inject constructor(
                         if (!response.isSuccessful) {
                             throw IOException("Unexpected code: ${response.code()} message: ${response.message()}")
                         } else {
-
-                            // TODO: Expand List<ArrivalEntity> to a display model.
-
+                            // TODO: Expand List<ArrivalEntity> to a display model
                             val blockPositions = mutableListOf<BlockPositionEntity>()
-
                             response.body()?.resultSet?.arrival?.let { arrivalResults ->
-
                                 for (arrival in arrivalResults) {
                                     val arrivalModel = ArrivalEntity(arrival)
                                     if (isStreetCar) {
@@ -240,7 +236,7 @@ class RailSystemRepositoryImpl @Inject constructor(
     companion object {
         private const val THROTTLE_LOCID = 86400000L  // a day
         const val THROTTLE_ARRIVALS = 10000L // 10 seconds
-        private val MEMORY = LruCache<String, Long>(10)
+        private val MEMORY = LruCache<String, Long>(10) // TODO: DI and inject?
     }
 
 }
