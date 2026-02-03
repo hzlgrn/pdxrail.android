@@ -11,7 +11,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.hzlgrn.pdxrail.R
-import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapItem
+import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
 
 @Composable
@@ -44,6 +44,96 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailVie
                     pdxRailViewModel.onClickStreetcarStop(this.position, this.uniqueId)
                     false
                 }
+
+            )
+        is RailSystemMapItem.Marker.Arrival.Default ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_arrival),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.MaxBlue ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_arrival_blue),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.MaxGreen ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_arrival_green),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.MaxOrange ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_arrival_orange),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.MaxRed ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_arrival_red),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.MaxYellow ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_arrival_yellow),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.NSLine ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_streetcar_ns_line),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.ALoop ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_streetcar_a_loop),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.BLoop ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_streetcar_b_loop),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
 
             )
         // Undefined render the same as Max but with no title or Id?

@@ -9,8 +9,7 @@ import com.hzlgrn.pdxrail.Domain.RailSystem.isInCity
 import com.hzlgrn.pdxrail.Domain.RailSystem.isNWLovejoyAND22nd
 import com.hzlgrn.pdxrail.Domain.RailSystem.isPioneerPlace
 import com.hzlgrn.pdxrail.data.net.RailSystemService
-import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapItem
-import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapViewModel
+import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
 import com.hzlgrn.pdxrail.data.room.dao.RailSystemDao
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
@@ -27,10 +26,9 @@ import java.util.Date
 import javax.inject.Inject
 
 interface RailSystemRepository {
-    fun flowRailSystemMap(): Flow<RailSystemMapViewModel>
     fun flowRailSystemMapItems(): Flow<List<RailSystemMapItem>>
     fun getLocIds(latLng: LatLng, isStreetCar: Boolean): List<Long>
-    fun flowArrivals(locIds: LongArray, isStreetcar: Boolean): Flow<List<ArrivalEntity>>
+    fun flowArrivals(locIds: LongArray, isStreetcar: Boolean): Flow<List<RailSystemMapItem.Marker.Arrival>>
 }
 
 class RailSystemRepositoryImpl @Inject constructor(
@@ -38,37 +36,6 @@ class RailSystemRepositoryImpl @Inject constructor(
     private val arrivalDao: ArrivalDao,
     private val railSystemService: RailSystemService,
 ): RailSystemRepository {
-
-    override fun flowRailSystemMap(): Flow<RailSystemMapViewModel> {
-        return combine(railSystemDao.railStops(), railSystemDao.railLines()) { stops, lines ->
-            val stopsViewModel = stops.map {
-                RailSystemMapViewModel.RailStopMapViewModel(
-                        uniqueid = it.uniqueid,
-                        station = it.station,
-                        line = it.line,
-                        type = it.type,
-                        position = LatLng(it.latitude, it.longitude)
-                )
-            }
-            val linesViewModel = lines.map { entity ->
-                val polyline = ArrayList<LatLng>()
-                val splits = entity.polylineString.split(" ")
-                splits.forEach {
-                    val split = it.split(",")
-                    if (split.count() == 2) {
-                        polyline.add(LatLng(split[0].toDouble(), split[1].toDouble()))
-                    }
-                }
-                RailSystemMapViewModel.RailLineMapViewModel(
-                        line = entity.line,
-                        passage = entity.passage,
-                        type = entity.type,
-                        polyline = polyline
-                )
-            }
-            RailSystemMapViewModel(stopsViewModel, linesViewModel)
-        }
-    }
 
     override fun flowRailSystemMapItems(): Flow<List<RailSystemMapItem>> {
         return combine(railSystemDao.railStops(), railSystemDao.railLines()) { stops, lines ->
@@ -165,15 +132,16 @@ class RailSystemRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun flowArrivals(locIds: LongArray, isStreetcar: Boolean): Flow<List<ArrivalEntity>> = flow {
+    override fun flowArrivals(locIds: LongArray, isStreetcar: Boolean): Flow<List<RailSystemMapItem.Marker.Arrival>> = flow {
         while(true) {
             emit(wsV2Arrivals(locIds, isStreetcar))
             delay(THROTTLE_ARRIVALS)
         }
     }
 
-    private fun wsV2Arrivals(locId: LongArray, isStreetCar: Boolean): List<ArrivalEntity> {
+    private fun wsV2Arrivals(locId: LongArray, isStreetCar: Boolean): List<RailSystemMapItem.Marker.Arrival> {
         val arrivals = mutableListOf<ArrivalEntity>()
+        val arrivalMarkers = mutableListOf<RailSystemMapItem.Marker.Arrival>()
         val memoryKey = "arrivals-$locId-updated"
         val now = SystemClock.elapsedRealtime()
         val lastArrivalFetch = MEMORY[memoryKey] ?: 0L
@@ -190,7 +158,6 @@ class RailSystemRepositoryImpl @Inject constructor(
                         if (!response.isSuccessful) {
                             throw IOException("Unexpected code: ${response.code()} message: ${response.message()}")
                         } else {
-                            // TODO: Expand List<ArrivalEntity> to a display model
                             val blockPositions = mutableListOf<BlockPositionEntity>()
                             response.body()?.resultSet?.arrival?.let { arrivalResults ->
                                 for (arrival in arrivalResults) {
@@ -216,19 +183,33 @@ class RailSystemRepositoryImpl @Inject constructor(
                                         }
                                     }
                                 }
-
                             }
 
-                            arrivalDao
-                                .updateArrivals(locId.toList(), blockPositions, arrivals)
+                            arrivalDao.updateArrivals(
+                                csvLocIds = locId.toList(),
+                                blockPositionEntities = blockPositions,
+                                arrivalEntities = arrivals
+                            )
                             MEMORY.put(memoryKey, SystemClock.elapsedRealtime())
+
+                            // Since we're here and we have all this data. Might as well combine it.
+                            // This should be removed in favor of flow directly from the DB.
+
+                            blockPositions.forEach { blockPosition ->
+                                arrivals.find {
+                                    it.blockPositionId != null &&
+                                            it.blockPositionId == blockPosition.id
+                                }?.let { arrivalEntity: ArrivalEntity ->
+                                    arrivalMarkers.add(arrivalEntity.toRailSystemMapItem(blockPosition))
+                                }
+                            }
                         }
                     }
                 }
             } catch (err: Exception) { Timber.e(err) }
         }
 
-        return arrivals
+        return arrivalMarkers
 
     }
 

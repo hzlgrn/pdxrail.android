@@ -3,7 +3,10 @@ package com.hzlgrn.pdxrail.data.room.entity
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import com.google.android.gms.maps.model.LatLng
+import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.data.net.railsystem.WsV2ArrivalsResponse
+import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity.Companion.TABLE_NAME
 
 @Entity(
@@ -68,9 +71,54 @@ data class ArrivalEntity(
         model.newTrip,
         model.status
     )
-
     companion object {
         const val TABLE_NAME = "railsystem_arrival"
     }
+}
 
+fun ArrivalEntity.toRailSystemMapItem(blockPosition: BlockPositionEntity): RailSystemMapItem.Marker.Arrival {
+    return with (this.shortSign) {
+        when {
+            this == null -> RailSystemMapItem.Marker.Arrival.Default(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            Domain.RailSystem.isBlue(this) -> RailSystemMapItem.Marker.Arrival.MaxBlue(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            Domain.RailSystem.isGreen(this) -> RailSystemMapItem.Marker.Arrival.MaxGreen(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            Domain.RailSystem.isOrange(this) -> RailSystemMapItem.Marker.Arrival.MaxOrange(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            Domain.RailSystem.isRed(this) -> RailSystemMapItem.Marker.Arrival.MaxRed(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            Domain.RailSystem.isYellow(this) -> RailSystemMapItem.Marker.Arrival.MaxYellow(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            Domain.RailSystem.isNSLine(this) -> RailSystemMapItem.Marker.Arrival.NSLine(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            Domain.RailSystem.isALoop(this) -> RailSystemMapItem.Marker.Arrival.ALoop(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            Domain.RailSystem.isBLoop(this) -> RailSystemMapItem.Marker.Arrival.BLoop(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+            else -> RailSystemMapItem.Marker.Arrival.Default(
+                position = LatLng(blockPosition.lat, blockPosition.lng),
+                heading = blockPosition.heading
+            )
+        }
+    }
 }

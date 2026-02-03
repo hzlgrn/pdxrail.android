@@ -30,11 +30,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapLine
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapMarker
-import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapItem
+import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class PdxRailMapFragment : Fragment() {
@@ -94,7 +93,9 @@ class PdxRailMapFragment : Fragment() {
                                     }
                                 }
                                 (railSystemArrivals as? PdxRailViewModel.RailSystemArrivals.Display)?.let {
-                                    Timber.d("There are ${it.arrivals.size} arrivals")
+                                    it.arrivals.forEach { arrivalMarker ->
+                                        arrivalMarker.DisplayGoogleMapMarker(pdxRailViewModel)
+                                    }
                                 }
                             }
                             Switch(

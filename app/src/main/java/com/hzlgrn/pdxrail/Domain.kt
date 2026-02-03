@@ -18,7 +18,7 @@ class Domain {
         val CAMERA_TARGET = LatLng(CAMERA_TARGET_LAT, CAMERA_TARGET_LNG)
         const val CAMERA_TARGET_LAT = 45.5231
         const val CAMERA_TARGET_LNG = -122.6765
-        const val CAMERA_ZOOM = 10f
+        const val CAMERA_ZOOM = 15f
     }
 
     object Intent {

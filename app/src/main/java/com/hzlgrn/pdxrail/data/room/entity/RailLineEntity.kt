@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.android.gms.maps.model.LatLng
 import com.hzlgrn.pdxrail.Domain
-import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapItem
+import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.data.room.entity.RailLineEntity.Companion.TABLE_NAME
 import timber.log.Timber
 

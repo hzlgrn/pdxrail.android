@@ -47,7 +47,7 @@ class PdxRailActivity : AppCompatActivity() {
                 consumeWindowInsets = false
                 setContent {
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-                    val drawerOpen by pdxRailViewModel.drawerShouldBeOpened
+                    val drawerOpen by pdxRailViewModel.shouldDrawerBeOpen
                         .collectAsStateWithLifecycle()
 
                     var selectedMenu by remember { mutableStateOf("composers") }
@@ -58,7 +58,7 @@ class PdxRailActivity : AppCompatActivity() {
                             try {
                                 drawerState.open()
                             } finally {
-                                pdxRailViewModel.resetOpenDrawerAction()
+                                pdxRailViewModel.shouldDrawerBeOpen(false)
                             }
                         }
                     }

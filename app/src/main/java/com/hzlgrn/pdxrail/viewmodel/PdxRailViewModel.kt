@@ -3,9 +3,8 @@ package com.hzlgrn.pdxrail.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
-import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapItem
-import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -26,14 +25,9 @@ class PdxRailViewModel @Inject constructor(
 ): ViewModel() {
 
     private val _drawerShouldBeOpened = MutableStateFlow(false)
-    val drawerShouldBeOpened = _drawerShouldBeOpened.asStateFlow()
-
-    fun openDrawer() {
-        _drawerShouldBeOpened.value = true
-    }
-
-    fun resetOpenDrawerAction() {
-        _drawerShouldBeOpened.value = false
+    val shouldDrawerBeOpen = _drawerShouldBeOpened.asStateFlow()
+    fun shouldDrawerBeOpen(shouldDrawerBeOpen: Boolean) {
+        _drawerShouldBeOpened.value = shouldDrawerBeOpen
     }
 
     /***
@@ -78,7 +72,7 @@ class PdxRailViewModel @Inject constructor(
     sealed class RailSystemArrivals {
         data object Idle : RailSystemArrivals()
         data object Loading : RailSystemArrivals()
-        data class Display(val arrivals: ImmutableList<ArrivalEntity>): RailSystemArrivals()
+        data class Display(val arrivals: ImmutableList<RailSystemMapItem.Marker.Arrival>): RailSystemArrivals()
     }
     private val _railSystemArrivals = MutableStateFlow<RailSystemArrivals>(RailSystemArrivals.Idle)
     val railSystemArrivals = _railSystemArrivals.asStateFlow()
@@ -101,8 +95,8 @@ class PdxRailViewModel @Inject constructor(
             _railSystemArrivals.value = RailSystemArrivals.Loading
             withContext(Dispatchers.IO) {
                 val locIds = railSystemRepository.getLocIds(position, isStreetCar)
-                railSystemRepository.flowArrivals(locIds.toLongArray(), isStreetCar).collect { arrivalEntities ->
-                    val display = RailSystemArrivals.Display(arrivalEntities.toImmutableList())
+                railSystemRepository.flowArrivals(locIds.toLongArray(), isStreetCar).collect { arrivalMarkers ->
+                    val display = RailSystemArrivals.Display(arrivalMarkers.toImmutableList())
                     withContext(Dispatchers.Main) {
                         _railSystemArrivals.value = display
                     }
