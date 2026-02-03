@@ -78,7 +78,7 @@ class PdxRailViewModel @Inject constructor(
     sealed class RailSystemArrivals {
         data object Idle : RailSystemArrivals()
         data object Loading : RailSystemArrivals()
-        data class Display(val arrivals: List<ArrivalEntity>): RailSystemArrivals()
+        data class Display(val arrivals: ImmutableList<ArrivalEntity>): RailSystemArrivals()
     }
     private val _railSystemArrivals = MutableStateFlow<RailSystemArrivals>(RailSystemArrivals.Idle)
     val railSystemArrivals = _railSystemArrivals.asStateFlow()
@@ -102,7 +102,10 @@ class PdxRailViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 val locIds = railSystemRepository.getLocIds(position, isStreetCar)
                 railSystemRepository.flowArrivals(locIds.toLongArray(), isStreetCar).collect { arrivalEntities ->
-                    _railSystemArrivals.value = RailSystemArrivals.Display(arrivalEntities)
+                    val display = RailSystemArrivals.Display(arrivalEntities.toImmutableList())
+                    withContext(Dispatchers.Main) {
+                        _railSystemArrivals.value = display
+                    }
                 }
             }
         }

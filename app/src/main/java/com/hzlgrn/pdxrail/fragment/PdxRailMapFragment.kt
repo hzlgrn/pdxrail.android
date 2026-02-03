@@ -27,7 +27,6 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapLine
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapMarker

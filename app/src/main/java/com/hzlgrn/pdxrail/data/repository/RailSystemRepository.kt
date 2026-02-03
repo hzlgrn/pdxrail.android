@@ -1,7 +1,6 @@
 package com.hzlgrn.pdxrail.data.repository
 
 import android.annotation.SuppressLint
-import android.os.Bundle
 import android.os.SystemClock
 import androidx.collection.LruCache
 import com.google.android.gms.maps.model.LatLng
