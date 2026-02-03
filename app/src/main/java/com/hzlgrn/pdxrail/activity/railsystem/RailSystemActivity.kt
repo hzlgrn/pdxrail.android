@@ -3,16 +3,24 @@ package com.hzlgrn.pdxrail.activity.railsystem
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.core.content.res.ResourcesCompat
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Dash
+import com.google.android.gms.maps.model.Gap
+import com.google.android.gms.maps.model.JointType
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PatternItem
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.RoundCap
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.activity.common.MapTypeMenuActivity
-import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
 import com.hzlgrn.pdxrail.data.repository.viewmodel.RailSystemMapViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 @SuppressLint("Registered")
 abstract class RailSystemActivity : MapTypeMenuActivity() {
