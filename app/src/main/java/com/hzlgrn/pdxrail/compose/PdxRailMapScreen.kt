@@ -28,7 +28,7 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailVie
                 tag = this.uniqueId.uniqueIdString,
                 onClick = {
                     pdxRailViewModel.onClickMaxStop(this.position, this.uniqueId)
-                    true
+                    false
                 }
             )
         is RailSystemMapItem.Marker.Stop.StreetcarStop ->
@@ -42,7 +42,7 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailVie
                 tag = this.uniqueId.uniqueIdString,
                 onClick = {
                     pdxRailViewModel.onClickStreetcarStop(this.position, this.uniqueId)
-                    true
+                    false
                 }
 
             )
@@ -57,7 +57,7 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailVie
                 infoWindowAnchor = Offset(0.5f, 0.5f),
                 onClick = {
                     pdxRailViewModel.onClickMaxStop(this.position)
-                    true
+                    false
                 }
             )
 
