@@ -8,10 +8,10 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.util.AttributeSet
 import android.view.View
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import com.hzlgrn.pdxrail.R
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.createBitmap
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.hzlgrn.pdxrail.R
 
 
 class AdaptiveIconView @JvmOverloads constructor(

@@ -1,12 +1,6 @@
 package com.hzlgrn.pdxrail.task
 
 import android.os.Bundle
-import android.os.SystemClock
-import com.hzlgrn.pdxrail.Domain
-import com.hzlgrn.pdxrail.data.net.RailSystemService
-import com.hzlgrn.pdxrail.data.room.ApplicationRoom
-import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
-import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,8 +8,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.IOException
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 class TaskWsV2Arrivals: CoroutineScope {

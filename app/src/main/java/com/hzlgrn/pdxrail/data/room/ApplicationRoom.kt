@@ -2,10 +2,7 @@ package com.hzlgrn.pdxrail.data.room
 
 import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.hzlgrn.pdxrail.BuildConfig
-import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.json.RailLineJson
 import com.hzlgrn.pdxrail.data.json.RailStopJson
@@ -19,10 +16,6 @@ import com.hzlgrn.pdxrail.data.room.entity.RailStopEntity
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.InputStreamReader

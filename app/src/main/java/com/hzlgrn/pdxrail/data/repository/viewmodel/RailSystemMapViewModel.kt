@@ -1,6 +1,5 @@
 package com.hzlgrn.pdxrail.data.repository.viewmodel
 
-import androidx.compose.runtime.Composable
 import com.google.android.gms.maps.model.LatLng
 
 data class RailSystemMapViewModel(

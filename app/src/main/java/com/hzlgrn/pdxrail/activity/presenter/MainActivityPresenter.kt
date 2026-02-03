@@ -20,7 +20,7 @@ import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.activity.MainActivity
 import com.hzlgrn.pdxrail.databinding.ActivityMainBinding
 import timber.log.Timber
-import java.util.*
+import java.util.Calendar
 
 
 class MainActivityPresenter(private val activity: MainActivity, private val mBinding: ActivityMainBinding) {

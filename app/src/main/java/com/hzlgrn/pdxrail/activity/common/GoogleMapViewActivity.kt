@@ -11,8 +11,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.hzlgrn.pdxrail.Domain
-import com.hzlgrn.pdxrail.dialog.HelpDialog
 import timber.log.Timber
 
 @SuppressLint("Registered")

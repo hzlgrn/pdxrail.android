@@ -1,23 +1,12 @@
 package com.hzlgrn.pdxrail.task
 
-import android.annotation.SuppressLint
 import com.google.android.gms.maps.model.LatLng
-import com.hzlgrn.pdxrail.Domain
-import com.hzlgrn.pdxrail.Domain.RailSystem.isInCity
-import com.hzlgrn.pdxrail.Domain.RailSystem.isNWLovejoyAND22nd
-import com.hzlgrn.pdxrail.Domain.RailSystem.isPioneerPlace
-import com.hzlgrn.pdxrail.data.net.RailSystemService
-import com.hzlgrn.pdxrail.data.room.ApplicationRoom
-import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
-import java.io.IOException
-import java.util.Date
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 class TaskWsV1Stops: CoroutineScope {
