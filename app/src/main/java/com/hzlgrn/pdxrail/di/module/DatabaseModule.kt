@@ -1,13 +1,10 @@
-package com.hzlgrn.pdxrail.hilt
+package com.hzlgrn.pdxrail.di.module
 
 import android.content.Context
 import androidx.room.Room
 import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.data.room.ApplicationRoom
-import com.hzlgrn.pdxrail.data.room.ApplicationRoomLoader
-import com.hzlgrn.pdxrail.data.room.ApplicationRoomLoaderImpl
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,13 +29,4 @@ class DatabaseModule {
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class DatabaseLoaderModule {
-    @Binds
-    abstract fun bindApplicationRoomLoader(
-        impl: ApplicationRoomLoaderImpl,
-    ): ApplicationRoomLoader
 }

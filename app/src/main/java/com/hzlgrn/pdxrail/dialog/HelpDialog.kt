@@ -20,9 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.DialogFragment
-import com.google.accompanist.appcompattheme.AppCompatTheme
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.databinding.FramedComposableBinding
+import com.hzlgrn.pdxrail.theme.PdxRailTheme
 
 class HelpDialog : DialogFragment() {
 
@@ -30,13 +30,19 @@ class HelpDialog : DialogFragment() {
 
     private lateinit var binding: FramedComposableBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = FramedComposableBinding.inflate(inflater)
-        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        dialog?.setCancelable(true)
-        dialog?.setCanceledOnTouchOutside(true)
+        dialog?.apply {
+            window?.requestFeature(Window.FEATURE_NO_TITLE)
+            setCancelable(true)
+            setCanceledOnTouchOutside(true)
+        }
         binding.composable.setContent {
-            AppCompatTheme {
+            PdxRailTheme {
                 DialogHelpContent()
             }
         }

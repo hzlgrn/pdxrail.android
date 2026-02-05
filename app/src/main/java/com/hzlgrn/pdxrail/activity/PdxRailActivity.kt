@@ -79,7 +79,7 @@ class PdxRailActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        launchLoadData()
+        launchLoadData() // TODO: Call this AFTER the map initializes?
     }
 
     override fun onSupportNavigateUp(): Boolean {

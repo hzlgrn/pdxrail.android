@@ -30,9 +30,11 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapLine
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapMarker
-import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -60,14 +62,14 @@ class PdxRailMapFragment : Fragment() {
                 val railSystemArrivals by pdxRailViewModel.railSystemArrivals.collectAsStateWithLifecycle()
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (railSystemMap) {
-                        is PdxRailViewModel.RailSystemMapState.Idle -> {
+                        is RailSystemMapState.Idle -> {
 
                         }
-                        is PdxRailViewModel.RailSystemMapState.Loading -> {
+                        is RailSystemMapState.Loading -> {
 
                         }
-                        is PdxRailViewModel.RailSystemMapState.Display -> {
-                            val mapItems = (railSystemMap as PdxRailViewModel.RailSystemMapState.Display).mapItems
+                        is RailSystemMapState.Display -> {
+                            val mapItems = (railSystemMap as RailSystemMapState.Display).mapItems
                             val mapCameraPositionState = rememberCameraPositionState {
                                 position = CameraPosition.fromLatLngZoom(
                                     Domain.PdxRail.CAMERA_TARGET,
@@ -92,7 +94,7 @@ class PdxRailMapFragment : Fragment() {
                                             mapItem.DisplayGoogleMapLine()
                                     }
                                 }
-                                (railSystemArrivals as? PdxRailViewModel.RailSystemArrivals.Display)?.let {
+                                (railSystemArrivals as? RailSystemArrivals.Display)?.let {
                                     it.arrivals.forEach { arrivalMarker ->
                                         arrivalMarker.DisplayGoogleMapMarker(pdxRailViewModel)
                                     }

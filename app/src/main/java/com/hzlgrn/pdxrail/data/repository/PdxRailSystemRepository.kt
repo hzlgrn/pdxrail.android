@@ -9,13 +9,14 @@ import com.hzlgrn.pdxrail.Domain.RailSystem.isInCity
 import com.hzlgrn.pdxrail.Domain.RailSystem.isNWLovejoyAND22nd
 import com.hzlgrn.pdxrail.Domain.RailSystem.isPioneerPlace
 import com.hzlgrn.pdxrail.data.net.RailSystemService
-import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
 import com.hzlgrn.pdxrail.data.room.dao.RailSystemDao
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
 import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
 import com.hzlgrn.pdxrail.data.room.entity.toRailSystemMapItem
+import com.hzlgrn.pdxrail.di.repository.RailSystemRepository
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -25,13 +26,7 @@ import java.io.IOException
 import java.util.Date
 import javax.inject.Inject
 
-interface RailSystemRepository {
-    fun flowRailSystemMapItems(): Flow<List<RailSystemMapItem>>
-    fun getLocIds(latLng: LatLng, isStreetCar: Boolean): List<Long>
-    fun flowArrivals(locIds: LongArray, isStreetcar: Boolean): Flow<List<RailSystemMapItem.Marker.Arrival>>
-}
-
-class RailSystemRepositoryImpl @Inject constructor(
+class PdxRailSystemRepository @Inject constructor(
     private val railSystemDao: RailSystemDao,
     private val arrivalDao: ArrivalDao,
     private val railSystemService: RailSystemService,

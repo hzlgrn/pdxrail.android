@@ -12,7 +12,6 @@ import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.adapter.ArrivalModelArrayAdapter
 import com.hzlgrn.pdxrail.data.repository.viewmodel.ArrivalItemViewModel
 import com.hzlgrn.pdxrail.databinding.DrawerArrivalsBinding
-import com.hzlgrn.pdxrail.task.TaskWsV2Arrivals
 import kotlinx.coroutines.Job
 import timber.log.Timber
 
@@ -140,7 +139,7 @@ abstract class RailSystemStopActivity: RailSystemActivity() {
 
     private fun onLocationIdUpdated(locid: LongArray, isStreetcar: Boolean) {
         Timber.d("onLocationIdUpdated()")
-        updateArrivalDataJob = TaskWsV2Arrivals().launchJob(locid, isStreetcar)
+        //updateArrivalDataJob = TaskWsV2Arrivals().launchJob(locid, isStreetcar)
         /*
         observeArrivalMarkers = launch {
             arrivalRepository.arrivalMarkersViewModel(locid.toList()).collect {

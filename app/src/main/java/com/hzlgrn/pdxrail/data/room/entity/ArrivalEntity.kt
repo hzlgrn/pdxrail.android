@@ -6,8 +6,8 @@ import androidx.room.Index
 import com.google.android.gms.maps.model.LatLng
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.data.net.railsystem.WsV2ArrivalsResponse
-import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity.Companion.TABLE_NAME
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
 
 @Entity(
     tableName = TABLE_NAME,

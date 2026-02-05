@@ -1,7 +1,7 @@
-package com.hzlgrn.pdxrail.hilt
+package com.hzlgrn.pdxrail.di.module
 
-import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
-import com.hzlgrn.pdxrail.data.repository.RailSystemRepositoryImpl
+import com.hzlgrn.pdxrail.data.repository.PdxRailSystemRepository
+import com.hzlgrn.pdxrail.di.repository.RailSystemRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -11,7 +11,7 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 abstract class RepositoryModule {
     @Binds
-    abstract fun bindRailSystemRepository(
-        impl: RailSystemRepositoryImpl,
+    abstract fun bindPdxRailSystemRepository(
+        impl: PdxRailSystemRepository,
     ): RailSystemRepository
 }

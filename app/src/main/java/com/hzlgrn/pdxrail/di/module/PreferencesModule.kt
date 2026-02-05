@@ -1,4 +1,4 @@
-package com.hzlgrn.pdxrail.hilt
+package com.hzlgrn.pdxrail.di.module
 
 import android.content.Context
 import android.content.SharedPreferences

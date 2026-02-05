@@ -1,4 +1,4 @@
-package com.hzlgrn.pdxrail.hilt
+package com.hzlgrn.pdxrail.di.module
 
 import com.hzlgrn.pdxrail.data.room.ApplicationRoom
 import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao

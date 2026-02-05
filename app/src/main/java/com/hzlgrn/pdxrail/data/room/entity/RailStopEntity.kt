@@ -3,8 +3,8 @@ package com.hzlgrn.pdxrail.data.room.entity
 import androidx.room.Entity
 import com.google.android.gms.maps.model.LatLng
 import com.hzlgrn.pdxrail.Domain
-import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.data.room.entity.RailStopEntity.Companion.TABLE_NAME
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
 
 @Entity(tableName = TABLE_NAME, primaryKeys = ["uniqueid"])
 data class RailStopEntity(

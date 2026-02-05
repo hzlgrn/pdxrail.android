@@ -11,8 +11,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.hzlgrn.pdxrail.R
-import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
 
 @Composable
 fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailViewModel) {

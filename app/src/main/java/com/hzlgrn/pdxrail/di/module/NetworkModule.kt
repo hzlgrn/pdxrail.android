@@ -1,4 +1,4 @@
-package com.hzlgrn.pdxrail.hilt
+package com.hzlgrn.pdxrail.di.module
 
 import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.data.net.RailSystemService
@@ -32,12 +32,14 @@ class NetworkModule {
             .create(RailSystemService::class.java)
     }
 
-    private val converterFactory get() = MoshiConverterFactory.create(
+    private val converterFactory get() =
+        MoshiConverterFactory.create(
             Moshi.Builder()
                 .add(KotlinJsonAdapterFactory())
                 .build())
 
-    private val okHttpClient get() = OkHttpClient.Builder()
+    private val okHttpClient get() =
+        OkHttpClient.Builder()
             .connectionSpecs(
                 Collections.singletonList(
                     ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)

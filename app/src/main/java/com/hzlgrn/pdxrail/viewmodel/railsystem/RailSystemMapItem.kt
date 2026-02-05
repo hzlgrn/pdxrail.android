@@ -1,4 +1,4 @@
-package com.hzlgrn.pdxrail.data.railsystem
+package com.hzlgrn.pdxrail.viewmodel.railsystem
 
 import com.google.android.gms.maps.model.LatLng
 

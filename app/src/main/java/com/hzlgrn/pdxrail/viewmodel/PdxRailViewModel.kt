@@ -3,10 +3,11 @@ package com.hzlgrn.pdxrail.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import com.hzlgrn.pdxrail.data.railsystem.RailSystemMapItem
-import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
+import com.hzlgrn.pdxrail.data.repository.PdxRailSystemRepository
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -21,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PdxRailViewModel @Inject constructor(
-    private val railSystemRepository: RailSystemRepository,
+    private val railSystemRepository: PdxRailSystemRepository,
 ): ViewModel() {
 
     private val _drawerShouldBeOpened = MutableStateFlow(false)
@@ -30,15 +31,6 @@ class PdxRailViewModel @Inject constructor(
         _drawerShouldBeOpened.value = shouldDrawerBeOpen
     }
 
-    /***
-     * The RailSystemMap contains static map features and when they are made available by the
-     * Database.
-     */
-    sealed class RailSystemMapState {
-        object Idle: RailSystemMapState()
-        object Loading: RailSystemMapState()
-        data class Display(val mapItems: ImmutableList<RailSystemMapItem>): RailSystemMapState()
-    }
     private val _railSystemMap = MutableStateFlow<RailSystemMapState>(RailSystemMapState.Idle)
     val railSystemMap = _railSystemMap.asStateFlow()
     private var _flowMapJob: Job? = null
@@ -65,15 +57,13 @@ class PdxRailViewModel @Inject constructor(
             }
         }
     }
-
-    /***
-     * RailSystemArrivals is the data collected from the rail system's API when a stop is focused.
-     */
-    sealed class RailSystemArrivals {
-        data object Idle : RailSystemArrivals()
-        data object Loading : RailSystemArrivals()
-        data class Display(val arrivals: ImmutableList<RailSystemMapItem.Marker.Arrival>): RailSystemArrivals()
+    fun onClickMaxStop(position: LatLng, markerId: RailSystemMapItem.Marker.MarkerId? = null) {
+        flowArrivals(position, markerId, false)
     }
+    fun onClickStreetcarStop(position: LatLng, markerId: RailSystemMapItem.Marker.MarkerId? = null) {
+        flowArrivals(position, markerId, true)
+    }
+
     private val _railSystemArrivals = MutableStateFlow<RailSystemArrivals>(RailSystemArrivals.Idle)
     val railSystemArrivals = _railSystemArrivals.asStateFlow()
     private var _flowRailSystemArrivalsJob: Job? = null
@@ -84,12 +74,6 @@ class PdxRailViewModel @Inject constructor(
             }
             field = job
         }
-    fun onClickMaxStop(position: LatLng, markerId: RailSystemMapItem.Marker.MarkerId? = null) {
-        flowArrivals(position, markerId, false)
-    }
-    fun onClickStreetcarStop(position: LatLng, markerId: RailSystemMapItem.Marker.MarkerId? = null) {
-        flowArrivals(position, markerId, true)
-    }
     private fun flowArrivals(position: LatLng, markerId: RailSystemMapItem.Marker.MarkerId?, isStreetCar: Boolean) {
         _flowRailSystemArrivalsJob = viewModelScope.launch {
             _railSystemArrivals.value = RailSystemArrivals.Loading
