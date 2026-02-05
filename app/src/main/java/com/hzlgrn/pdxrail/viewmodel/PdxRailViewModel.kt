@@ -3,7 +3,9 @@ package com.hzlgrn.pdxrail.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.hzlgrn.pdxrail.compose.MapIconBitmapLoader
 import com.hzlgrn.pdxrail.data.repository.PdxRailSystemRepository
+import com.hzlgrn.pdxrail.viewmodel.bitmap.MapIconBitmap
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapState
@@ -23,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PdxRailViewModel @Inject constructor(
     private val railSystemRepository: PdxRailSystemRepository,
+    private val mapIconBitmapLoader: MapIconBitmapLoader,
 ): ViewModel() {
 
     private val _drawerShouldBeOpened = MutableStateFlow(false)
@@ -83,6 +86,23 @@ class PdxRailViewModel @Inject constructor(
                     val display = RailSystemArrivals.Display(arrivalMarkers.toImmutableList())
                     withContext(Dispatchers.Main) {
                         _railSystemArrivals.value = display
+                    }
+                }
+            }
+        }
+    }
+
+    private val _mapDrawerIcon = MutableStateFlow<MapIconBitmap>(MapIconBitmap.Idle)
+    val mapDrawerIcon = _mapDrawerIcon.asStateFlow()
+    fun loadMapIcon() {
+        if (_mapDrawerIcon.value == MapIconBitmap.Idle) {
+            viewModelScope.launch {
+                _mapDrawerIcon.value = MapIconBitmap.Loading
+                withContext(Dispatchers.IO) {
+                    val mapIconBitmap = mapIconBitmapLoader.load()
+                    val display = MapIconBitmap.Display(mapIconBitmap = mapIconBitmap)
+                    withContext(Dispatchers.Main) {
+                        _mapDrawerIcon.value = display
                     }
                 }
             }

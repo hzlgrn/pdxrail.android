@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 
-
 @Composable
 fun PdxRailDrawer(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
