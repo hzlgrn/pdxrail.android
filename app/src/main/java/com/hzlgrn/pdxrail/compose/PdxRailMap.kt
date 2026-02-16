@@ -67,19 +67,18 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
                                 mapItem.DisplayGoogleMapLine()
                         }
                     }
-                    (railSystemArrivals as? RailSystemArrivals.Display)?.let {
-                        it.arrivals.forEach { arrivalMarker ->
+                    (railSystemArrivals as? RailSystemArrivals.Display)
+                        ?.arrivals?.forEach { arrivalMarker ->
                             arrivalMarker.DisplayGoogleMapMarker(pdxRailViewModel)
                         }
-                    }
                 }
                 when (mapDrawerIcon) {
                     is MapIconBitmap.Display -> {
                         Image(
                             bitmap = (mapDrawerIcon as MapIconBitmap.Display).mapIconBitmap.asImageBitmap(),
-                            contentDescription = "your mom",
+                            contentDescription = "",
                             modifier = Modifier.align(Alignment.BottomStart).padding(
-                                bottom = dimensionResource(R.dimen.map_icon_below),
+                                bottom = dimensionResource(R.dimen.map_icon_bottom),
                                 start = dimensionResource(R.dimen.map_icon_start)
                             ),
                         )

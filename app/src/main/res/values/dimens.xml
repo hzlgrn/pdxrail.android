@@ -33,7 +33,7 @@
     <dimen name="text_forced_large">20dp</dimen>
 
     <dimen name="map_icon_width">64dp</dimen>
-    <dimen name="map_icon_below">24dp</dimen>
+    <dimen name="map_icon_bottom">24dp</dimen>
     <dimen name="map_icon_start">3dp</dimen>
 
     <dimen name="google_map_logo_height">36dp</dimen>
