@@ -3,14 +3,6 @@ import java.util.Properties
 
 val javaVersion = JavaVersion.VERSION_18
 
-val versionCompose = "1.10.3"
-val versionCoroutines = "1.10.2"
-val versionHilt = "2.58"
-val versionLifecycle = "2.10.0"
-val versionMoshi = "1.15.2"
-val versionNavigation = "2.9.7"
-val versionRoom = "2.8.4"
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(javaVersion.majorVersion))
@@ -18,12 +10,12 @@ java {
 }
 
 plugins {
-    id("com.android.application")
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.agp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.android)
 }
 
 val buildTime = Date().time
@@ -116,84 +108,84 @@ ksp {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:34.8.0"))
+    implementation(platform(libs.firebase.bom))
 
     // AndroidX
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.cardview:cardview:1.0.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
-    implementation("androidx.core:core-ktx:1.17.0")
-    implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.cardview)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.recyclerview)
 
     // Compose
-    implementation("androidx.activity:activity-compose:1.12.3")
-    implementation("androidx.compose.animation:animation:$versionCompose")
-    implementation("androidx.compose.material:material:$versionCompose")
-    implementation("androidx.compose.material:material-icons-core-android:1.7.8")
-    implementation("androidx.compose.material3:material3:1.4.0")
-    implementation("androidx.compose.ui:ui-tooling:$versionCompose")
-    implementation("androidx.compose.ui:ui-unit:$versionCompose")
-    implementation("androidx.compose.ui:ui-viewbinding:$versionCompose")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$versionCompose")
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.compose.animation)
+    implementation(libs.compose.material)
+    implementation(libs.compose.material.icons.core.android)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.unit)
+    implementation(libs.compose.ui.viewbinding)
+    androidTestImplementation(libs.compose.ui.test.junit4)
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$versionCoroutines")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versionCoroutines")
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
 
     // Firebase
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics-ndk")
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics.ndk)
 
     // Hilt
-    implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")
-    implementation("com.google.dagger:hilt-android:$versionHilt")
-    ksp("com.google.dagger:hilt-android-compiler:$versionHilt")
-    ksp("com.google.dagger:hilt-compiler:$versionHilt")
+    implementation(libs.hilt.navigation.fragment)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.hilt.compiler)
 
     // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$versionLifecycle")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$versionLifecycle")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$versionLifecycle")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$versionLifecycle")
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.viewmodel.ktx)
 
     // Maps
-    implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.android.gms:play-services-maps:20.0.0")
-    implementation("com.google.maps.android:android-maps-utils:4.0.0")
-    implementation("com.google.maps.android:maps-compose:7.0.0")
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+    implementation(libs.android.maps.utils)
+    implementation(libs.maps.compose)
 
     // Moshi
-    implementation("com.squareup.moshi:moshi:$versionMoshi")
-    implementation("com.squareup.moshi:moshi-kotlin:$versionMoshi")
-    implementation("com.squareup.retrofit2:converter-moshi:3.0.0")
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.retrofit.converter.moshi)
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:$versionNavigation")
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$versionNavigation")
-    implementation("androidx.navigation:navigation-fragment:$versionNavigation")
-    implementation("androidx.navigation:navigation-ui:$versionNavigation")
-    androidTestImplementation("androidx.navigation:navigation-testing:$versionNavigation")
+    implementation(libs.navigation.compose)
+    implementation(libs.navigation.dynamic.features.fragment)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
+    androidTestImplementation(libs.navigation.testing)
 
     // Network
-    implementation("com.squareup.okhttp3:okhttp:5.3.2")
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
 
     // Room
-    implementation("androidx.room:room-ktx:$versionRoom")
-    implementation("androidx.room:room-runtime:$versionRoom")
-    ksp("androidx.room:room-compiler:$versionRoom")
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
     // Utilities
-    implementation("com.google.accompanist:accompanist-appcompat-theme:0.36.0")
-    implementation("com.google.android.material:material:1.13.0")
-    implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+    implementation(libs.accompanist.appcompat.theme)
+    implementation(libs.android.material)
+    implementation(libs.timber)
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.kotlinx.serialization.json)
 
     // Testing
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$versionCoroutines")
-    androidTestImplementation("androidx.test:runner:1.7.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.test.runner)
+    androidTestImplementation(libs.espresso.core)
 }
