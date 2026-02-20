@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,12 +39,18 @@ class HelpDialog : DialogFragment() {
         binding = FramedComposableBinding.inflate(inflater)
         dialog?.apply {
             window?.requestFeature(Window.FEATURE_NO_TITLE)
+            window?.setBackgroundDrawableResource(android.R.color.transparent)
             setCancelable(true)
             setCanceledOnTouchOutside(true)
         }
         binding.composable.setContent {
             PdxRailTheme {
-                DialogHelpContent()
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    tonalElevation = 6.dp,
+                ) {
+                    DialogHelpContent()
+                }
             }
         }
         return binding.root
@@ -61,7 +68,7 @@ class HelpDialog : DialogFragment() {
     private fun DialogHelpContent() {
         Column(
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 6.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
             Text(
                 modifier = Modifier.padding(bottom = 6.dp),

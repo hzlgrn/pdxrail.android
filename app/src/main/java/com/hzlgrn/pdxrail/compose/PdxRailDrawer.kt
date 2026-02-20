@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivalItem
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun PdxRailDrawer(
@@ -54,7 +53,8 @@ fun PdxRailDrawer(
                 drawerContainerColor = MaterialTheme.colorScheme.background,
                 drawerContentColor = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.width(240.dp)
-                // Consider 1/3 screen width to reserve viewable space?
+                // Consider 1/3 screen width to reserve viewable space? Or refactor to
+                // a bottom sheet. Is there enough screen for the map and an arrivals list?
             ) {
                 PdxRailDrawerContent(
                     railSystemArrivals = railSystemArrivals,
@@ -77,7 +77,7 @@ fun PdxRailDrawerContent(
     ) {
     LazyColumn() {
         item {
-            HeaderItem("Arrivals")
+            HeaderItem("Arrivals") // TODO: "Arrivals to ${shortSign}"
         }
         when (railSystemArrivals) {
             is RailSystemArrivals.Display -> {
@@ -90,13 +90,6 @@ fun PdxRailDrawerContent(
             else -> { /* nothing */ }
         }
     }
-    /*
-    if (widgetAddingIsSupported(LocalContext.current)) {
-        DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
-        DrawerItemHeader("Settings")
-        WidgetDiscoverability()
-    }
-     */
 }
 
 @Composable
@@ -169,7 +162,7 @@ private fun ArrivalItem(
                     if (isLate) {
                         Row() {
                             Text(
-                                DateUtils.formatElapsedTime((item.estimated - item.scheduled).milliseconds.inWholeSeconds),
+                                DateUtils.formatDateTime(LocalContext.current, item.estimated, DateUtils.FORMAT_SHOW_TIME),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error,
                             )
@@ -178,7 +171,7 @@ private fun ArrivalItem(
                     if (isEarly) {
                         Row() {
                             Text(
-                                DateUtils.formatElapsedTime((item.scheduled - item.estimated).milliseconds.inWholeSeconds),
+                                DateUtils.formatDateTime(LocalContext.current, item.estimated, DateUtils.FORMAT_SHOW_TIME),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary,
                             )

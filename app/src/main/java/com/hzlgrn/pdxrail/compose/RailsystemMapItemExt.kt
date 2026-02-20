@@ -1,5 +1,6 @@
 package com.hzlgrn.pdxrail.compose
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -157,7 +158,7 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailVie
 
 @Composable
 fun RailSystemMapItem.Line.DisplayGoogleMapLine() {
-    Polyline(points = this.polyline, color = Color.White, width = widthOutLine)
+    Polyline(points = this.polyline, color = if (isSystemInDarkTheme()) Color.DarkGray else Color.White, width = widthOutLine)
     when (this) {
         is RailSystemMapItem.Line.MaxBlue ->
             Polyline(points = this.polyline, color = colorResource(R.color.max_blue_line))

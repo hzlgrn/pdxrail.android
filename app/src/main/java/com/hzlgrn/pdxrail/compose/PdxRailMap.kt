@@ -1,6 +1,7 @@
 package com.hzlgrn.pdxrail.compose
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,12 +13,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.hzlgrn.pdxrail.Domain
@@ -33,6 +35,7 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
     val railSystemMap by pdxRailViewModel.railSystemMap.collectAsStateWithLifecycle()
     val railSystemArrivals by pdxRailViewModel.railSystemArrivals.collectAsStateWithLifecycle()
     val mapDrawerIcon by pdxRailViewModel.mapDrawerIcon.collectAsStateWithLifecycle()
+    val mapType by pdxRailViewModel.mapType.collectAsStateWithLifecycle()
     Box(modifier = Modifier.fillMaxSize()) {
         when (railSystemMap) {
             is RailSystemMapState.Idle -> {
@@ -49,9 +52,21 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
                         Domain.PdxRail.CAMERA_ZOOM
                     )
                 }
+
+                val isDarkTheme = isSystemInDarkTheme()
+                val context = LocalContext.current
+                val mapStyleOptions = remember(isDarkTheme) {
+                    if (isDarkTheme) {
+                        MapStyleOptions.loadRawResourceStyle(context, R.raw.google_map_dark)
+                    } else {
+                        null
+                    }
+                }
+
                 var mapUiSettings by remember { mutableStateOf(MapUiSettings()) }
-                var mapProperties by remember {
-                    mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+                var mapProperties by remember { mutableStateOf(MapProperties(mapType = mapType, mapStyleOptions = mapStyleOptions)) }
+                if (mapProperties.mapType != mapType) {
+                    mapProperties = mapProperties.copy(mapType = mapType)
                 }
                 GoogleMap(
                     modifier = Modifier.matchParentSize(),

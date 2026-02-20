@@ -37,9 +37,8 @@ import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.MapType
 import com.hzlgrn.pdxrail.BuildConfig
 import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
@@ -80,13 +79,10 @@ class PdxRailActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        launchLoadData() // TODO: Call this AFTER the map initializes?
+        launchLoadData() // TODO: Maybe call this AFTER the map initializes?
+        showHelpDialog()
     }
 
-    override fun onResume() {
-        super.onResume()
-        showHelpDialog(true)
-    }
 
     fun showHelpDialog(noMatterWhat: Boolean = false, shouldCheckPermissionAfter: Boolean = false) {
         val hasDialogShown = applicationPreferences
@@ -134,15 +130,6 @@ class PdxRailActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * See https://issuetracker.google.com/142847973
-     */
-    private fun findNavController(): NavController {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        return navHostFragment.navController
-    }
-
     private fun launchLoadData() {
         pdxRailViewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -151,6 +138,9 @@ class PdxRailActivity : AppCompatActivity() {
         }
     }
 
+    /***
+     * Handling of deep links, this is legacy code copied over and not yet re-implemented.
+     */
     private fun handleActionViewIntent(data: String): Boolean {
         return when {
             data.contains(BuildConfig.HOME_HOST) -> {
@@ -188,17 +178,17 @@ class PdxRailActivity : AppCompatActivity() {
     private fun PdxRailActivityContent() {
         val coroutineScope = rememberCoroutineScope()
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-        val drawerOpen by pdxRailViewModel.shouldDrawerBeOpen
-            .collectAsStateWithLifecycle()
+        val isDrawerOpen by pdxRailViewModel.isDrawerOpen.collectAsStateWithLifecycle()
+        val isMapTypeDropdownOpen by pdxRailViewModel.isMapTypeDropdownOpen.collectAsStateWithLifecycle()
         val railSystemArrivals by pdxRailViewModel.railSystemArrivals.collectAsStateWithLifecycle()
-        if (drawerOpen) {
+        if (isDrawerOpen) {
             // Open drawer and reset state in VM.
             LaunchedEffect(Unit) {
                 // wrap in try-finally to handle interruption while opening drawer
                 try {
                     drawerState.open()
                 } finally {
-                    pdxRailViewModel.shouldDrawerBeOpen(false)
+                    pdxRailViewModel.openDrawer(false)
                 }
             }
         }
@@ -209,27 +199,27 @@ class PdxRailActivity : AppCompatActivity() {
                     TopAppBar(
                         title = { Text(getString(R.string.app_name)) },
                         actions = {
-                            IconButton(onClick = {}) {
+                            IconButton(onClick = { showHelpDialog(true) }) {
                                 Icon(painterResource(R.drawable.menu_help), getString(R.string.menu_help))
                             }
 
-                            IconButton(onClick = {}) {
+                            IconButton(onClick = { pdxRailViewModel.openMapTypeDropdown(!isMapTypeDropdownOpen) }) {
                                 Icon(painterResource(R.drawable.menu_base_layer), getString(R.string.menu_google_map))
                             }
                             DropdownMenu(
-                                expanded = false, // pdxRailViewModel.isMapOptionsExpanded
-                                onDismissRequest = { /* pdxRailViewModel.isMapOptionsExpanded set false */ }
+                                expanded = isMapTypeDropdownOpen,
+                                onDismissRequest = { pdxRailViewModel.openMapTypeDropdown(false) }
                             ) {
-                                DropdownMenuItem(onClick = { /* set map to */ }) {
+                                DropdownMenuItem(onClick = { pdxRailViewModel.commitMapType(MapType.HYBRID) }) {
                                     Text(text = getString(R.string.google_map_type_hybrid))
                                 }
-                                DropdownMenuItem(onClick = { /* set map to */ }) {
+                                DropdownMenuItem(onClick = { pdxRailViewModel.commitMapType(MapType.SATELLITE) }) {
                                     Text(text = getString(R.string.google_map_type_satellite))
                                 }
-                                DropdownMenuItem(onClick = { /* set map to */ }) {
+                                DropdownMenuItem(onClick = { pdxRailViewModel.commitMapType(MapType.TERRAIN) }) {
                                     Text(text = getString(R.string.google_map_type_terrain))
                                 }
-                                DropdownMenuItem(onClick = { /* set map to */ }) {
+                                DropdownMenuItem(onClick = { pdxRailViewModel.commitMapType(MapType.NORMAL) }) {
                                     Text(text = getString(R.string.google_map_type_normal))
                                 }
                             }

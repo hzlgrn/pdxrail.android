@@ -3,6 +3,7 @@ package com.hzlgrn.pdxrail.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.MapType
 import com.hzlgrn.pdxrail.compose.MapIconBitmapLoader
 import com.hzlgrn.pdxrail.data.repository.PdxRailSystemRepository
 import com.hzlgrn.pdxrail.viewmodel.bitmap.MapIconBitmap
@@ -34,10 +35,22 @@ class PdxRailViewModel @Inject constructor(
         _isMyLocationEnabled.value = isMyLocationEnabled
     }
 
-    private val _drawerShouldBeOpened = MutableStateFlow(false)
-    val shouldDrawerBeOpen = _drawerShouldBeOpened.asStateFlow()
-    fun shouldDrawerBeOpen(shouldDrawerBeOpen: Boolean) {
-        _drawerShouldBeOpened.value = shouldDrawerBeOpen
+    private val _isDrawerOpen = MutableStateFlow(false)
+    val isDrawerOpen = _isDrawerOpen.asStateFlow()
+    fun openDrawer(isOpen: Boolean) {
+        _isDrawerOpen.value = isOpen
+    }
+
+    private val _isMapTypeDropdownOpen = MutableStateFlow(false)
+    val isMapTypeDropdownOpen = _isMapTypeDropdownOpen.asStateFlow()
+    fun openMapTypeDropdown(isOpen: Boolean) {
+        _isMapTypeDropdownOpen.value = isOpen
+    }
+
+    private val _mapType = MutableStateFlow<MapType>(MapType.NORMAL)
+    val mapType = _mapType.asStateFlow()
+    fun commitMapType(newMapType: MapType) {
+        _mapType.value = newMapType
     }
 
     private val _railSystemMap = MutableStateFlow<RailSystemMapState>(RailSystemMapState.Idle)
