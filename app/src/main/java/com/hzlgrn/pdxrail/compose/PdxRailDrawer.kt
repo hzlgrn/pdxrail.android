@@ -1,12 +1,23 @@
 package com.hzlgrn.pdxrail.compose
 
 import android.text.format.DateUtils
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,24 +28,29 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivalItem
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
+import kotlin.math.roundToInt
 
 @Composable
 fun PdxRailDrawer(
@@ -45,28 +61,76 @@ fun PdxRailDrawer(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     content: @Composable () -> Unit,
 ) {
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet(
-                drawerState = drawerState,
-                drawerContainerColor = MaterialTheme.colorScheme.background,
-                drawerContentColor = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.width(240.dp)
-                // Consider 1/3 screen width to reserve viewable space? Or refactor to
-                // a bottom sheet. Is there enough screen for the map and an arrivals list?
+    val density = LocalDensity.current
+    val drawerWidth = (LocalConfiguration.current.screenWidthDp / 2f).dp
+    val drawerWidthPx = with(density) { drawerWidth.toPx() }
+
+    val anchoredDraggableState = remember {
+        AnchoredDraggableState(
+            initialValue = DrawerValue.Closed,
+            positionalThreshold = { distance -> distance * 0.4f },
+            velocityThreshold = { with(density) { 400.dp.toPx() } },
+            snapAnimationSpec = spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessMediumLow,
+            ),
+            decayAnimationSpec = exponentialDecay(),
+        )
+    }
+
+    LaunchedEffect(drawerWidthPx) {
+        anchoredDraggableState.updateAnchors(DraggableAnchors {
+            DrawerValue.Closed at -drawerWidthPx
+            DrawerValue.Open at 0f
+        })
+    }
+
+    // Sync: external DrawerState.open()/close() calls → internal drag animation
+    LaunchedEffect(drawerState.targetValue) {
+        when (drawerState.targetValue) {
+            DrawerValue.Open -> anchoredDraggableState.animateTo(DrawerValue.Open)
+            DrawerValue.Closed -> anchoredDraggableState.animateTo(DrawerValue.Closed)
+        }
+    }
+
+    // Sync: drag settled → external DrawerState so isOpen/isClosed stay accurate
+    LaunchedEffect(anchoredDraggableState.currentValue) {
+        when (anchoredDraggableState.currentValue) {
+            DrawerValue.Open -> if (drawerState.targetValue != DrawerValue.Open) drawerState.open()
+            DrawerValue.Closed -> if (drawerState.targetValue != DrawerValue.Closed) drawerState.close()
+        }
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        // Content is always fully interactive — no scrim, no input blocking
+        Box(Modifier.fillMaxSize()) { content() }
+
+        val currentOffset = anchoredDraggableState.offset.takeUnless { it.isNaN() } ?: -drawerWidthPx
+        if (currentOffset > -drawerWidthPx) {
+            Box(
+                modifier = Modifier
+                    .width(drawerWidth)
+                    .fillMaxHeight()
+                    .offset { IntOffset(currentOffset.roundToInt(), 0) }
+                    .anchoredDraggable(
+                        state = anchoredDraggableState,
+                        orientation = Orientation.Horizontal,
+                    )
             ) {
-                PdxRailDrawerContent(
-                    railSystemArrivals = railSystemArrivals,
-                    onArrivalClick = onArrivalClick,
-                    onReviewClick = onReviewClick,
-                )
+                ModalDrawerSheet(
+                    modifier = Modifier.fillMaxWidth(),
+                    drawerContainerColor = MaterialTheme.colorScheme.background,
+                    drawerContentColor = MaterialTheme.colorScheme.onBackground,
+                ) {
+                    PdxRailDrawerContent(
+                        railSystemArrivals = railSystemArrivals,
+                        onArrivalClick = onArrivalClick,
+                        onReviewClick = onReviewClick,
+                    )
+                }
             }
-        },
-        content = content,
-        gesturesEnabled = false,
-        modifier = modifier,
-    )
+        }
+    }
 }
 
 @Composable
