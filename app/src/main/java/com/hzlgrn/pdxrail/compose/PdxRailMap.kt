@@ -68,8 +68,8 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
                         }
                     }
                     (railSystemArrivals as? RailSystemArrivals.Display)
-                        ?.arrivals?.forEach { arrivalMarker ->
-                            arrivalMarker.DisplayGoogleMapMarker(pdxRailViewModel)
+                        ?.mapItems?.forEach { mapItem ->
+                            mapItem.DisplayGoogleMapMarker(pdxRailViewModel)
                         }
                 }
                 when (mapDrawerIcon) {

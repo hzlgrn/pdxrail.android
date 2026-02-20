@@ -8,5 +8,8 @@ import kotlinx.collections.immutable.ImmutableList
 sealed class RailSystemArrivals {
     data object Idle : RailSystemArrivals()
     data object Loading : RailSystemArrivals()
-    data class Display(val arrivals: ImmutableList<RailSystemMapItem.Marker.Arrival>): RailSystemArrivals()
+    data class Display(
+        val details: ImmutableList<RailSystemArrivalItem>,
+        val mapItems: ImmutableList<RailSystemMapItem.Marker.Arrival>
+    ): RailSystemArrivals()
 }

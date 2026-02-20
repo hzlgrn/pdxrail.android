@@ -8,6 +8,7 @@ import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.Domain.RailSystem.isInCity
 import com.hzlgrn.pdxrail.Domain.RailSystem.isNWLovejoyAND22nd
 import com.hzlgrn.pdxrail.Domain.RailSystem.isPioneerPlace
+import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.data.net.RailSystemService
 import com.hzlgrn.pdxrail.data.room.dao.ArrivalDao
 import com.hzlgrn.pdxrail.data.room.dao.RailSystemDao
@@ -16,11 +17,13 @@ import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
 import com.hzlgrn.pdxrail.data.room.entity.toRailSystemMapItem
 import com.hzlgrn.pdxrail.di.repository.RailSystemRepository
+import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivalItem
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import java.io.IOException
 import java.util.Date
@@ -35,6 +38,25 @@ class PdxRailSystemRepository @Inject constructor(
     override fun flowRailSystemMapItems(): Flow<List<RailSystemMapItem>> {
         return combine(railSystemDao.railStops(), railSystemDao.railLines()) { stops, lines ->
             stops.map { it.toRailSystemMapItem() } + lines.map { it.toRailSystemMapItem() }
+        }
+    }
+
+    override fun flowArrivalItems(listLocId: List<Long>): Flow<List<RailSystemArrivalItem>> {
+        return arrivalDao.arrivalItemsFor(listLocId).map { listArrivalItem ->
+            listArrivalItem.map {
+                val arrivalLat = it.blockPosition.firstOrNull()?.lat ?: 0.0
+                val arrivalLon = it.blockPosition.firstOrNull()?.lng ?: 0.0
+                val arrivalPosition = LatLng(arrivalLat,arrivalLon)
+                val textShortSign = it.shortSign.orEmpty().removePrefix(Domain.RailSystem.PREFIX_PORTLAND_STREETCAR)
+                RailSystemArrivalItem(
+                    textShortSign = textShortSign,
+                    scheduled = it.scheduled,
+                    estimated = it.estimated,
+                    drawableArrivalMarker = drawableFromShortSign(it.shortSign),
+                    drawableRotation = it.blockPosition.firstOrNull()?.heading?.toFloat() ?: 0f,
+                    latlng = arrivalPosition
+                )
+            }
         }
     }
 
@@ -127,7 +149,7 @@ class PdxRailSystemRepository @Inject constructor(
         }
     }
 
-    override fun flowArrivals(locIds: LongArray, isStreetcar: Boolean): Flow<List<RailSystemMapItem.Marker.Arrival>> = flow {
+    override fun flowArrivalMarkers(locIds: LongArray, isStreetcar: Boolean): Flow<List<RailSystemMapItem.Marker.Arrival>> = flow {
         while(true) {
             emit(wsV2Arrivals(locIds, isStreetcar))
             delay(THROTTLE_ARRIVALS)
@@ -172,7 +194,8 @@ class PdxRailSystemRepository @Inject constructor(
                                         if (isValid) {
                                             arrival.blockPosition?.let { blockPosition ->
                                                 arrivalModel.blockPositionId = blockPosition.id
-                                                blockPositions.add(BlockPositionEntity(blockPosition))
+                                                val blockPosition = BlockPositionEntity(blockPosition)
+                                                blockPositions.add(blockPosition)
                                             }
                                             arrivals.add(arrivalModel)
                                         }
@@ -187,15 +210,15 @@ class PdxRailSystemRepository @Inject constructor(
                             )
                             MEMORY.put(memoryKey, SystemClock.elapsedRealtime())
 
-                            // Since we're here and we have all this data. Might as well combine it.
-                            // This should be removed in favor of flow directly from the DB.
+                            // This should be removed in favor of a flow from the DB?
 
                             blockPositions.forEach { blockPosition ->
                                 arrivals.find {
                                     it.blockPositionId != null &&
                                             it.blockPositionId == blockPosition.id
                                 }?.let { arrivalEntity: ArrivalEntity ->
-                                    arrivalMarkers.add(arrivalEntity.toRailSystemMapItem(blockPosition))
+                                    val marker = arrivalEntity.toRailSystemMapItem(blockPosition)
+                                    arrivalMarkers.add(marker)
                                 }
                             }
                         }
@@ -206,6 +229,25 @@ class PdxRailSystemRepository @Inject constructor(
 
         return arrivalMarkers
 
+    }
+
+    private fun drawableFromShortSign(shortSign: String?): Int {
+        return when {
+            shortSign == null -> R.drawable.marker_max_arrival
+
+            Domain.RailSystem.isBlue(shortSign) -> R.drawable.marker_max_arrival_blue
+            Domain.RailSystem.isGreen(shortSign) -> R.drawable.marker_max_arrival_green
+            Domain.RailSystem.isOrange(shortSign) -> R.drawable.marker_max_arrival_orange
+            Domain.RailSystem.isRed(shortSign) -> R.drawable.marker_max_arrival_red
+            Domain.RailSystem.isYellow(shortSign) -> R.drawable.marker_max_arrival_yellow
+            Domain.RailSystem.isNSLine(shortSign) -> R.drawable.marker_streetcar_ns_line
+            Domain.RailSystem.isALoop(shortSign) -> R.drawable.marker_streetcar_a_loop
+            Domain.RailSystem.isBLoop(shortSign) -> R.drawable.marker_streetcar_b_loop
+
+            else -> R.drawable.marker_max_arrival
+        }.also {
+            Timber.d("drawableFromShortSign($shortSign) = $it")
+        }
     }
 
     companion object {

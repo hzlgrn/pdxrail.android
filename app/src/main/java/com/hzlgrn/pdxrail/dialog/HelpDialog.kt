@@ -11,14 +11,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.fragment.app.DialogFragment
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.databinding.FramedComposableBinding
@@ -60,12 +60,13 @@ class HelpDialog : DialogFragment() {
     @Composable
     private fun DialogHelpContent() {
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 6.dp)
         ) {
             Text(
-                fontSize = 20.sp,
                 modifier = Modifier.padding(bottom = 6.dp),
                 text = resources.getString(R.string.help_title),
+                style = MaterialTheme.typography.bodyMedium,
             )
             Row(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
@@ -75,7 +76,7 @@ class HelpDialog : DialogFragment() {
                     contentDescription = "MAX stop"
                 )
                 Text(
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     text = resources.getString(R.string.help_max_stop),
                 )
             }
@@ -87,7 +88,7 @@ class HelpDialog : DialogFragment() {
                     contentDescription = "Streetcar stop"
                 )
                 Text(
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     text = resources.getString(R.string.help_streetcar_stop),
                 )
             }
@@ -99,7 +100,7 @@ class HelpDialog : DialogFragment() {
                     contentDescription = "Vehicle arrival"
                 )
                 Text(
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.labelSmall,
                     text = resources.getString(R.string.help_arrival),
                 )
             }
@@ -109,7 +110,7 @@ class HelpDialog : DialogFragment() {
                     .padding(horizontal = 4.dp, vertical = 3.dp)
             ) {
                 Text(
-                    fontSize = 11.sp,
+                    style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .align(Alignment.CenterStart),

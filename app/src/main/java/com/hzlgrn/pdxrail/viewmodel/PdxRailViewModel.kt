@@ -16,6 +16,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,6 +28,11 @@ class PdxRailViewModel @Inject constructor(
     private val railSystemRepository: PdxRailSystemRepository,
     private val mapIconBitmapLoader: MapIconBitmapLoader,
 ): ViewModel() {
+    private val _isMyLocationEnabled = MutableStateFlow(false)
+    val isMyLocationEnabled = _isMyLocationEnabled.asStateFlow()
+    fun setIsMyLocationEnabled(isMyLocationEnabled: Boolean) {
+        _isMyLocationEnabled.value = isMyLocationEnabled
+    }
 
     private val _drawerShouldBeOpened = MutableStateFlow(false)
     val shouldDrawerBeOpen = _drawerShouldBeOpened.asStateFlow()
@@ -82,8 +88,15 @@ class PdxRailViewModel @Inject constructor(
             _railSystemArrivals.value = RailSystemArrivals.Loading
             withContext(Dispatchers.IO) {
                 val locIds = railSystemRepository.getLocIds(position, isStreetCar)
-                railSystemRepository.flowArrivals(locIds.toLongArray(), isStreetCar).collect { arrivalMarkers ->
-                    val display = RailSystemArrivals.Display(arrivalMarkers.toImmutableList())
+                combine(
+                    railSystemRepository.flowArrivalItems(locIds),
+                    railSystemRepository.flowArrivalMarkers(locIds.toLongArray(), isStreetCar),
+                ) { arrivalItems, arrivalMarkers ->
+                    RailSystemArrivals.Display(
+                        details = arrivalItems.toImmutableList(),
+                        mapItems = arrivalMarkers.toImmutableList()
+                    )
+                }.collect { display ->
                     withContext(Dispatchers.Main) {
                         _railSystemArrivals.value = display
                     }

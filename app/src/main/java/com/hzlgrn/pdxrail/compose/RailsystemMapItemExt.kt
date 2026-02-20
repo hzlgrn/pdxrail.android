@@ -136,7 +136,7 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailVie
                 rotation = this.heading.toFloat()
 
             )
-        // Undefined render the same as Max but with no title or Id?
+        // Undefined render the same as Max but with no title or id?
         // Looks to be only WES stops. Investigate later.
         is RailSystemMapItem.Marker.Undefined ->
             Marker(
