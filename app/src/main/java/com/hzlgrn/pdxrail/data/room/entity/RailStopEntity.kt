@@ -31,7 +31,7 @@ fun RailStopEntity.toRailSystemMapItem(): RailSystemMapItem {
                 stationText = this.station,
             )
         Domain.RailSystem.STOP_STREETCAR ->
-            RailSystemMapItem.Marker.Stop.MaxStop(
+            RailSystemMapItem.Marker.Stop.StreetcarStop(
                 position = position,
                 uniqueId = RailSystemMapItem.Marker.MarkerId(this.uniqueid),
                 stationText = this.station,

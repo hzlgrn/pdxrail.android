@@ -2,10 +2,10 @@ package com.hzlgrn.pdxrail.compose
 
 import android.text.format.DateUtils
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -59,33 +59,31 @@ fun PdxRailDrawer(
     onReviewClick: () -> Unit,
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-    content: @Composable () -> Unit,
+    scrimContent: @Composable () -> Unit,
 ) {
     val density = LocalDensity.current
     val drawerWidth = (LocalConfiguration.current.screenWidthDp / 2f).dp
     val drawerWidthPx = with(density) { drawerWidth.toPx() }
 
-    val anchoredDraggableState = remember {
+    val anchoredDraggableState = remember(drawerWidthPx) {
         AnchoredDraggableState(
             initialValue = DrawerValue.Closed,
-            positionalThreshold = { distance -> distance * 0.4f },
-            velocityThreshold = { with(density) { 400.dp.toPx() } },
-            snapAnimationSpec = spring(
-                dampingRatio = Spring.DampingRatioNoBouncy,
-                stiffness = Spring.StiffnessMediumLow,
-            ),
-            decayAnimationSpec = exponentialDecay(),
+            anchors = DraggableAnchors {
+                DrawerValue.Closed at -drawerWidthPx
+                DrawerValue.Open at 0f
+            },
         )
     }
 
-    LaunchedEffect(drawerWidthPx) {
-        anchoredDraggableState.updateAnchors(DraggableAnchors {
-            DrawerValue.Closed at -drawerWidthPx
-            DrawerValue.Open at 0f
-        })
-    }
+    val flingBehavior = AnchoredDraggableDefaults.flingBehavior(
+        state = anchoredDraggableState,
+        positionalThreshold = { distance -> distance * 0.4f },
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioNoBouncy,
+            stiffness = Spring.StiffnessMediumLow,
+        ),
+    )
 
-    // Sync: external DrawerState.open()/close() calls → internal drag animation
     LaunchedEffect(drawerState.targetValue) {
         when (drawerState.targetValue) {
             DrawerValue.Open -> anchoredDraggableState.animateTo(DrawerValue.Open)
@@ -93,7 +91,6 @@ fun PdxRailDrawer(
         }
     }
 
-    // Sync: drag settled → external DrawerState so isOpen/isClosed stay accurate
     LaunchedEffect(anchoredDraggableState.currentValue) {
         when (anchoredDraggableState.currentValue) {
             DrawerValue.Open -> if (drawerState.targetValue != DrawerValue.Open) drawerState.open()
@@ -102,10 +99,14 @@ fun PdxRailDrawer(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        // Content is always fully interactive — no scrim, no input blocking
-        Box(Modifier.fillMaxSize()) { content() }
-
         val currentOffset = anchoredDraggableState.offset.takeUnless { it.isNaN() } ?: -drawerWidthPx
+        val drawerVisibleWidth = with(density) {
+            (currentOffset + drawerWidthPx).coerceAtLeast(0f).toDp()
+        }
+
+        // Content fills the remaining width not occupied by the visible drawer portion
+        Box(Modifier.fillMaxSize().padding(start = drawerVisibleWidth)) { scrimContent() }
+
         if (currentOffset > -drawerWidthPx) {
             Box(
                 modifier = Modifier
@@ -115,6 +116,7 @@ fun PdxRailDrawer(
                     .anchoredDraggable(
                         state = anchoredDraggableState,
                         orientation = Orientation.Horizontal,
+                        flingBehavior = flingBehavior,
                     )
             ) {
                 ModalDrawerSheet(
@@ -160,7 +162,7 @@ fun PdxRailDrawerContent(
 private fun HeaderItem(text: String) {
     Box(
         modifier = Modifier
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 6.dp, vertical = 3.dp),
         contentAlignment = CenterStart,
     ) {
         Text(
@@ -278,46 +280,3 @@ fun DrawerPreviewDark() {
         }
     }
 }
-
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-private fun WidgetDiscoverability() {
-    val context = LocalContext.current
-    Row(
-        modifier = Modifier
-            .height(56.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp)
-            .clip(CircleShape)
-            .clickable(onClick = {
-                addWidgetToHomeScreen(context)
-            }),
-        verticalAlignment = CenterVertically,
-    ) {
-        Text(
-            stringResource(id = R.string.add_widget_to_home_page),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(start = 12.dp),
-        )
-    }
-}
- */
-
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-private fun addWidgetToHomeScreen(context: Context) {
-    val appWidgetManager = AppWidgetManager.getInstance(context)
-    val myProvider = ComponentName(context, WidgetReceiver::class.java)
-    if (widgetAddingIsSupported(context)) {
-        appWidgetManager.requestPinAppWidget(myProvider, null, null)
-    }
-}
-
-@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.O)
-private fun widgetAddingIsSupported(context: Context): Boolean {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-            AppWidgetManager.getInstance(context).isRequestPinAppWidgetSupported
-}
- */

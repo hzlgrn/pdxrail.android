@@ -4,7 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,10 +94,13 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
                         Image(
                             bitmap = (mapDrawerIcon as MapIconBitmap.Display).mapIconBitmap.asImageBitmap(),
                             contentDescription = "",
-                            modifier = Modifier.align(Alignment.BottomStart).padding(
-                                bottom = dimensionResource(R.dimen.map_icon_bottom),
-                                start = dimensionResource(R.dimen.map_icon_start)
-                            ),
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .width(dimensionResource(R.dimen.map_icon_width))
+                                .offset(
+                                    x = dimensionResource(R.dimen.map_icon_start),
+                                    y = -dimensionResource(R.dimen.map_icon_bottom)
+                                ),
                         )
                     }
                     else -> {}
