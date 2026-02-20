@@ -2,16 +2,20 @@ import java.util.Date
 import java.util.Properties
 
 val javaVersion = JavaVersion.VERSION_18
-val kotlinJvmTarget = javaVersion.majorVersion
+
+val versionCompose = "1.10.3"
+val versionCoroutines = "1.10.2"
+val versionHilt = "2.58"
+val versionLifecycle = "2.10.0"
+val versionMoshi = "1.15.2"
+val versionNavigation = "2.9.7"
+val versionRoom = "2.8.4"
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(javaVersion.majorVersion))
     }
 }
-
-val versionCompose = "1.10.3"
-val versionKotlin = "2.3.0"
 
 plugins {
     id("com.android.application")
@@ -62,37 +66,24 @@ android {
         manifestPlaceholders["HOME_URL"] = "https://${keyRing["HOME_HOST"] as String}/"
 
         resValue("string", "asset_statements", """[{
-            "relation": ["delegate_permission/common.handle_all_urls"], 
+            "relation": ["delegate_permission/common.handle_all_urls"],
             "target": {
-                "namespace": "web", 
+                "namespace": "web",
                 "site": "https://${keyRing["HOME_HOST"] as String}/"
             }
         }]""")
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf(
-                    "room.schemaLocation" to "${projectDir}/schemas",
-                    "room.incremental" to "true",
-                    "room.expandProjection" to "true",
-                    "dagger.hilt.disableCrossCompilationRootValidation" to "true",
-                )
-            }
-        }
-
         vectorDrawables.useSupportLibrary = true
-    }
-    viewBinding {
-        enable = true
     }
 
     buildFeatures {
         buildConfig = true
         compose = true
+        dataBinding = true
         resValues = true
         viewBinding = true
-        dataBinding = true
     }
+
     buildTypes {
         getByName("debug") {
             applicationIdSuffix = ".dbg"
@@ -101,6 +92,7 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
     compileOptions {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
@@ -115,98 +107,93 @@ android {
         }
     }
 }
+
+ksp {
+    arg("room.schemaLocation", "${projectDir}/schemas")
+    arg("room.incremental", "true")
+    arg("room.expandProjection", "true")
+    arg("dagger.hilt.disableCrossCompilationRootValidation", "true")
+}
+
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.8.0"))
 
+    // AndroidX
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
-    implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.android.gms:play-services-maps:20.0.0")
-    implementation("com.google.maps.android:maps-compose:7.0.0")
-    implementation("com.google.android.material:material:1.13.0")
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics-ndk")
-    implementation("com.google.maps.android:android-maps-utils:4.0.0")
-    implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation("com.squareup.okhttp3:okhttp:5.3.2")
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versionKotlin")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0")
 
     // Compose
     implementation("androidx.activity:activity-compose:1.12.3")
-    implementation("androidx.compose.animation:animation:1.10.2")
-    implementation("androidx.compose.material:material:1.10.2")
+    implementation("androidx.compose.animation:animation:$versionCompose")
+    implementation("androidx.compose.material:material:$versionCompose")
     implementation("androidx.compose.material:material-icons-core-android:1.7.8")
     implementation("androidx.compose.material3:material3:1.4.0")
-    implementation("androidx.compose.ui:ui-tooling:1.10.2")
-    implementation("androidx.compose.ui:ui-viewbinding:1.10.2")
-    implementation("androidx.compose.ui:ui-unit:1.10.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.10.2")
-
-    // When using a AppCompat theme
-    implementation("com.google.accompanist:accompanist-appcompat-theme:0.36.0")
-
+    implementation("androidx.compose.ui:ui-tooling:$versionCompose")
+    implementation("androidx.compose.ui:ui-unit:$versionCompose")
+    implementation("androidx.compose.ui:ui-viewbinding:$versionCompose")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$versionCompose")
 
     // Coroutines
-    val versionCoroutines = "1.10.2"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versionCoroutines")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$versionCoroutines")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versionCoroutines")
+
+    // Firebase
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics-ndk")
 
     // Hilt
-    val versionHilt = "2.58"
     implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")
     implementation("com.google.dagger:hilt-android:$versionHilt")
-    ksp("com.google.dagger:hilt-compiler:$versionHilt")
     ksp("com.google.dagger:hilt-android-compiler:$versionHilt")
+    ksp("com.google.dagger:hilt-compiler:$versionHilt")
 
     // Lifecycle
-    val versionLifecycle = "2.2.0"
-    implementation("androidx.lifecycle:lifecycle-extensions:$versionLifecycle")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$versionLifecycle")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$versionLifecycle")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$versionLifecycle")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$versionLifecycle")
+
+    // Maps
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.gms:play-services-maps:20.0.0")
+    implementation("com.google.maps.android:android-maps-utils:4.0.0")
+    implementation("com.google.maps.android:maps-compose:7.0.0")
 
     // Moshi
-    val versionMoshi = "1.15.2"
     implementation("com.squareup.moshi:moshi:$versionMoshi")
     implementation("com.squareup.moshi:moshi-kotlin:$versionMoshi")
     implementation("com.squareup.retrofit2:converter-moshi:3.0.0")
 
-    // Room
-    val versionRoom = "2.8.4"
-    implementation("androidx.room:room-runtime:$versionRoom")
-    implementation("androidx.room:room-ktx:$versionRoom")
-    ksp("androidx.room:room-compiler:$versionRoom")
-
     // Navigation
-    val versionNavigation = "2.9.7"
-    // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$versionNavigation")
-
-    // Views/Fragments Integration
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$versionNavigation")
     implementation("androidx.navigation:navigation-fragment:$versionNavigation")
     implementation("androidx.navigation:navigation-ui:$versionNavigation")
-
-    // Feature module support for Fragments
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$versionNavigation")
-
-    // Testing Navigation
     androidTestImplementation("androidx.navigation:navigation-testing:$versionNavigation")
 
-    // JSON serialization library, works with the Kotlin serialization plugin.
+    // Network
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+
+    // Room
+    implementation("androidx.room:room-ktx:$versionRoom")
+    implementation("androidx.room:room-runtime:$versionRoom")
+    ksp("androidx.room:room-compiler:$versionRoom")
+
+    // Utilities
+    implementation("com.google.accompanist:accompanist-appcompat-theme:0.36.0")
+    implementation("com.google.android.material:material:1.13.0")
+    implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 
+    // Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$versionCoroutines")
-
     androidTestImplementation("androidx.test:runner:1.7.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 }
