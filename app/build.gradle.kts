@@ -25,7 +25,6 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.android)
 }
 
@@ -123,11 +122,7 @@ dependencies {
 
     // AndroidX
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.cardview)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.recyclerview)
 
     // Compose
     implementation(libs.androidx.activity.compose)
@@ -149,13 +144,11 @@ dependencies {
     implementation(libs.firebase.crashlytics.ndk)
 
     // Hilt
-    implementation(libs.hilt.navigation.fragment)
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
 
     // Lifecycle
-    implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.viewmodel.ktx)
@@ -163,7 +156,6 @@ dependencies {
     // Maps
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
-    implementation(libs.android.maps.utils)
     implementation(libs.maps.compose)
 
     // Moshi
@@ -172,11 +164,7 @@ dependencies {
     implementation(libs.retrofit.converter.moshi)
 
     // Navigation
-    implementation(libs.navigation.compose)
-    implementation(libs.navigation.dynamic.features.fragment)
     implementation(libs.navigation.fragment)
-    implementation(libs.navigation.ui)
-    androidTestImplementation(libs.navigation.testing)
 
     // Network
     implementation(libs.okhttp)
@@ -188,11 +176,9 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Utilities
-    implementation(libs.accompanist.appcompat.theme)
     implementation(libs.android.material)
     implementation(libs.timber)
     implementation(libs.kotlinx.collections.immutable)
-    implementation(libs.kotlinx.serialization.json)
 
     // Testing
     testImplementation(libs.junit)
