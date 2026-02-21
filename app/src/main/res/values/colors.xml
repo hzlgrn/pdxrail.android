@@ -30,10 +30,5 @@
     <color name="rail_system_primary">#004a98</color>
     <color name="rail_system_secondary">#ff6</color>
 
-    <color name="cardview_background">#EEFFFFFF</color>
-    <color name="cardview_background_inverse">#EE000000</color>
-    <color name="cardview_inverse_text">#EEFFFFFF</color>
-    <color name="drawer_background">#CC333333</color>
-
 </resources>
 
