@@ -37,7 +37,7 @@ abstract class ApplicationRoom: RoomDatabase() {
     abstract fun railSystemDao(): RailSystemDao
 
     fun loadRailSystemData(context: Context, applicationRoom: ApplicationRoom) {
-        val railStopEntities = readRailStopJson(context)?.rail_stops?.map { json ->
+        val railStopEntities = readRailStopJson(context)?.railStops?.map { json ->
             RailStopEntity(
                     uniqueid = json.uniqueid,
                     station = json.station,
@@ -46,7 +46,7 @@ abstract class ApplicationRoom: RoomDatabase() {
                     latitude = json.lat,
                     longitude = json.lon)
         } ?: emptyList()
-        val railLineEntities = readRailLineJson(context)?.rail_lines?.map { json ->
+        val railLineEntities = readRailLineJson(context)?.railLines?.map { json ->
             val polyline = json.polyline
             RailLineEntity(
                     line = json.line,
@@ -71,7 +71,7 @@ abstract class ApplicationRoom: RoomDatabase() {
         val railStopAdapter: JsonAdapter<RailStopJson> = moshi.adapter(RailStopJson::class.java)
         val railStopJsonString = railStopsReader.readText()
         val railStopJsonModel = railStopAdapter.fromJson(railStopJsonString)
-        Timber.d("version: ${railStopJsonModel?.version} with ${railStopJsonModel?.rail_stops?.count() ?: 0} rail_stops")
+        Timber.d("version: ${railStopJsonModel?.version} with ${railStopJsonModel?.railStops?.count() ?: 0} rail stops")
 
         return railStopJsonModel
     }
@@ -87,7 +87,7 @@ abstract class ApplicationRoom: RoomDatabase() {
         val railLineAdapter: JsonAdapter<RailLineJson> = moshi.adapter(RailLineJson::class.java)
         val railLineJsonString = railLineReader.readText()
         val railLineJsonModel = railLineAdapter.fromJson(railLineJsonString)
-        Timber.d("version: ${railLineJsonModel?.version} with ${railLineJsonModel?.rail_lines?.count() ?: 0} rail_lines")
+        Timber.d("version: ${railLineJsonModel?.version} with ${railLineJsonModel?.railLines?.count() ?: 0} rail lines")
 
         return railLineJsonModel
     }

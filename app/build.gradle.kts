@@ -1,11 +1,22 @@
 import java.util.Date
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val javaVersion = JavaVersion.VERSION_18
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(javaVersion.majorVersion))
+    }
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xjsr305=strict")
+        freeCompilerArgs.add("-Xjvm-default=all")
+        freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+
+        jvmTarget.set(JvmTarget.JVM_18)
     }
 }
 
