@@ -1,5 +1,6 @@
 package com.hzlgrn.pdxrail.compose
 
+import android.content.res.Configuration
 import android.text.format.DateUtils
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -34,6 +36,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -44,9 +47,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivalItem
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
@@ -54,6 +59,37 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PdxRailDrawer(
+    railSystemArrivals: RailSystemArrivals,
+    onArrivalClick: (String) -> Unit,
+    onReviewClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    scrimContent: @Composable () -> Unit,
+) {
+    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+    if (isPortrait) {
+        PdxRailDrawerPortrait(
+            railSystemArrivals = railSystemArrivals,
+            onArrivalClick = onArrivalClick,
+            onReviewClick = onReviewClick,
+            modifier = modifier,
+            drawerState = drawerState,
+            scrimContent = scrimContent,
+        )
+    } else {
+        PdxRailDrawerLandscape(
+            railSystemArrivals = railSystemArrivals,
+            onArrivalClick = onArrivalClick,
+            onReviewClick = onReviewClick,
+            modifier = modifier,
+            drawerState = drawerState,
+            scrimContent = scrimContent,
+        )
+    }
+}
+
+@Composable
+private fun PdxRailDrawerLandscape(
     railSystemArrivals: RailSystemArrivals,
     onArrivalClick: (String) -> Unit,
     onReviewClick: () -> Unit,
@@ -104,7 +140,6 @@ fun PdxRailDrawer(
             (currentOffset + drawerWidthPx).coerceAtLeast(0f).toDp()
         }
 
-        // Content fills the remaining width not occupied by the visible drawer portion
         Box(Modifier.fillMaxSize().padding(start = drawerVisibleWidth)) { scrimContent() }
 
         if (currentOffset > -drawerWidthPx) {
@@ -136,6 +171,89 @@ fun PdxRailDrawer(
 }
 
 @Composable
+private fun PdxRailDrawerPortrait(
+    railSystemArrivals: RailSystemArrivals,
+    onArrivalClick: (String) -> Unit,
+    onReviewClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+    scrimContent: @Composable () -> Unit,
+) {
+    val density = LocalDensity.current
+    val drawerHeight = (LocalConfiguration.current.screenHeightDp / 2f).dp
+    val drawerHeightPx = with(density) { drawerHeight.toPx() }
+
+    val anchoredDraggableState = remember(drawerHeightPx) {
+        AnchoredDraggableState(
+            initialValue = DrawerValue.Closed,
+            anchors = DraggableAnchors {
+                DrawerValue.Closed at drawerHeightPx
+                DrawerValue.Open at 0f
+            },
+        )
+    }
+
+    val flingBehavior = AnchoredDraggableDefaults.flingBehavior(
+        state = anchoredDraggableState,
+        positionalThreshold = { distance -> distance * 0.4f },
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioNoBouncy,
+            stiffness = Spring.StiffnessMediumLow,
+        ),
+    )
+
+    LaunchedEffect(drawerState.targetValue) {
+        when (drawerState.targetValue) {
+            DrawerValue.Open -> anchoredDraggableState.animateTo(DrawerValue.Open)
+            DrawerValue.Closed -> anchoredDraggableState.animateTo(DrawerValue.Closed)
+        }
+    }
+
+    LaunchedEffect(anchoredDraggableState.currentValue) {
+        when (anchoredDraggableState.currentValue) {
+            DrawerValue.Open -> if (drawerState.targetValue != DrawerValue.Open) drawerState.open()
+            DrawerValue.Closed -> if (drawerState.targetValue != DrawerValue.Closed) drawerState.close()
+        }
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        val currentOffset = anchoredDraggableState.offset.takeUnless { it.isNaN() } ?: drawerHeightPx
+        val drawerVisibleHeight = with(density) {
+            (drawerHeightPx - currentOffset).coerceAtLeast(0f).toDp()
+        }
+
+        Box(Modifier.fillMaxSize().padding(bottom = drawerVisibleHeight)) { scrimContent() }
+
+        if (currentOffset < drawerHeightPx) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(drawerHeight)
+                    .align(Alignment.BottomStart)
+                    .offset { IntOffset(0, currentOffset.roundToInt()) }
+                    .anchoredDraggable(
+                        state = anchoredDraggableState,
+                        orientation = Orientation.Vertical,
+                        flingBehavior = flingBehavior,
+                    )
+            ) {
+                ModalDrawerSheet(
+                    modifier = Modifier.fillMaxSize(),
+                    drawerContainerColor = MaterialTheme.colorScheme.background,
+                    drawerContentColor = MaterialTheme.colorScheme.onBackground,
+                ) {
+                    PdxRailDrawerContent(
+                        railSystemArrivals = railSystemArrivals,
+                        onArrivalClick = onArrivalClick,
+                        onReviewClick = onReviewClick,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun PdxRailDrawerContent(
     onArrivalClick: (String) -> Unit,
     onReviewClick: () -> Unit,
@@ -143,7 +261,7 @@ fun PdxRailDrawerContent(
     ) {
     LazyColumn() {
         item {
-            HeaderItem("Arrivals") // TODO: "Arrivals to ${shortSign}"
+            HeaderItem(stringResource(R.string.arrivals_header)) // TODO: "Arrivals to ${shortSign}"
         }
         when (railSystemArrivals) {
             is RailSystemArrivals.Display -> {
@@ -213,7 +331,7 @@ private fun ArrivalItem(
                     painter = painterResource(id = item.drawableArrivalMarker),
                     tint = Color.Unspecified,
                     modifier = Modifier.rotate(item.drawableRotation),
-                    contentDescription = null, // TODO: Convert rotation to cardinal text. example: "North West"
+                    contentDescription = null, // TODO: Convert rotation to cardinal text? example: "North West"
                 )
                 Column() {
                     Row() {

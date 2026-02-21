@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="arrivals_header">Arrivals</string>
     <string name="google_map_type_normal">Normal</string>
     <string name="google_map_type_terrain">Terreno</string>
     <string name="google_map_type_hybrid">Híbrido</string>
