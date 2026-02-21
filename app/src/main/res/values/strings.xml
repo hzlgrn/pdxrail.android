@@ -2,6 +2,7 @@
     <string name="app_name" translatable="false">PDX Rail</string>
     <string name="arriving_at" translatable="false">⏰ %1$s</string>
     <string name="estimated_at" translatable="false">🚉 %1$s</string>
+    <string name="arrivals_header">Arrivals</string>
 
     <string name="google_map_type_normal">Normal</string>
     <string name="google_map_type_terrain">Terrain</string>

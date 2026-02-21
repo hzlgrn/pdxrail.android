@@ -14,6 +14,13 @@ class Domain {
         }
     }
 
+    object PdxRail {
+        val CAMERA_TARGET = LatLng(CAMERA_TARGET_LAT, CAMERA_TARGET_LNG)
+        const val CAMERA_TARGET_LAT = 45.5231
+        const val CAMERA_TARGET_LNG = -122.6765
+        const val CAMERA_ZOOM = 15f
+    }
+
     object Intent {
         const val GEO = "geo:"
     }
@@ -21,7 +28,6 @@ class Domain {
     object RailSystem {
         val REGION_RECT_NW = LatLng(45.698441, -123.183735)
         val REGION_RECT_SE = LatLng(45.214177, -122.303207)
-
         const val PATH_WS_V1_STOPS = "ws/V1/stops?appID=${BuildConfig.API_RAIL_SYSTEM_KEY}&json=true"
         const val PATH_WS_V2_ARRIVALS = "ws/V2/arrivals?appID=${BuildConfig.API_RAIL_SYSTEM_KEY}&json=true&showPosition=true"
 

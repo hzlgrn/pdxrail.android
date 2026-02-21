@@ -6,7 +6,8 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class RailLineJson(
     val version: Int,
-    val rail_lines: List<RailLine>
+    @Json(name = "rail_lines")
+    val railLines: List<RailLine>
 ) {
     data class RailLine(
         val line: String?,
