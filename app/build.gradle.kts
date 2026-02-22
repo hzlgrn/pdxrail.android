@@ -86,20 +86,6 @@ android {
         viewBinding = true
     }
 
-    buildTypes {
-        getByName("debug") {
-            applicationIdSuffix = ".dbg"
-        }
-        getByName("release") {
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
-    }
-
     signingConfigs {
         create("release") {
             keyAlias = keyRing["UPLOAD_KEYSTORE_ALIAS"] as String
@@ -107,6 +93,21 @@ android {
             storeFile = rootProject.file(keyRing["UPLOAD_KEYSTORE_FILE"] as String)
             storePassword = keyRing["UPLOAD_KEYSTORE_PASSWORD"] as String
         }
+    }
+
+    buildTypes {
+        getByName("debug") {
+            applicationIdSuffix = ".dbg"
+        }
+        getByName("release") {
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
 }
 
