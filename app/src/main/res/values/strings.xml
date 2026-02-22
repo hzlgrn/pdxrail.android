@@ -25,7 +25,6 @@
     <string name="arrival_estimated_at">Estimated at %1$s</string>
     <string name="arrival_at">Arriving at %1$s</string>
     
-    <!-- Needs localization 🇲🇽 -->
     <string name="back_to">back to: %1$s</string>
     <string name="dialog_help_action">Sweet!</string>
     <string name="share_using">Share using..</string>
