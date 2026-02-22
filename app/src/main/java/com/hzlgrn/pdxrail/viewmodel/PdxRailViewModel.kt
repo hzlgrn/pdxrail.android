@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapType
 import com.hzlgrn.pdxrail.compose.MapIconBitmapLoader
 import com.hzlgrn.pdxrail.data.repository.PdxRailSystemRepository
+import com.hzlgrn.pdxrail.data.room.ApplicationRoomLoader
 import com.hzlgrn.pdxrail.viewmodel.bitmap.MapIconBitmap
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
@@ -28,6 +29,7 @@ import javax.inject.Inject
 class PdxRailViewModel @Inject constructor(
     private val railSystemRepository: PdxRailSystemRepository,
     private val mapIconBitmapLoader: MapIconBitmapLoader,
+    private val applicationRoomLoader: ApplicationRoomLoader,
 ): ViewModel() {
     private val _isMyLocationEnabled = MutableStateFlow(false)
     val isMyLocationEnabled = _isMyLocationEnabled.asStateFlow()
@@ -79,11 +81,20 @@ class PdxRailViewModel @Inject constructor(
             }
         }
     }
-    fun onClickMaxStop(position: LatLng, markerId: RailSystemMapItem.Marker.MarkerId? = null) {
-        flowArrivals(position, markerId, false)
+
+    private val _stationText = MutableStateFlow("")
+    val stationText = _stationText.asStateFlow()
+    fun onClickStop(position: LatLng) {
+        _stationText.value = ""
+        flowArrivals(position, null, false)
     }
-    fun onClickStreetcarStop(position: LatLng, markerId: RailSystemMapItem.Marker.MarkerId? = null) {
-        flowArrivals(position, markerId, true)
+    fun onClickMaxStop(maxStop: RailSystemMapItem.Marker.Stop.MaxStop) {
+        _stationText.value = maxStop.stationText ?: ""
+        flowArrivals(maxStop.position, maxStop.uniqueId, false)
+    }
+    fun onClickStreetcarStop(streetcarStop: RailSystemMapItem.Marker.Stop.StreetcarStop) {
+        _stationText.value = streetcarStop.stationText ?: ""
+        flowArrivals(streetcarStop.position, streetcarStop.uniqueId, true)
     }
 
     private val _railSystemArrivals = MutableStateFlow<RailSystemArrivals>(RailSystemArrivals.Idle)
@@ -131,6 +142,22 @@ class PdxRailViewModel @Inject constructor(
                         _mapDrawerIcon.value = display
                     }
                 }
+            }
+        }
+    }
+
+    private val _isMapLoaded = MutableStateFlow(false)
+    val isMapLoaded = _isMapLoaded.asStateFlow()
+    private var _loadApplicationRoom: Job? = null
+        set(job) {
+            field?.cancel()
+            field = job
+        }
+    fun onMapLoaded() {
+        if(!_isMapLoaded.value) {
+            _isMapLoaded.value = true
+            _loadApplicationRoom = viewModelScope.launch(Dispatchers.IO) {
+                applicationRoomLoader.load()
             }
         }
     }

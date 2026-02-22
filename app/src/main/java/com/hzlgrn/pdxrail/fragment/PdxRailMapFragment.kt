@@ -9,7 +9,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.hzlgrn.pdxrail.compose.PdxRailMap
+import com.hzlgrn.pdxrail.compose.pdxrail.PdxRailMap
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
 import dagger.hilt.android.AndroidEntryPoint

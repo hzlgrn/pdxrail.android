@@ -1,20 +1,18 @@
-package com.hzlgrn.pdxrail.compose
+package com.hzlgrn.pdxrail.compose.pdxrail
 
 import android.content.res.Configuration
-import android.text.format.DateUtils
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,44 +21,43 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterStart
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hzlgrn.pdxrail.R
+import com.hzlgrn.pdxrail.compose.ArrivalEmptyMaxViewCard
+import com.hzlgrn.pdxrail.compose.ArrivalEmptyStreetcarViewCard
+import com.hzlgrn.pdxrail.compose.ArrivalItem
+import com.hzlgrn.pdxrail.compose.HeaderItem
+import com.hzlgrn.pdxrail.compose.HorizontalDividerItem
 import com.hzlgrn.pdxrail.theme.PdxRailTheme
+import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivalItem
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
 import kotlin.math.roundToInt
 
 @Composable
 fun PdxRailDrawer(
+    pdxRailViewModel: PdxRailViewModel,
     railSystemArrivals: RailSystemArrivals,
-    onArrivalClick: (String) -> Unit,
+    onArrivalClick: (RailSystemArrivalItem) -> Unit,
     onReviewClick: () -> Unit,
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
@@ -69,6 +66,7 @@ fun PdxRailDrawer(
     val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
     if (isPortrait) {
         PdxRailDrawerPortrait(
+            pdxRailViewModel = pdxRailViewModel,
             railSystemArrivals = railSystemArrivals,
             onArrivalClick = onArrivalClick,
             onReviewClick = onReviewClick,
@@ -78,6 +76,7 @@ fun PdxRailDrawer(
         )
     } else {
         PdxRailDrawerLandscape(
+            pdxRailViewModel = pdxRailViewModel,
             railSystemArrivals = railSystemArrivals,
             onArrivalClick = onArrivalClick,
             onReviewClick = onReviewClick,
@@ -90,8 +89,9 @@ fun PdxRailDrawer(
 
 @Composable
 private fun PdxRailDrawerLandscape(
+    pdxRailViewModel: PdxRailViewModel,
     railSystemArrivals: RailSystemArrivals,
-    onArrivalClick: (String) -> Unit,
+    onArrivalClick: (RailSystemArrivalItem) -> Unit,
     onReviewClick: () -> Unit,
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
@@ -159,7 +159,9 @@ private fun PdxRailDrawerLandscape(
                     drawerContainerColor = MaterialTheme.colorScheme.background,
                     drawerContentColor = MaterialTheme.colorScheme.onBackground,
                 ) {
+                    val stationText by pdxRailViewModel.stationText.collectAsStateWithLifecycle()
                     PdxRailDrawerContent(
+                        stationText = stationText,
                         railSystemArrivals = railSystemArrivals,
                         onArrivalClick = onArrivalClick,
                         onReviewClick = onReviewClick,
@@ -172,8 +174,9 @@ private fun PdxRailDrawerLandscape(
 
 @Composable
 private fun PdxRailDrawerPortrait(
+    pdxRailViewModel: PdxRailViewModel,
     railSystemArrivals: RailSystemArrivals,
-    onArrivalClick: (String) -> Unit,
+    onArrivalClick: (RailSystemArrivalItem) -> Unit,
     onReviewClick: () -> Unit,
     modifier: Modifier = Modifier,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
@@ -242,7 +245,9 @@ private fun PdxRailDrawerPortrait(
                     drawerContainerColor = MaterialTheme.colorScheme.background,
                     drawerContentColor = MaterialTheme.colorScheme.onBackground,
                 ) {
+                    val stationText by pdxRailViewModel.stationText.collectAsStateWithLifecycle()
                     PdxRailDrawerContent(
+                        stationText = stationText,
                         railSystemArrivals = railSystemArrivals,
                         onArrivalClick = onArrivalClick,
                         onReviewClick = onReviewClick,
@@ -255,124 +260,51 @@ private fun PdxRailDrawerPortrait(
 
 @Composable
 fun PdxRailDrawerContent(
-    onArrivalClick: (String) -> Unit,
+    stationText: String,
+    onArrivalClick: (RailSystemArrivalItem) -> Unit,
     onReviewClick: () -> Unit,
     railSystemArrivals: RailSystemArrivals = RailSystemArrivals.Idle
     ) {
-    LazyColumn() {
-        item {
-            HeaderItem(stringResource(R.string.arrivals_header)) // TODO: "Arrivals to ${shortSign}"
+    HorizontalDividerItem(modifier = Modifier.padding(bottom = dimensionResource(R.dimen.vertical)))
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.vertical_2x)),
+        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.horizontal_2x))
+    ) {
+        when (railSystemArrivals) {
+            is RailSystemArrivals.Idle, is RailSystemArrivals.Loading-> {
+                item {
+                    ArrivalEmptyMaxViewCard()
+                }
+                item {
+                    ArrivalEmptyStreetcarViewCard()
+                }
+            }
+            else -> {
+                item {
+                    HeaderItem(stationText.takeIf { it.isNotBlank() }?.let { stringResource(R.string.arrival_at, stationText) } ?: stringResource(R.string.arrivals_header))
+                }
+            }
         }
         when (railSystemArrivals) {
             is RailSystemArrivals.Display -> {
-                railSystemArrivals.details.forEach { arrivalDisplay ->
+                railSystemArrivals.details.forEach { railSystemArrivalItem ->
                     item {
-                        ArrivalItem(arrivalDisplay)
+                        ArrivalItem(
+                            item = railSystemArrivalItem,
+                            onArrivalClick = { onArrivalClick(railSystemArrivalItem) }
+                        )
                     }
                 }
             }
             else -> { /* nothing */ }
         }
-    }
-}
-
-@Composable
-private fun HeaderItem(text: String) {
-    Box(
-        modifier = Modifier
-            .padding(horizontal = 6.dp, vertical = 3.dp),
-        contentAlignment = CenterStart,
-    ) {
-        Text(
-            text,
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
-@Composable
-private fun ArrivalItem(
-    item: RailSystemArrivalItem,
-    onArrivalClick: (RailSystemArrivalItem) -> Unit = {},
-    isSelected: Boolean = false,
-) {
-    val background = if (isSelected) {
-        Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh)
-    } else {
-        Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .then(background)
-            .clickable(onClick = { onArrivalClick(item) }),
-        verticalAlignment = CenterVertically,
-    ) {
-        Column(
-            modifier = Modifier.padding(6.dp)
-        ) {
-            Row() {
-                Text(
-                    item.textShortSign,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (isSelected) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
-                    modifier = Modifier.padding(start = 6.dp),
-                )
-            }
-            Row() {
-                Icon(
-                    painter = painterResource(id = item.drawableArrivalMarker),
-                    tint = Color.Unspecified,
-                    modifier = Modifier.rotate(item.drawableRotation),
-                    contentDescription = null, // TODO: Convert rotation to cardinal text? example: "North West"
-                )
-                Column() {
-                    Row() {
-                        Text(
-                            DateUtils.formatDateTime(LocalContext.current, item.scheduled, DateUtils.FORMAT_SHOW_TIME),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-
-                    val isLate = item.estimated > item.scheduled
-                    val isEarly = item.scheduled > item.estimated
-                    if (isLate) {
-                        Row() {
-                            Text(
-                                DateUtils.formatDateTime(LocalContext.current, item.estimated, DateUtils.FORMAT_SHOW_TIME),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                        }
-                    }
-                    if (isEarly) {
-                        Row() {
-                            Text(
-                                DateUtils.formatDateTime(LocalContext.current, item.estimated, DateUtils.FORMAT_SHOW_TIME),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                    }
-                }
-            }
+        item {
+            PdxRailReviewCard(
+                onReviewClick = onReviewClick,
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.horizontal_4x)),
+            )
         }
     }
-}
-
-@Composable
-fun DividerItem(modifier: Modifier = Modifier) {
-    HorizontalDivider(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-    )
 }
 
 @Composable
@@ -381,7 +313,7 @@ fun DrawerPreview() {
     PdxRailTheme {
         Surface {
             Column {
-                PdxRailDrawerContent({}, {})
+                PdxRailDrawerContent(stationText = "station text", {}, {})
             }
         }
     }
@@ -393,7 +325,7 @@ fun DrawerPreviewDark() {
     PdxRailTheme(isDarkTheme = true) {
         Surface {
             Column {
-                PdxRailDrawerContent({}, {})
+                PdxRailDrawerContent(stationText = "station text", {}, {})
             }
         }
     }

@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">PDX Rail</string>
-    <string name="arriving_at" translatable="false">⏰ %1$s</string>
-    <string name="estimated_at" translatable="false">🚉 %1$s</string>
     <string name="arrivals_header">Arrivals</string>
 
     <string name="google_map_type_normal">Normal</string>
@@ -22,6 +20,10 @@
     <string name="help_streetcar_stop">Get real-time arrival information for Portland Streetcar.</string>
     <string name="help_max_stop">Get real-time vehicle locations and arrival information for MAX Light Rail.</string>
     <string name="help_title">An interactive map for Portland, Oregon\'s rail-based transit systems.</string>
+
+    <string name="arrival_scheduled_at">Scheduled at %1$s</string>
+    <string name="arrival_estimated_at">Estimated at %1$s</string>
+    <string name="arrival_at">Arriving at %1$s</string>
     
     <!-- Needs localization 🇲🇽 -->
     <string name="back_to">back to: %1$s</string>
