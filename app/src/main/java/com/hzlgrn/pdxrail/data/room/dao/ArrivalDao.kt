@@ -1,6 +1,10 @@
 package com.hzlgrn.pdxrail.data.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import com.hzlgrn.pdxrail.data.room.entity.ArrivalEntity
 import com.hzlgrn.pdxrail.data.room.entity.BlockPositionEntity
 import com.hzlgrn.pdxrail.data.room.entity.LocIdEntity
