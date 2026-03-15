@@ -54,8 +54,8 @@ android {
         applicationId = "com.hzlgrn.pdxrail"
         minSdk = 24
         targetSdk = 36
-        versionCode = 11
-        versionName = "2.0"
+        versionCode = 12
+        versionName = "2.001"
 
         buildConfigField("long", "BUILD_TIME", "${buildTime}L")
         buildConfigField("String", "API_RAIL_SYSTEM_KEY", "\"${keyRing["API_RAIL_SYSTEM_KEY"] as String}\"")

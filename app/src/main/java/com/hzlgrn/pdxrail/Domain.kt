@@ -10,7 +10,6 @@ class Domain {
 
         enum class PREFERENCE(var type: String) {
             DIALOG_HELP_PERMISSION("dialog_help_permission_shown"),
-            MENU_MAP_TYPE("menu_map_type_int")
         }
     }
 
