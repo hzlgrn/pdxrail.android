@@ -26,6 +26,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.services)
 }
 
 val buildTime = Date().time
@@ -53,8 +54,8 @@ android {
         applicationId = "com.hzlgrn.pdxrail"
         minSdk = 24
         targetSdk = 36
-        versionCode = 11
-        versionName = "2.0"
+        versionCode = 12
+        versionName = "2.001"
 
         buildConfigField("long", "BUILD_TIME", "${buildTime}L")
         buildConfigField("String", "API_RAIL_SYSTEM_KEY", "\"${keyRing["API_RAIL_SYSTEM_KEY"] as String}\"")
@@ -141,8 +142,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     // Firebase
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
-    implementation(libs.firebase.crashlytics.ndk)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.crashlyticsndk)
 
     // Hilt
     implementation(libs.hilt.android)
