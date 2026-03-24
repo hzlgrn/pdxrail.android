@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -14,16 +13,16 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import com.google.android.gms.maps.model.LatLng
 import com.hzlgrn.pdxrail.BuildConfig
-import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.compose.pdxrail.PdxRailActivityAction
 import com.hzlgrn.pdxrail.compose.pdxrail.PdxRailActivityScreen
-import com.hzlgrn.pdxrail.dialog.HelpDialog
+import com.hzlgrn.pdxrail.data.help.PdxRailSystemHelper
+import com.hzlgrn.pdxrail.fragment.HelpDialogFragment
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
+import com.russhwolf.settings.Settings
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -31,7 +30,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class PdxRailActivity : AppCompatActivity() {
     @Inject
-    lateinit var applicationPreferences: SharedPreferences
+    lateinit var settings: Settings
     private val pdxRailViewModel: PdxRailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,21 +60,18 @@ class PdxRailActivity : AppCompatActivity() {
 
 
     fun showHelpDialog(noMatterWhat: Boolean = false, shouldCheckPermissionAfter: Boolean = false) {
-        val hasDialogShown = applicationPreferences
-                .getBoolean(Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type, false)
+        val hasDialogShown = settings
+                .getBoolean(PdxRailSystemHelper.SETTING_HAS_SHOWN_HELP_DIALOG, false)
         if (!hasDialogShown || noMatterWhat) {
             if (!hasDialogShown) {
-                applicationPreferences.edit {
-                    putBoolean(Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type, true)
-                    apply()
-                }
+                settings.putBoolean(PdxRailSystemHelper.SETTING_HAS_SHOWN_HELP_DIALOG, true)
             }
-            with (HelpDialog()) {
+            with (HelpDialogFragment()) {
                 onDismissListener = {
                     supportFragmentManager.beginTransaction().remove(this).commit()
                     if (shouldCheckPermissionAfter) requestAccessFineLocation()
                 }
-                show(supportFragmentManager, Domain.App.PREFERENCE.DIALOG_HELP_PERMISSION.type)
+                show(supportFragmentManager, PdxRailSystemHelper.SETTING_HAS_SHOWN_HELP_DIALOG)
             }
         } else if (shouldCheckPermissionAfter) {
             requestAccessFineLocation()
@@ -83,7 +79,7 @@ class PdxRailActivity : AppCompatActivity() {
     }
 
     fun onReviewClick() {
-        val uri = "market://details?id=${packageName}".toUri()
+        val uri = "market://details?id=${BuildConfig.STORE_ID}".toUri()
         val goToMarket = Intent(Intent.ACTION_VIEW, uri)
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY
                 or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
@@ -91,7 +87,7 @@ class PdxRailActivity : AppCompatActivity() {
         try {
             startActivity(goToMarket)
         } catch (err: ActivityNotFoundException) {
-            val fallbackUri = "http://play.google.com/store/apps/details?id=${packageName}".toUri()
+            val fallbackUri = "http://play.google.com/store/apps/details?id=${BuildConfig.STORE_ID}".toUri()
             startActivity(Intent(Intent.ACTION_VIEW, fallbackUri))
         }
     }
@@ -130,7 +126,7 @@ class PdxRailActivity : AppCompatActivity() {
             }
 
             //--- https://developer.android.com/guide/components/intents-common
-            data.contains(Domain.Intent.GEO) -> {
+            data.contains("geo:") -> {
                 handleActionViewGeo(data)
                 true
             }
@@ -140,7 +136,7 @@ class PdxRailActivity : AppCompatActivity() {
     private fun handleActionViewGeo(data: String) {
         try {
             val args = if (data.contains("?")) data.substringAfter("?") else ""
-            val strLatLng = data.removePrefix(Domain.Intent.GEO).removeSuffix("?$args").split(",")
+            val strLatLng = data.removePrefix("geo:").removeSuffix("?$args").split(",")
             val lat = strLatLng[1].toDouble()
             val lon = strLatLng[0].toDouble()
             val geoPosition = LatLng(lat, lon)

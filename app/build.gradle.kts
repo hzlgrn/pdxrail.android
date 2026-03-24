@@ -30,21 +30,22 @@ plugins {
 }
 
 val buildTime = Date().time
-val keyRing = file("../com.hzlgrn.pdxrail.keyring")
-    .takeIf { it.canRead() }?.let { keyRingFile ->
-        Properties().apply {
+val keyRing = Properties().apply {
+    setProperty("UPLOAD_KEYSTORE_FILE", "com.hzlgrn.pdxrail.jks")
+    setProperty("UPLOAD_KEYSTORE_ALIAS", "alias")
+    setProperty("UPLOAD_KEYSTORE_PASSWORD", "secret")
+    setProperty("HOME_URL", "https://pdxrail.hzlgrn.com")
+    setProperty("HOME_HOST", "pdxrail.hzlgrn.com")
+    setProperty("API_GOOGLE_KEY", "google-api-key-with-maps-android-enabled")
+    setProperty("API_RAIL_SYSTEM_KEY", "rail-system-api-key")
+    setProperty("API_RAIL_SYSTEM_URL", "https://pdxrail.hzlgrn.com/")
+}.also { properties ->
+    file("../com.hzlgrn.pdxrail.keyring").takeIf { it.canRead() }?.let { keyRingFile ->
+        properties.apply {
             keyRingFile.inputStream().use { load(it) }
         }
-    } ?: Properties().apply {
-        setProperty("UPLOAD_KEYSTORE_FILE", "com.hzlgrn.pdxrail.jks")
-        setProperty("UPLOAD_KEYSTORE_ALIAS", "alias")
-        setProperty("UPLOAD_KEYSTORE_PASSWORD", "secret")
-        setProperty("HOME_URL", "https://pdxrail.hzlgrn.com")
-        setProperty("HOME_HOST", "pdxrail.hzlgrn.com")
-        setProperty("API_GOOGLE_KEY", "google-api-key-with-maps-android-enabled")
-        setProperty("API_RAIL_SYSTEM_KEY", "rail-system-api-key")
-        setProperty("API_RAIL_SYSTEM_URL", "https://pdxrail.hzlgrn.com/")
     }
+}
 
 android {
     namespace = "com.hzlgrn.pdxrail"
@@ -54,10 +55,11 @@ android {
         applicationId = "com.hzlgrn.pdxrail"
         minSdk = 24
         targetSdk = 36
-        versionCode = 12
-        versionName = "2.001"
+        versionCode = 13
+        versionName = "26.04.01"
 
         buildConfigField("long", "BUILD_TIME", "${buildTime}L")
+        buildConfigField("String", "STORE_ID", "\"$applicationId\"")
         buildConfigField("String", "API_RAIL_SYSTEM_KEY", "\"${keyRing["API_RAIL_SYSTEM_KEY"] as String}\"")
         buildConfigField("String", "API_RAIL_SYSTEM_URL", "\"${keyRing["API_RAIL_SYSTEM_URL"] as String}\"")
         buildConfigField("String", "HOME_URL", "\"https://${keyRing["HOME_HOST"] as? String}/\"")
@@ -106,16 +108,25 @@ android {
         }
     }
 
+
     compileOptions {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
     }
 }
 
+androidComponents {
+    onVariants { variant ->
+        if (variant.buildType == "debug") {
+            variant.outputs.forEach { output ->
+                output.versionCode.set(1)
+                output.versionName.set("0.0.0")
+            }
+        }
+    }
+}
+
 ksp {
-    arg("room.schemaLocation", "${projectDir}/schemas")
-    arg("room.incremental", "true")
-    arg("room.expandProjection", "true")
     arg("dagger.hilt.disableCrossCompilationRootValidation", "true")
 }
 
@@ -125,6 +136,7 @@ dependencies {
     // AndroidX
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.sqlite.framework)
 
     // Compose
     implementation(libs.androidx.activity.compose)
@@ -162,26 +174,27 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.maps.compose)
 
-    // Moshi
-    implementation(libs.moshi)
-    implementation(libs.moshi.kotlin)
-    implementation(libs.retrofit.converter.moshi)
+    // Data module
+    implementation(project(":data"))
+    implementation(libs.sqlite.copyopenhelper)
+
+    // Ktor OkHttp engine + content negotiation (TLS config and HttpClient built here)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp)
 
     // Navigation
     implementation(libs.navigation.fragment)
 
-    // Network
-    implementation(libs.okhttp)
-    implementation(libs.retrofit)
-
-    // Room
-    implementation(libs.room.ktx)
-    implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
+    // SQLDelight Android driver (provided to :data via DI)
+    implementation(libs.sqldelight.android.driver)
 
     // Utilities
     implementation(libs.android.material)
     implementation(libs.timber)
+    implementation(libs.kmp.settings)
     implementation(libs.kotlinx.collections.immutable)
 
     // Testing

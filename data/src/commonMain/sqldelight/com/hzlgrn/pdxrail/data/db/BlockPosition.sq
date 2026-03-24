@@ -1,0 +1,21 @@
+CREATE TABLE railsystem_block_position (
+    id INTEGER NOT NULL PRIMARY KEY,
+    route_number INTEGER NOT NULL,
+    sign_message TEXT,
+    heading INTEGER NOT NULL,
+    next_stop_seq INTEGER NOT NULL,
+    trip_id TEXT NOT NULL,
+    at INTEGER NOT NULL,
+    sign_message_long TEXT,
+    last_loc_id INTEGER,
+    next_loc_id INTEGER,
+    last_stop_seq INTEGER,
+    vehicle_id INTEGER,
+    new_trip INTEGER NOT NULL,
+    direction INTEGER NOT NULL,
+    lat REAL NOT NULL,
+    lng REAL NOT NULL
+);
+
+insertOrReplace:
+INSERT OR REPLACE INTO railsystem_block_position VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);

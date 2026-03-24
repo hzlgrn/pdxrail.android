@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">@color/rail_system_primary</color>
-    <color name="colorSecondary">@color/hzlgrn_purple</color>
+    <color name="colorSecondary">@color/rail_system_secondary</color>
     <color name="colorPrimaryDark">@color/hzlgrn_green_dark</color>
-    <color name="colorAccent">@color/hzlgrn_green</color>
+    <color name="colorAccent">@color/hzlgrn_purple</color>
     <color name="colorBlack">#000</color>
     <color name="colorWhite">#FFF</color>
 
-    <color name="reviewButtonTextColor">@color/colorWhite</color>
-
     <color name="max_blue_line">#0069aa</color>
+    <color name="max_blue_line_background">#e5f5ff</color>
     <color name="max_green_line">#008752</color>
+    <color name="max_green_line_background">#e9fff6</color>
     <color name="max_orange_line">#d15f27</color>
+    <color name="max_orange_line_background">#fbefe9</color>
     <color name="max_red_line">#d11242</color>
+    <color name="max_red_line_background">#fde5eb</color>
     <color name="max_yellow_line">#ffc425</color>
+    <color name="max_yellow_line_background">#fff4d6</color>
 
     <color name="wes_commuter_rail">#231f20</color>
 
     <color name="portland_streetcar_a_loop">#dd288e</color>
+    <color name="portland_streetcar_a_loop_background">#fae2f0</color>
     <color name="portland_streetcar_b_loop">#0091b2</color>
+    <color name="portland_streetcar_b_loop_background">#d9f8ff</color>
     <color name="portland_streetcar_north_south_line">#8cc63e</color>
+    <color name="portland_streetcar_north_south_line_background">#eff7e5</color>
 
     <color name="hzlgrn_blue">#3399ff</color>
     <color name="hzlgrn_blue_dark">#0066cc</color>

@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapType
 import com.hzlgrn.pdxrail.compose.MapIconBitmapLoader
-import com.hzlgrn.pdxrail.data.repository.PdxRailSystemRepository
-import com.hzlgrn.pdxrail.data.room.ApplicationRoomLoader
+import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
+import com.hzlgrn.pdxrail.data.toLatLon
+import com.hzlgrn.pdxrail.data.toRailSystemArrivalItem
+import com.hzlgrn.pdxrail.data.toRailSystemMapItem
 import com.hzlgrn.pdxrail.viewmodel.bitmap.MapIconBitmap
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
@@ -19,7 +21,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -27,10 +28,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PdxRailViewModel @Inject constructor(
-    private val railSystemRepository: PdxRailSystemRepository,
+    private val railSystemRepository: RailSystemRepository,
     private val mapIconBitmapLoader: MapIconBitmapLoader,
-    private val applicationRoomLoader: ApplicationRoomLoader,
-): ViewModel() {
+) : ViewModel() {
+
     private val _isMyLocationEnabled = MutableStateFlow(false)
     val isMyLocationEnabled = _isMyLocationEnabled.asStateFlow()
     fun setIsMyLocationEnabled(isMyLocationEnabled: Boolean) {
@@ -65,36 +66,47 @@ class PdxRailViewModel @Inject constructor(
             }
             field = job
         }
+
     @OptIn(FlowPreview::class)
     fun flowRailSystemMap() {
         _flowMapJob = viewModelScope.launch {
             _railSystemMap.value = RailSystemMapState.Loading
             withContext(Dispatchers.IO) {
-                railSystemRepository.flowRailSystemMapItems().debounce(timeoutMillis = 3000).collect { mapItems ->
-                    Timber.d("collected ${mapItems.size} map items")
-                    RailSystemMapState.Display(mapItems.toImmutableList()).let { display ->
-                        withContext(Dispatchers.Main) {
-                            _railSystemMap.value = display
+                railSystemRepository.flowRailSystemMapData()
+                    .collect { mapData ->
+                        Timber.d("collected ${mapData.size} map items")
+                        val mapItems = mapData.map { it.toRailSystemMapItem() }
+                        RailSystemMapState.Display(mapItems.toImmutableList()).let { display ->
+                            withContext(Dispatchers.Main) {
+                                _railSystemMap.value = display
+                            }
                         }
                     }
-                }
             }
         }
     }
 
     private val _stationText = MutableStateFlow("")
     val stationText = _stationText.asStateFlow()
+
     fun onClickStop(position: LatLng) {
         _stationText.value = ""
-        flowArrivals(position, null, false)
+        flowArrivals(position,  false)
     }
+
     fun onClickMaxStop(maxStop: RailSystemMapItem.Marker.Stop.MaxStop) {
         _stationText.value = maxStop.stationText ?: ""
-        flowArrivals(maxStop.position, maxStop.uniqueId, false)
+        flowArrivals(maxStop.position,  false)
     }
+
     fun onClickStreetcarStop(streetcarStop: RailSystemMapItem.Marker.Stop.StreetcarStop) {
         _stationText.value = streetcarStop.stationText ?: ""
-        flowArrivals(streetcarStop.position, streetcarStop.uniqueId, true)
+        flowArrivals(streetcarStop.position,  true)
+    }
+
+    fun onClickCommuterStop(commuterStop: RailSystemMapItem.Marker.Stop.CommuterStop) {
+        _stationText.value = commuterStop.stationText ?: ""
+        flowArrivals(commuterStop.position,  true)
     }
 
     private val _railSystemArrivals = MutableStateFlow<RailSystemArrivals>(RailSystemArrivals.Idle)
@@ -107,18 +119,24 @@ class PdxRailViewModel @Inject constructor(
             }
             field = job
         }
-    private fun flowArrivals(position: LatLng, markerId: RailSystemMapItem.Marker.MarkerId?, isStreetCar: Boolean) {
+
+    private fun flowArrivals(
+        position: LatLng,
+        isStreetCar: Boolean,
+    ) {
         _flowRailSystemArrivalsJob = viewModelScope.launch {
             _railSystemArrivals.value = RailSystemArrivals.Loading
             withContext(Dispatchers.IO) {
-                val locIds = railSystemRepository.getLocIds(position, isStreetCar)
+                val locIds = railSystemRepository.getLocIds(position.toLatLon(), isStreetCar)
+                Timber.d("getLocIds: ${position}: ${locIds}")
                 combine(
+                    railSystemRepository.foreverGetArrivals(locIds, isStreetCar),
                     railSystemRepository.flowArrivalItems(locIds),
-                    railSystemRepository.flowArrivalMarkers(locIds.toLongArray(), isStreetCar),
-                ) { arrivalItems, arrivalMarkers ->
+                    railSystemRepository.flowArrivalMarkers(locIds),
+                ) { _, itemData, markerData ->
                     RailSystemArrivals.Display(
-                        details = arrivalItems.toImmutableList(),
-                        mapItems = arrivalMarkers.toImmutableList()
+                        details = itemData.map { it.toRailSystemArrivalItem() }.toImmutableList(),
+                        mapItems = markerData.map { it.toRailSystemMapItem() }.toImmutableList(),
                     )
                 }.collect { display ->
                     withContext(Dispatchers.Main) {
@@ -148,17 +166,9 @@ class PdxRailViewModel @Inject constructor(
 
     private val _isMapLoaded = MutableStateFlow(false)
     val isMapLoaded = _isMapLoaded.asStateFlow()
-    private var _loadApplicationRoom: Job? = null
-        set(job) {
-            field?.cancel()
-            field = job
-        }
     fun onMapLoaded() {
-        if(!_isMapLoaded.value) {
+        if (!_isMapLoaded.value) {
             _isMapLoaded.value = true
-            _loadApplicationRoom = viewModelScope.launch(Dispatchers.IO) {
-                applicationRoomLoader.load()
-            }
         }
     }
 }

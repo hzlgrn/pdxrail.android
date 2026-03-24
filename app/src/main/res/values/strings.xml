@@ -16,24 +16,25 @@
     <string name="action_play_store">Review</string>
     <string name="menu_help">Help</string>
     <string name="permission_location_reason">Allowing location services will display your current location on the map.</string>
-    <string name="help_arrival">MAX arrivals render current location on the map. Portland Streetcar vehicle locations are unavailable.</string>
-    <string name="help_streetcar_stop">Get real-time arrival information for Portland Streetcar.</string>
-    <string name="help_max_stop">Get real-time vehicle locations and arrival information for MAX Light Rail.</string>
+    <string name="help_arrival">MAX arrivals show vehicle positions on the map. Portland Streetcar vehicle locations are unavailable.</string>
+    <string name="help_streetcar_stop">Get real-time arrivals for Portland Streetcar.</string>
+    <string name="help_max_stop">Get real-time vehicle locations and arrivals for MAX Light Rail.</string>
     <string name="help_title">An interactive map for Portland, Oregon\'s rail-based transit systems.</string>
 
+    <string name="arrival_none_incoming">No arrivals are on the way to this location.</string>
     <string name="arrival_scheduled_at">Scheduled at %1$s</string>
     <string name="arrival_estimated_at">Estimated at %1$s</string>
     <string name="arrival_at">Arriving at %1$s</string>
     
     <string name="back_to">back to: %1$s</string>
     <string name="dialog_help_action">Sweet!</string>
-    <string name="share_using">Share using..</string>
+    <string name="share_using">Share using…</string>
     <string name="toast_fail_share">Select a stop to share</string>
-    <string name="gratitude">Review or request updates on Google Play.</string>
+    <string name="gratitude">Rate or request updates on Google Play.</string>
     <string name="menu_share_extra_subject">A stop on PDX Rail</string>
     <string name="content_description_max_stop">A MAX stop</string>
     <string name="content_description_max_stop_verbose">Tap a MAX stop to view incoming vehicle positions and times.</string>
-    <string name="content_description_streetcar_stop_verbose">Tap a Street Car stop to view incoming times only.</string>
+    <string name="content_description_streetcar_stop_verbose">Tap a Streetcar stop to view incoming times only.</string>
     <string name="menu_share">Share</string>
 
 </resources>

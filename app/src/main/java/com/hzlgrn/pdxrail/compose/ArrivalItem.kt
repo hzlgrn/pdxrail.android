@@ -14,10 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,11 +32,19 @@ fun ArrivalItem(
     onArrivalClick: (RailSystemArrivalItem) -> Unit = {},
     isSelected: Boolean = false,
 ) {
-    val background = if (isSelected) {
-        Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh)
-    } else {
-        Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
+    val background = when (item.backgroundColorArrival) {
+        android.R.color.white -> {
+            if (isSelected) {
+                Modifier.background(MaterialTheme.colorScheme.primary)
+            } else {
+                Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+            }
+        }
+        else -> {
+            Modifier.background(colorResource(item.backgroundColorArrival))
+        }
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,7 +60,7 @@ fun ArrivalItem(
             Row {
                 Text(
                     item.textShortSign,
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleSmall,
                     color = if (isSelected) {
                         MaterialTheme.colorScheme.primary
                     } else {
@@ -60,12 +70,15 @@ fun ArrivalItem(
                 )
             }
             Row {
+                // TODO: Only max stops report lat lon and heading so do not indicate a marker here.
+                // Consider a different drawable, a circle to not indicate a heading if lat lon are
+                // valid.
                 Column {
-                    Row{
+                    Row {
                         Icon(
                             painter = painterResource(id = item.drawableArrivalMarker),
                             tint = Color.Unspecified,
-                            modifier = Modifier.rotate(item.drawableRotation),
+                            modifier = Modifier.rotate(item.drawableRotation).alpha(if (item.isMaxStop) 1.0f else 0.0f),
                             contentDescription = null, // TODO: Convert rotation to cardinal text? example: "North West"
                         )
                     }

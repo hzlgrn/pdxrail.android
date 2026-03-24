@@ -1,0 +1,38 @@
+CREATE TABLE railsystem_rail_line (
+    id INTEGER PRIMARY KEY,
+    line TEXT,
+    passage TEXT NOT NULL,
+    type TEXT NOT NULL,
+    polyline_string TEXT NOT NULL,
+    max_lat REAL NOT NULL,
+    max_lon REAL NOT NULL,
+    min_lat REAL NOT NULL,
+    min_lon REAL NOT NULL
+);
+
+railLines:
+SELECT id,
+    line,
+    passage,
+    type,
+    polyline_string,
+    max_lat,
+    max_lon,
+    min_lat,
+    min_lon
+FROM railsystem_rail_line;
+
+deleteAll:
+DELETE FROM railsystem_rail_line;
+
+insert:
+INSERT OR REPLACE INTO railsystem_rail_line (
+    line,
+    passage,
+    type,
+    polyline_string,
+    max_lat,
+    max_lon,
+    min_lat,
+    min_lon
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
