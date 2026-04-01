@@ -1,0 +1,56 @@
+CREATE TABLE railsystem_arrival (
+    id TEXT NOT NULL PRIMARY KEY,
+    feet INTEGER NOT NULL,
+    in_congestion INTEGER,
+    departed INTEGER,
+    scheduled INTEGER NOT NULL,
+    load_percentage INTEGER,
+    short_sign TEXT,
+    estimated INTEGER,
+    detoured INTEGER NOT NULL,
+    trip_id TEXT,
+    dir INTEGER NOT NULL,
+    block_id INTEGER NOT NULL,
+    route INTEGER NOT NULL,
+    piece TEXT,
+    full_sign TEXT,
+    drop_off_only INTEGER,
+    vehicle_id TEXT,
+    show_miles_away INTEGER,
+    locid INTEGER NOT NULL,
+    new_trip INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    block_position_id INTEGER REFERENCES railsystem_block_position(id)
+);
+
+deleteByLocIds:
+DELETE FROM railsystem_arrival WHERE locid IN :locIds;
+
+insertIgnore:
+INSERT OR IGNORE INTO railsystem_arrival VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+arrivalItemsForLocIds:
+SELECT
+    a.scheduled,
+    a.estimated,
+    a.short_sign,
+    a.block_position_id,
+    bp.lat,
+    bp.lng,
+    bp.heading
+FROM railsystem_arrival a
+LEFT JOIN railsystem_block_position bp ON a.block_position_id = bp.id
+WHERE a.locid IN :locIds
+ORDER BY a.scheduled ASC, a.estimated ASC
+LIMIT 100;
+
+getArrivalMarkers:
+SELECT
+    a.short_sign,
+    bp.lat,
+    bp.lng,
+    bp.heading
+FROM railsystem_arrival a
+INNER JOIN railsystem_block_position bp ON a.block_position_id = bp.id
+WHERE a.locid IN :locIds
+LIMIT 100;

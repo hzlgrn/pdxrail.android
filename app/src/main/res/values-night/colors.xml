@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/rail_system_secondary</color>
+    <color name="max_blue_line_background">#001421</color>
+    <color name="max_green_line_background">#002516</color>
+    <color name="max_orange_line_background">#1b0c05</color>
+    <color name="max_red_line_background">#1c0209</color>
+    <color name="max_yellow_line_background">#251b00</color>
+
+    <color name="portland_streetcar_a_loop_background">#16030e</color>
+    <color name="portland_streetcar_b_loop_background">#001115</color>
+    <color name="portland_streetcar_north_south_line_background">#0d1306</color>
 </resources>

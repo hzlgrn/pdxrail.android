@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hzlgrn.pdxrail.R
+import com.hzlgrn.pdxrail.compose.ArrivalEmptyCard
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyMaxViewCard
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyStreetcarViewCard
 import com.hzlgrn.pdxrail.compose.ArrivalItem
@@ -140,7 +143,9 @@ private fun PdxRailDrawerLandscape(
             (currentOffset + drawerWidthPx).coerceAtLeast(0f).toDp()
         }
 
-        Box(Modifier.fillMaxSize().padding(start = drawerVisibleWidth)) { scrimContent() }
+        Box(Modifier.fillMaxSize().padding(start = drawerVisibleWidth)) {
+            scrimContent()
+        }
 
         if (currentOffset > -drawerWidthPx) {
             Box(
@@ -158,6 +163,7 @@ private fun PdxRailDrawerLandscape(
                     modifier = Modifier.fillMaxWidth(),
                     drawerContainerColor = MaterialTheme.colorScheme.background,
                     drawerContentColor = MaterialTheme.colorScheme.onBackground,
+                    windowInsets = WindowInsets()
                 ) {
                     val stationText by pdxRailViewModel.stationText.collectAsStateWithLifecycle()
                     PdxRailDrawerContent(
@@ -167,6 +173,7 @@ private fun PdxRailDrawerLandscape(
                         onReviewClick = onReviewClick,
                     )
                 }
+                HorizontalDividerItem(modifier = Modifier.align(Alignment.TopCenter))
             }
         }
     }
@@ -244,8 +251,10 @@ private fun PdxRailDrawerPortrait(
                     modifier = Modifier.fillMaxSize(),
                     drawerContainerColor = MaterialTheme.colorScheme.background,
                     drawerContentColor = MaterialTheme.colorScheme.onBackground,
+                    windowInsets = WindowInsets(bottom = 0, top = 60),
                 ) {
                     val stationText by pdxRailViewModel.stationText.collectAsStateWithLifecycle()
+                    HorizontalDividerItem(modifier = Modifier.alpha(0.3f))
                     PdxRailDrawerContent(
                         stationText = stationText,
                         railSystemArrivals = railSystemArrivals,
@@ -253,6 +262,7 @@ private fun PdxRailDrawerPortrait(
                         onReviewClick = onReviewClick,
                     )
                 }
+                HorizontalDividerItem(modifier = Modifier.align(Alignment.TopCenter))
             }
         }
     }
@@ -265,11 +275,18 @@ fun PdxRailDrawerContent(
     onReviewClick: () -> Unit,
     railSystemArrivals: RailSystemArrivals = RailSystemArrivals.Idle
     ) {
-    HorizontalDividerItem(modifier = Modifier.padding(bottom = dimensionResource(R.dimen.vertical)))
+    // if connectionState == offline put an offline item here
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.vertical_2x)),
-        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.horizontal_2x))
+        modifier = Modifier,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.vertical_3x)),
+        contentPadding = PaddingValues(
+            horizontal = dimensionResource(R.dimen.horizontal_2x),
+            vertical = dimensionResource(R.dimen.vertical_4x),
+        )
     ) {
+        item {
+            HeaderItem(stationText.takeIf { it.isNotBlank() }?.let { stringResource(R.string.arrival_at, stationText) } ?: stringResource(R.string.arrivals_header))
+        }
         when (railSystemArrivals) {
             is RailSystemArrivals.Idle, is RailSystemArrivals.Loading-> {
                 item {
@@ -279,24 +296,22 @@ fun PdxRailDrawerContent(
                     ArrivalEmptyStreetcarViewCard()
                 }
             }
-            else -> {
-                item {
-                    HeaderItem(stationText.takeIf { it.isNotBlank() }?.let { stringResource(R.string.arrival_at, stationText) } ?: stringResource(R.string.arrivals_header))
-                }
-            }
-        }
-        when (railSystemArrivals) {
             is RailSystemArrivals.Display -> {
-                railSystemArrivals.details.forEach { railSystemArrivalItem ->
+                if (railSystemArrivals.details.count() == 0) {
                     item {
-                        ArrivalItem(
-                            item = railSystemArrivalItem,
-                            onArrivalClick = { onArrivalClick(railSystemArrivalItem) }
-                        )
+                        ArrivalEmptyCard()
+                    }
+                } else {
+                    railSystemArrivals.details.forEach { railSystemArrivalItem ->
+                        item {
+                            ArrivalItem(
+                                item = railSystemArrivalItem,
+                                onArrivalClick = { onArrivalClick(railSystemArrivalItem) }
+                            )
+                        }
                     }
                 }
             }
-            else -> { /* nothing */ }
         }
         item {
             PdxRailReviewCard(
@@ -313,7 +328,10 @@ fun DrawerPreview() {
     PdxRailTheme {
         Surface {
             Column {
-                PdxRailDrawerContent(stationText = "station text", {}, {})
+                PdxRailDrawerContent(
+                    stationText = "station text",
+                    onArrivalClick = {},
+                    onReviewClick = {})
             }
         }
     }

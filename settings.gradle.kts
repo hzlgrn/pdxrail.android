@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PDX Rail"
 include(":app")
+include(":data")

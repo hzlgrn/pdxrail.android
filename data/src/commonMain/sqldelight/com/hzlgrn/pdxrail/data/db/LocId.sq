@@ -1,0 +1,11 @@
+CREATE TABLE railsystem_locid (
+    latlon TEXT NOT NULL PRIMARY KEY,
+    updated INTEGER NOT NULL,
+    csvlocid TEXT NOT NULL
+);
+
+getForLatLon:
+SELECT latlon, updated, csvlocid FROM railsystem_locid WHERE latlon = :latlon;
+
+upsert:
+INSERT OR REPLACE INTO railsystem_locid VALUES (?, ?, ?);

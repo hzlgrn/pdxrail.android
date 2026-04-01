@@ -52,7 +52,35 @@ fun RailSystemMapItem.Marker.DisplayGoogleMapMarker(pdxRailViewModel: PdxRailVie
                     pdxRailViewModel.openDrawer(true)
                 },
             )
+        is RailSystemMapItem.Marker.Stop.CommuterStop ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_stop),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                title = this.stationText,
+                tag = this.uniqueId.uniqueIdString,
+                onClick = {
+                    pdxRailViewModel.onClickCommuterStop(this)
+                    false
+                },
+                onInfoWindowClick = {
+                    pdxRailViewModel.openDrawer(true)
+                },
+            )
+
         is RailSystemMapItem.Marker.Arrival.Default ->
+            Marker(
+                state = rememberUpdatedMarkerState(position = this.position),
+                anchor = Offset(0.5f, 0.5f),
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.marker_max_arrival),
+                flat = true,
+                infoWindowAnchor = Offset(0.5f, 0.5f),
+                rotation = this.heading.toFloat()
+
+            )
+        is RailSystemMapItem.Marker.Arrival.Commuter ->
             Marker(
                 state = rememberUpdatedMarkerState(position = this.position),
                 anchor = Offset(0.5f, 0.5f),

@@ -62,6 +62,12 @@ sealed class RailSystemMapItem {
                 override val uniqueId: MarkerId,
                 override val stationText: String?,
             ) : Stop()
+
+            data class CommuterStop(
+                override val position: LatLng,
+                override val uniqueId: MarkerId,
+                override val stationText: String?,
+            ) : Stop()
         }
 
         sealed class Arrival() : Marker() {
@@ -74,6 +80,8 @@ sealed class RailSystemMapItem {
             data class NSLine(override val position: LatLng, val heading: Int): Arrival()
             data class ALoop(override val position: LatLng, val heading: Int): Arrival()
             data class BLoop(override val position: LatLng, val heading: Int): Arrival()
+
+            data class Commuter(override val position: LatLng, val heading: Int): Arrival()
         }
     }
 }

@@ -26,37 +26,37 @@ import com.hzlgrn.pdxrail.theme.PdxRailTheme
 @Composable
 fun ArrivalEmptyMaxViewCard() {
     val textMax = stringResource(id = R.string.content_description_max_stop_verbose)
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Card(
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier
+                .clickable { /* just ripples */ }
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(dimensionResource(androidx.cardview.R.dimen.cardview_default_radius))
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .clickable { /* just ripples */ }
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(dimensionResource(androidx.cardview.R.dimen.cardview_default_radius))
+                    .padding(
+                        horizontal = dimensionResource(R.dimen.horizontal),
+                        vertical = dimensionResource(R.dimen.vertical)
+                    ),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                Image(
+                    painter = painterResource(
+                        id = R.drawable.marker_max_stop
+                    ),
+                    contentDescription = "Max stop",
                     modifier = Modifier
-                        .padding(
-                            horizontal = dimensionResource(R.dimen.horizontal),
-                            vertical = dimensionResource(R.dimen.vertical)
-                        ),
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = R.drawable.marker_max_stop
-                        ),
-                        contentDescription = "Max stop",
-                        modifier = Modifier
-                            .height(dimensionResource(R.dimen.ic_size_large))
-                            .width(dimensionResource(R.dimen.ic_size_large))
-                    )
-                    Text(
-                        style = MaterialTheme.typography.bodyMedium,
-                        text = textMax,
-                    )
-                }
+                        .height(dimensionResource(R.dimen.ic_size_large))
+                        .width(dimensionResource(R.dimen.ic_size_large))
+                )
+                Text(
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = textMax,
+                )
             }
         }
+    }
 }
 
 @Composable
@@ -96,6 +96,41 @@ fun ArrivalEmptyStreetcarViewCard() {
     }
 }
 
+@Composable
+fun ArrivalEmptyCard() {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier
+                .clickable { /* just ripples */ }
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(dimensionResource(androidx.cardview.R.dimen.cardview_default_radius))
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(
+                        horizontal = dimensionResource(R.dimen.horizontal),
+                        vertical = dimensionResource(R.dimen.vertical)
+                    ),
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = android.R.drawable.ic_menu_info_details
+                    ),
+                    contentDescription = "Max stop",
+                    modifier = Modifier
+                        .height(dimensionResource(R.dimen.ic_size_large))
+                        .width(dimensionResource(R.dimen.ic_size_large))
+                )
+                Text(
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = stringResource(R.string.arrival_none_incoming),
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun PreviewEmptyStates() {
@@ -103,6 +138,7 @@ fun PreviewEmptyStates() {
         Column {
             ArrivalEmptyMaxViewCard()
             ArrivalEmptyStreetcarViewCard()
+            ArrivalEmptyCard()
         }
     }
 }

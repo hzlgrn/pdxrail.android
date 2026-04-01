@@ -8,27 +8,28 @@ import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
 @HiltAndroidApp
-public class PdxRailApp : Application() {
+class PdxRailApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        FirebaseApp.initializeApp(this)
+        if (BuildConfig.DEBUG) {
+            FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = false
+        }
+        Timber.plant(growTree())
+    }
+
     private fun growTree(): Timber.Tree = if (BuildConfig.DEBUG) {
-            Timber.DebugTree()
-        } else {
-            object: Timber.Tree() {
-                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-                    when (priority) {
-                        Log.ASSERT, Log.ERROR -> with(FirebaseCrashlytics.getInstance()) {
-                            log("$tag: $message")
-                            t?.let { recordException(it) }
-                        }
+        Timber.DebugTree()
+    } else {
+        object: Timber.Tree() {
+            override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                when (priority) {
+                    Log.ASSERT, Log.ERROR -> with(FirebaseCrashlytics.getInstance()) {
+                        log("$tag: $message")
+                        t?.let { recordException(it) }
                     }
                 }
             }
         }
-
-    override fun onCreate() {
-        super.onCreate()
-        if (BuildConfig.DEBUG.not())  {
-            FirebaseApp.initializeApp(this)
-        }
-        Timber.plant(growTree())
     }
 }

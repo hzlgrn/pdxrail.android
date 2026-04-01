@@ -10,14 +10,15 @@
     <string name="drawer_opened">Abierto</string>
     <string name="drawer_closed">Cerrado</string>
     <string name="version">versión %1$s</string>
+    <string name="arrival_none_incoming">No hay llegadas en camino a esta ubicación.</string>
     <string name="no_arrival">sin llegada programada</string>
     <string name="no_estimate">sin estimación</string>
 
     <string name="action_play_store">Reseña</string>
     <string name="menu_help">Ayuda</string>
     <string name="permission_location_reason">Permitir los servicios de ubicación mostrará su posición actual en el mapa.</string>
-    <string name="help_arrival">Las llegadas de MAX muestran la ubicación actual en el mapa. La ubicación de los vehículos del Portland Streetcar no está disponible.</string>
-    <string name="help_streetcar_stop">Obtenga información de llegadas en tiempo real para el Portland Streetcar.</string>
+    <string name="help_arrival">Las llegadas de MAX muestran las posiciones de los vehículos en el mapa. La ubicación de los vehículos del Portland Streetcar no está disponible.</string>
+    <string name="help_streetcar_stop">Obtenga llegadas en tiempo real para el Portland Streetcar.</string>
     <string name="help_max_stop">Obtenga ubicaciones de vehículos y llegadas en tiempo real para el MAX Light Rail.</string>
     <string name="help_title">Un mapa interactivo de los sistemas de tránsito ferroviario de Portland, Oregón.</string>
 

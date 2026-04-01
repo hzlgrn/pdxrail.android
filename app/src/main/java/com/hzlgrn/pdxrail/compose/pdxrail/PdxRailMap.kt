@@ -1,34 +1,28 @@
 package com.hzlgrn.pdxrail.compose.pdxrail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.hzlgrn.pdxrail.Domain
 import com.hzlgrn.pdxrail.R
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapLine
 import com.hzlgrn.pdxrail.compose.DisplayGoogleMapMarker
+import com.hzlgrn.pdxrail.data.help.PdxRailSystemHelper
 import com.hzlgrn.pdxrail.viewmodel.PdxRailViewModel
-import com.hzlgrn.pdxrail.viewmodel.bitmap.MapIconBitmap
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemArrivals
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapItem
 import com.hzlgrn.pdxrail.viewmodel.railsystem.RailSystemMapState
@@ -43,8 +37,11 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
         val mapItems = (railSystemMap as? RailSystemMapState.Display)?.mapItems ?: emptyList<RailSystemMapItem>()
         val mapCameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(
-                Domain.PdxRail.CAMERA_TARGET,
-                Domain.PdxRail.CAMERA_ZOOM
+                LatLng(
+                    PdxRailSystemHelper.CAMERA.TARGET_LAT,
+                    PdxRailSystemHelper.CAMERA.TARGET_LNG,
+                ),
+                PdxRailSystemHelper.CAMERA.ZOOM,
             )
         }
 
@@ -54,7 +51,7 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
             if (isDarkTheme) {
                 MapStyleOptions.loadRawResourceStyle(context, R.raw.google_map_dark)
             } else {
-                null
+                MapStyleOptions.loadRawResourceStyle(context, R.raw.google_map_silver)
             }
         }
 
@@ -83,6 +80,7 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
                     mapItem.DisplayGoogleMapMarker(pdxRailViewModel)
                 }
         }
+        /*
         when (mapDrawerIcon) {
             is MapIconBitmap.Display -> {
                 Image(
@@ -99,5 +97,6 @@ fun PdxRailMap(pdxRailViewModel: PdxRailViewModel) {
             }
             else -> {}
         }
+         */
     }
 }

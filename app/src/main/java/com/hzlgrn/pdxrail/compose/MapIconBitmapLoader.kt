@@ -11,7 +11,7 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
 import com.hzlgrn.pdxrail.R
-import com.hzlgrn.pdxrail.di.loader.BitmapLoader
+import com.hzlgrn.pdxrail.data.loader.BitmapLoader
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

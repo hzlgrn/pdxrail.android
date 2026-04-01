@@ -1,0 +1,17 @@
+CREATE TABLE railsystem_rail_stop (
+    uniqueid TEXT NOT NULL PRIMARY KEY,
+    station TEXT,
+    line TEXT,
+    type TEXT NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL
+);
+
+railStops:
+SELECT uniqueid, station, line, type, latitude, longitude FROM railsystem_rail_stop;
+
+deleteAll:
+DELETE FROM railsystem_rail_stop;
+
+insert:
+INSERT OR REPLACE INTO railsystem_rail_stop VALUES (?, ?, ?, ?, ?, ?);
