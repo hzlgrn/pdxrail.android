@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">PDX Rail</string>
+    <string name="arrivals_header">Arrivals</string>
+    <string name="arrival_at">Arriving at %1$s</string>
+    <string name="arrival_scheduled_at">Scheduled at %1$s</string>
+    <string name="arrival_estimated_at">Estimated at %1$s</string>
+    <string name="arrival_none_incoming">No arrivals are on the way to this location.</string>
+    <string name="version">version %1$s</string>
+    <string name="action_review">Review</string>
+    <string name="gratitude">Rate or request updates on the app store.</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_licenses">Licenses</string>
+    <string name="dialog_help_action">Sweet!</string>
+    <string name="help_title">An interactive map for Portland, Oregon rail-based transit systems.</string>
+    <string name="help_max_stop">Get real-time vehicle locations and arrivals for MAX Light Rail.</string>
+    <string name="help_streetcar_stop">Get real-time arrivals for Portland Streetcar.</string>
+    <string name="help_arrival">MAX arrivals show vehicle positions on the map. Portland Streetcar vehicle locations are unavailable.</string>
+    <string name="permission_location_reason">Allowing location services will display your current location on the map.</string>
+    <string name="cd_max_stop">MAX stop</string>
+    <string name="cd_streetcar_stop">Streetcar stop</string>
+    <string name="cd_vehicle_arrival">Vehicle arrival</string>
+    <string name="empty_state_max">Tap a MAX stop to view incoming vehicle locations and arrivals.</string>
+    <string name="empty_state_streetcar">Tap a Streetcar stop to view incoming times.</string>
+</resources>

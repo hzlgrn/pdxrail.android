@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -30,20 +31,38 @@ class PdxRailSystemRepository(
 
     private val json = Json { ignoreUnknownKeys = true }
 
+    override fun flowRailSystemMapDataByRegion(
+        north: Double, south: Double, east: Double, west: Double,
+    ): Flow<List<RailSystemMapData>> {
+        val stopsFlow = appDatabase.railStopQueries.railStopsByRegion(
+            north = north, south = south, east = east, west = west,
+        )
+            .asFlow()
+            .mapToList(Dispatchers.Default)
+            .map { rows -> rows.map { RailSystemMapData.Stop(it.uniqueid, it.station, it.type, it.latitude, it.longitude) } }
+
+        val linesFlow = appDatabase.railLineQueries.railLinesByRegion(
+            north = north, south = south, east = east, west = west,
+        )
+            .asFlow()
+            .mapToList(Dispatchers.Default)
+            .map { rows -> rows.map { RailSystemMapData.Line(it.line, it.passage, it.type, it.polyline_string) } }
+
+        return combine(stopsFlow, linesFlow) { stops, lines -> lines + stops }.conflate()
+    }
+
     override fun flowRailSystemMapData(): Flow<List<RailSystemMapData>> {
         val stopsFlow = appDatabase.railStopQueries.railStops()
             .asFlow()
-            .debounce(DELIVERY_DEBOUNCE_MS)
             .mapToList(Dispatchers.Default)
             .map { rows -> rows.map { RailSystemMapData.Stop(it.uniqueid, it.station, it.type, it.latitude, it.longitude) } }
 
         val linesFlow = appDatabase.railLineQueries.railLines()
             .asFlow()
-            .debounce(DELIVERY_DEBOUNCE_MS)
             .mapToList(Dispatchers.Default)
             .map { rows -> rows.map { RailSystemMapData.Line(it.line, it.passage, it.type, it.polyline_string) } }
 
-        return combine(stopsFlow, linesFlow) { stops, lines -> lines + stops }
+        return combine(stopsFlow, linesFlow) { stops, lines -> lines + stops }.conflate()
     }
 
     override suspend fun getLocIds(latLon: LatLon, isStreetCar: Boolean): List<Long> {
@@ -134,8 +153,7 @@ class PdxRailSystemRepository(
                     csvlocid = csvLocId,
                 )
             }
-        } catch (e: Exception) {
-            println("Error: " + (e.message?:e.toString()))
+        } catch (_: Exception) {
             // non-fatal: stale or missing locId cache is handled at caller
         }
     }
@@ -257,8 +275,7 @@ class PdxRailSystemRepository(
             }
 
             settings.putLong(settingsKey, Clock.System.now().toEpochMilliseconds())
-        } catch (e: Exception) {
-            println("Error: " + (e.message?:e.toString()))
+        } catch (_: Exception) {
             return false
         }
 

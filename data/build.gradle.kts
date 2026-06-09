@@ -39,6 +39,10 @@ kotlin {
             implementation(libs.okhttp)
             implementation(libs.sqldelight.android.driver)
         }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native.driver)
+        }
     }
 }
 

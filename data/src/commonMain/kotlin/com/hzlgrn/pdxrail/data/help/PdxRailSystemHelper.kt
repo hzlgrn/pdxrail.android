@@ -72,7 +72,15 @@ object PdxRailSystemHelper {
         val TARGET = LatLon(TARGET_LAT, TARGET_LNG)
         const val TARGET_LAT = 45.5231
         const val TARGET_LNG = -122.6765
-        const val ZOOM = 15f
+        const val ZOOM = 13f
+    }
+
+    object BOUNDS {
+        const val NORTH   = 45.635
+        const val SOUTH   = 45.282
+        const val EAST    = -122.378
+        const val WEST    = -123.032
+        const val ZOOM_MIN = 10f
     }
 
     fun isBlue(shortSign: String) = shortSign.contains("blue",true)

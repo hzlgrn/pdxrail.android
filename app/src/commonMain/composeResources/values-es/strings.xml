@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="arrivals_header">Llegadas</string>
+    <string name="arrival_at">Llegando a %1$s</string>
+    <string name="arrival_scheduled_at">Programado a las %1$s</string>
+    <string name="arrival_estimated_at">Estimado a las %1$s</string>
+    <string name="arrival_none_incoming">No hay llegadas en camino a esta ubicación.</string>
+    <string name="version">versión %1$s</string>
+    <string name="action_review">Reseña</string>
+    <string name="gratitude">Califica o solicita actualizaciones en Google Play.</string>
+    <string name="menu_help">Ayuda</string>
+    <string name="menu_licenses">Licencias</string>
+    <string name="dialog_help_action">¡Entendido!</string>
+    <string name="help_title">Un mapa interactivo de los sistemas de tránsito ferroviario de Portland, Oregon.</string>
+    <string name="help_max_stop">Obtenga ubicaciones de vehículos y llegadas en tiempo real para el MAX Light Rail.</string>
+    <string name="help_streetcar_stop">Obtenga llegadas en tiempo real para el Portland Streetcar.</string>
+    <string name="help_arrival">Las llegadas de MAX muestran las posiciones de los vehículos en el mapa. La ubicación de los vehículos del Portland Streetcar no está disponible.</string>
+    <string name="permission_location_reason">Permitir los servicios de ubicación mostrará su posición actual en el mapa.</string>
+    <string name="cd_max_stop">Una parada de MAX</string>
+    <string name="cd_streetcar_stop">Una parada del Streetcar</string>
+    <string name="cd_vehicle_arrival">Llegada de vehículo</string>
+    <string name="empty_state_max">Toca una parada de MAX para ver las posiciones y horarios de los vehículos.</string>
+    <string name="empty_state_streetcar">Toca una parada del Streetcar para ver los horarios de llegada.</string>
+</resources>

@@ -22,6 +22,14 @@ SELECT id,
     min_lon
 FROM railsystem_rail_line;
 
+railLinesByRegion:
+SELECT id, line, passage, type, polyline_string, max_lat, max_lon, min_lat, min_lon
+FROM railsystem_rail_line
+WHERE min_lat <= :north
+  AND max_lat >= :south
+  AND min_lon <= :east
+  AND max_lon >= :west;
+
 deleteAll:
 DELETE FROM railsystem_rail_line;
 

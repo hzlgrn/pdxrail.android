@@ -10,6 +10,14 @@ CREATE TABLE railsystem_rail_stop (
 railStops:
 SELECT uniqueid, station, line, type, latitude, longitude FROM railsystem_rail_stop;
 
+railStopsByRegion:
+SELECT uniqueid, station, line, type, latitude, longitude
+FROM railsystem_rail_stop
+WHERE latitude <= :north
+  AND latitude >= :south
+  AND longitude <= :east
+  AND longitude >= :west;
+
 deleteAll:
 DELETE FROM railsystem_rail_stop;
 
