@@ -1,0 +1,10 @@
+# Xcode user-specific data
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# Secrets (only the example is tracked)
+Secrets.xcconfig
+
+# macOS
+.DS_Store

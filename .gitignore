@@ -71,3 +71,6 @@ fastlane/readme.md
 
 # KMP
 .kotlin/
+
+# iOS local secrets
+iosApp/Secrets.xcconfig

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface RailSystemRepository {
     fun flowRailSystemMapData(): Flow<List<RailSystemMapData>>
+    fun flowRailSystemMapDataByRegion(north: Double, south: Double, east: Double, west: Double): Flow<List<RailSystemMapData>>
     suspend fun getLocIds(latLon: LatLon, isStreetCar: Boolean): List<Long>
     fun flowArrivalMarkers(locIds: List<Long>): Flow<List<ArrivalMarkerData>>
     fun flowArrivalItems(locIds: List<Long>): Flow<List<ArrivalItemData>>
