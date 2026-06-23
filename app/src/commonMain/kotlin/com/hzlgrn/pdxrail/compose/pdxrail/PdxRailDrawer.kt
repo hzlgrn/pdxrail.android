@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyCard
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyMaxViewCard
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyStreetcarViewCard
@@ -257,7 +258,12 @@ private fun PdxRailDrawerPortrait(
                     modifier = Modifier.fillMaxSize(),
                     drawerContainerColor = MaterialTheme.colorScheme.background,
                     drawerContentColor = MaterialTheme.colorScheme.onBackground,
-                    windowInsets = WindowInsets(left = 0, top = 32, right = 0, bottom = 0),
+                    windowInsets = WindowInsets(
+                        left = 0.dp,
+                        top = LocalAppDimensions.current.paddingXLarge,
+                        right = 0.dp,
+                        bottom = 0.dp
+                    ),
                 ) {
                     val stationText by pdxRailViewModel.stationText.collectAsState()
                     HorizontalDividerItem(modifier = Modifier.alpha(0.3f))
