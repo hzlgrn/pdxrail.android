@@ -75,7 +75,7 @@ fun PdxRailActivityScreen(
                 onArrivalClick = { },
                 onReviewClick = onReviewClick,
                 onLicensesClick = onLicensesClick,
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
             ) {
                 Column {
                     Row { HorizontalDividerItem() }
