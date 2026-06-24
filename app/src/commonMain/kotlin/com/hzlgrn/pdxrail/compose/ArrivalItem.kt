@@ -46,7 +46,7 @@ fun ArrivalItem(
         verticalAlignment = CenterVertically,
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = dimens.paddingMedium, vertical = dimens.paddingLarge)
+            modifier = Modifier.padding(horizontal = dimens.paddingLarge, vertical = dimens.paddingLarge)
         ) {
             Row {
                 Text(

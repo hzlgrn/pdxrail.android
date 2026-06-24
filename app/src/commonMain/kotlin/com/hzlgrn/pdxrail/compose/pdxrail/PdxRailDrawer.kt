@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -293,7 +294,7 @@ fun PdxRailDrawerContent(
     LazyColumn(
         modifier = Modifier,
         verticalArrangement = Arrangement.spacedBy(dimens.itemSpacing),
-        contentPadding = PaddingValues(horizontal = dimens.paddingMedium, vertical = dimens.paddingLarge),
+        contentPadding = PaddingValues(horizontal = dimens.paddingLarge, vertical = dimens.paddingMedium),
     ) {
         item {
             val headerText = if (stationText.isNotBlank()) stringResource(Res.string.arrival_at, stationText) else stringResource(Res.string.arrivals_header)
@@ -332,8 +333,6 @@ fun PdxRailDrawerContent(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
-        }
-        item {
             Text(
                 text = stringResource(Res.string.menu_licenses),
                 style = MaterialTheme.typography.labelSmall,
@@ -341,6 +340,9 @@ fun PdxRailDrawerContent(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxWidth().clickable { onLicensesClick() },
             )
+        }
+        item {
+            Spacer(modifier = Modifier.height(dimens.itemSpacing))
         }
     }
 }
