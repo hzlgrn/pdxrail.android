@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +42,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyCard
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyMaxViewCard
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyStreetcarViewCard
@@ -257,7 +259,12 @@ private fun PdxRailDrawerPortrait(
                     modifier = Modifier.fillMaxSize(),
                     drawerContainerColor = MaterialTheme.colorScheme.background,
                     drawerContentColor = MaterialTheme.colorScheme.onBackground,
-                    windowInsets = WindowInsets(left = 0, top = 32, right = 0, bottom = 0),
+                    windowInsets = WindowInsets(
+                        left = 0.dp,
+                        top = LocalAppDimensions.current.paddingXLarge,
+                        right = 0.dp,
+                        bottom = 0.dp
+                    ),
                 ) {
                     val stationText by pdxRailViewModel.stationText.collectAsState()
                     HorizontalDividerItem(modifier = Modifier.alpha(0.3f))
@@ -287,7 +294,7 @@ fun PdxRailDrawerContent(
     LazyColumn(
         modifier = Modifier,
         verticalArrangement = Arrangement.spacedBy(dimens.itemSpacing),
-        contentPadding = PaddingValues(horizontal = dimens.paddingMedium, vertical = dimens.paddingLarge),
+        contentPadding = PaddingValues(horizontal = dimens.paddingLarge, vertical = dimens.paddingMedium),
     ) {
         item {
             val headerText = if (stationText.isNotBlank()) stringResource(Res.string.arrival_at, stationText) else stringResource(Res.string.arrivals_header)
@@ -326,8 +333,6 @@ fun PdxRailDrawerContent(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
-        }
-        item {
             Text(
                 text = stringResource(Res.string.menu_licenses),
                 style = MaterialTheme.typography.labelSmall,
@@ -335,6 +340,9 @@ fun PdxRailDrawerContent(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxWidth().clickable { onLicensesClick() },
             )
+        }
+        item {
+            Spacer(modifier = Modifier.height(dimens.itemSpacing))
         }
     }
 }

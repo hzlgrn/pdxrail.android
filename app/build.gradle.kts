@@ -132,8 +132,8 @@ android {
         applicationId = "com.hzlgrn.pdxrail"
         minSdk = 24
         targetSdk = 36
-        versionCode = 18
-        versionName = "26.06.01"
+        versionCode = 19
+        versionName = "26.06.02"
 
         buildConfigField("long", "BUILD_TIME", "${buildTime}L")
         buildConfigField("String", "STORE_ID", "\"$applicationId\"")
