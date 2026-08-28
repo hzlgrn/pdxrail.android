@@ -13,6 +13,8 @@ import com.hzlgrn.pdxrail.data.net.PdxRailSystemClient
 import com.hzlgrn.pdxrail.data.repository.RailSystemRepository
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -20,16 +22,16 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.isActive
 import kotlin.time.Clock
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class PdxRailSystemRepository(
     private val appDatabase: AppDatabase,
     private val pdxRailSystemClient: PdxRailSystemClient,
     private val settings: Settings,
 ) : RailSystemRepository {
-
-    private val json = Json { ignoreUnknownKeys = true }
 
     override fun flowRailSystemMapDataByRegion(
         north: Double, south: Double, east: Double, west: Double,
@@ -81,6 +83,7 @@ class PdxRailSystemRepository(
         return csvLocId?.split(',').orEmpty().mapNotNull { it.toLongOrNull() }
     }
 
+    @OptIn(FlowPreview::class)
     override fun flowArrivalMarkers(
         locIds: List<Long>
     ): Flow<List<ArrivalMarkerData>> {
@@ -88,7 +91,7 @@ class PdxRailSystemRepository(
         return appDatabase.arrivalQueries
             .getArrivalMarkers(locIds)
             .asFlow()
-            .debounce(DELIVERY_DEBOUNCE_MS)
+            .debounce(DELIVERY_DEBOUNCE_MS.toDuration(DurationUnit.MILLISECONDS))
             .mapToList(Dispatchers.Default)
             .map { list ->
                 val now = Clock.System.now().toEpochMilliseconds()
@@ -106,18 +109,22 @@ class PdxRailSystemRepository(
     }
 
     override fun foreverGetArrivals(locIds: List<Long>, isStreetCar: Boolean): Flow<Boolean> = flow {
-        while (true) {
-            wsV2Arrivals(locIds, isStreetCar)
-            emit(true)
-            delay(THROTTLE_ARRIVALS)
+        // Note: in kotlinx-coroutines 1.10 the flow builder receiver (FlowCollector)
+        // is no longer a CoroutineScope, so use currentCoroutineContext().
+        while (currentCoroutineContext().isActive) {
+            // wsV2Arrivals never throws; it reports failures as `false`.
+            val didArrivalFetchSucceed = wsV2Arrivals(locIds, isStreetCar)
+            emit(didArrivalFetchSucceed)
+            delay(THROTTLE_GET_ARRIVALS_S.toDuration(DurationUnit.SECONDS))
         }
     }
 
+    @OptIn(FlowPreview::class)
     override fun flowArrivalItems(locIds: List<Long>): Flow<List<ArrivalItemData>> {
         val settingsKey = "arrivals-${locIds.joinToString("-")}"
         return appDatabase.arrivalQueries.arrivalItemsForLocIds(locIds)
             .asFlow()
-            .debounce(DELIVERY_DEBOUNCE_MS)
+            .debounce(DELIVERY_DEBOUNCE_MS.toDuration(DurationUnit.MILLISECONDS))
             .mapToList(Dispatchers.Default)
             .map { rows ->
                 val now = Clock.System.now().toEpochMilliseconds()
@@ -158,14 +165,20 @@ class PdxRailSystemRepository(
         }
     }
 
+    /**
+     * Fetches arrivals for [locIds] and writes them to the database.
+     *
+     * Returns true when the data is current (freshly fetched, or there was
+     * nothing to fetch) and false when the request failed. Never throws:
+     * failures are reported as false so the [foreverGetArrivals] polling loop
+     * survives transient errors and callers can tell a failure apart from a
+     * genuinely empty result set.
+     */
     private suspend fun wsV2Arrivals(locIds: List<Long>, isStreetCar: Boolean): Boolean {
         val settingsKey = "arrivals-${locIds.joinToString("-")}"
-        val now = Clock.System.now().toEpochMilliseconds()
-        val lastFetch = settings.getLong(settingsKey, 0L)
-        if (now - lastFetch <= THROTTLE_ARRIVALS) return false
 
         val csvLocId = locIds.joinToString(",")
-        if (csvLocId.isBlank()) return false
+        if (csvLocId.isBlank()) return true
 
         try {
             val response = pdxRailSystemClient.wsV2Arrivals(csvLocId, isStreetCar)
@@ -284,7 +297,7 @@ class PdxRailSystemRepository(
 
     companion object {
         private const val THROTTLE_LOCID = 86400000L // 24 hours
-        const val THROTTLE_ARRIVALS = 10000L // 10 seconds
+        const val THROTTLE_GET_ARRIVALS_S = 10L // arrivals polling interval (10 seconds)
         const val EXPIRE_ARRIVALS = 300000L // 5 minutes
         const val DELIVERY_DEBOUNCE_MS = 600L
     }

@@ -4,7 +4,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.hzlgrn.pdxrail.di.IosModule
 import com.hzlgrn.pdxrail.di.repositoryModule
 import com.hzlgrn.pdxrail.di.viewModelModule
-import org.koin.core.context.startKoin
+import org.koin.mp.KoinPlatformTools
 import platform.CoreLocation.CLAuthorizationStatus
 import platform.CoreLocation.CLLocationManager
 import platform.CoreLocation.CLLocationManagerDelegateProtocol
@@ -40,7 +40,11 @@ private fun openUrl(url: String) {
 }
 
 fun MainViewController(): UIViewController {
-    startKoin {
+    // Start Koin only once: this factory can run more than once (e.g. when the
+    // view controller is recreated), and starting a second Koin application
+    // crashes with KoinApplicationAlreadyStartedException.
+    val koinContext = KoinPlatformTools.defaultContext()
+    koinContext.getOrNull() ?: koinContext.startKoin {
         modules(IosModule.all + repositoryModule + viewModelModule)
     }
 

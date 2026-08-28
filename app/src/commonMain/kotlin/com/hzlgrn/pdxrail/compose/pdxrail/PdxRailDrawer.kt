@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyCard
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyMaxViewCard
 import com.hzlgrn.pdxrail.compose.ArrivalEmptyStreetcarViewCard
+import com.hzlgrn.pdxrail.compose.ArrivalErrorViewCard
 import com.hzlgrn.pdxrail.compose.ArrivalItem
 import com.hzlgrn.pdxrail.compose.HeaderItem
 import com.hzlgrn.pdxrail.compose.HorizontalDividerItem
@@ -304,6 +305,9 @@ fun PdxRailDrawerContent(
             is RailSystemArrivals.Idle, is RailSystemArrivals.Loading -> {
                 item { ArrivalEmptyMaxViewCard() }
                 item { ArrivalEmptyStreetcarViewCard() }
+            }
+            is RailSystemArrivals.Error -> {
+                item { ArrivalErrorViewCard() }
             }
             is RailSystemArrivals.Display -> {
                 if (railSystemArrivals.details.isEmpty()) {

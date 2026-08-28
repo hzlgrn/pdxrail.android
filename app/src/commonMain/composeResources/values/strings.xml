@@ -6,6 +6,7 @@
     <string name="arrival_scheduled_at">Scheduled at %1$s</string>
     <string name="arrival_estimated_at">Estimated at %1$s</string>
     <string name="arrival_none_incoming">No arrivals are on the way to this location.</string>
+    <string name="arrival_error">Arrivals are temporarily unavailable. They will appear automatically as soon as a new update is received.</string>
     <string name="version">version %1$s</string>
     <string name="action_review">Review</string>
     <string name="gratitude">Rate or request updates on the app store.</string>
