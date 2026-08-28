@@ -25,7 +25,9 @@
 	<key>CFBundleIconName</key>
 	<string>AppIcon</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>PDX Rail uses your location to show nearby MAX and Streetcar stops on the map.</string>
+	<string>Your location is used only to show your position on the map. This is optional — PDX Rail works fully without it.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Your location is used only to show your position on the map. This is optional — PDX Rail works fully without it.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
