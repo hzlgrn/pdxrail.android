@@ -5,6 +5,7 @@
     <string name="arrival_scheduled_at">Programado a las %1$s</string>
     <string name="arrival_estimated_at">Estimado a las %1$s</string>
     <string name="arrival_none_incoming">No hay llegadas en camino a esta ubicación.</string>
+    <string name="arrival_error">Llegadas no disponibles temporalmente. Aparecerán automáticamente en cuanto se reciba una nueva actualización.</string>
     <string name="version">versión %1$s</string>
     <string name="action_review">Reseña</string>
     <string name="gratitude">Califica o solicita actualizaciones en Google Play.</string>
@@ -15,7 +16,7 @@
     <string name="help_max_stop">Obtenga ubicaciones de vehículos y llegadas en tiempo real para el MAX Light Rail.</string>
     <string name="help_streetcar_stop">Obtenga llegadas en tiempo real para el Portland Streetcar.</string>
     <string name="help_arrival">Las llegadas de MAX muestran las posiciones de los vehículos en el mapa. La ubicación de los vehículos del Portland Streetcar no está disponible.</string>
-    <string name="permission_location_reason">Permitir los servicios de ubicación mostrará su posición actual en el mapa.</string>
+    <string name="permission_location_reason">La ubicación es opcional. Permitirla mostrará tu posición actual en el mapa, pero la app funciona completamente sin ella.</string>
     <string name="cd_max_stop">Una parada de MAX</string>
     <string name="cd_streetcar_stop">Una parada del Streetcar</string>
     <string name="cd_vehicle_arrival">Llegada de vehículo</string>

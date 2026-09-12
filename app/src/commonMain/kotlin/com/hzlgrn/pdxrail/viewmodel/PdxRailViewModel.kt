@@ -16,13 +16,24 @@ import com.russhwolf.settings.Settings
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.maplibre.compose.sources.GeoJsonData
+import org.maplibre.spatialk.geojson.Feature
+import org.maplibre.spatialk.geojson.FeatureCollection
+import org.maplibre.spatialk.geojson.Point
+import org.maplibre.spatialk.geojson.toJson
+import kotlin.math.abs
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class PdxRailViewModel(
     private val railSystemRepository: RailSystemRepository,
@@ -54,8 +65,10 @@ class PdxRailViewModel(
     val railSystemMap = _railSystemMap.asStateFlow()
     private var _flowRailSystemMapJob: Job? = null
         set(job) {
+            // Keep showing the last map data while the replacement flow starts
+            // emitting; map content comes from the bundled database, so there is
+            // no staleness concern while the new data arrives.
             field?.cancel()
-            if (field == null) _railSystemMap.value = RailSystemMapState.Idle
             field = job
         }
 
@@ -71,22 +84,6 @@ class PdxRailViewModel(
                             val commuterStops = filterIsInstance<RailSystemMapItem.Marker.Stop.CommuterStop>().toImmutableList()
                             val lineItems = filterIsInstance<RailSystemMapItem.Line>()
 
-                            val maxStopFeatures = (maxStops.map { stop ->
-                                val id = stop.uniqueId.uniqueIdString
-                                """{"type":"Feature","geometry":{"type":"Point","coordinates":[${stop.position.lon},${stop.position.lat}]},"properties":{"id":"$id","type":"max"}}"""
-                            } + commuterStops.map { stop ->
-                                val id = stop.uniqueId.uniqueIdString
-                                """{"type":"Feature","geometry":{"type":"Point","coordinates":[${stop.position.lon},${stop.position.lat}]},"properties":{"id":"$id","type":"commuter"}}"""
-                            }).joinToString(",")
-
-                            val maxStopJson = """{"type":"FeatureCollection","features":[$maxStopFeatures]}"""
-
-                            val streetcarFeatures = streetcarStops.joinToString(",") { stop ->
-                                val id = stop.uniqueId.uniqueIdString
-                                """{"type":"Feature","geometry":{"type":"Point","coordinates":[${stop.position.lon},${stop.position.lat}]},"properties":{"id":"$id","type":"streetcar"}}"""
-                            }
-                            val streetcarStopJson = """{"type":"FeatureCollection","features":[$streetcarFeatures]}"""
-
                             RailSystemMapState.Display(
                                 maxStopData = maxStops,
                                 streetcarStopData = streetcarStops,
@@ -94,8 +91,17 @@ class PdxRailViewModel(
 
                                 // Group all segments by line type, one FeatureCollection per type.
                                 // This keeps the MapLibre layer count low regardless of segment count.
-                                maxStops = GeoJsonData.JsonString(maxStopJson),
-                                streetcarStops = GeoJsonData.JsonString(streetcarStopJson),
+                                maxStops = GeoJsonData.JsonString(
+                                    FeatureCollection(
+                                        maxStops.map { stopFeature(it, STOP_TYPE_MAX) } +
+                                            commuterStops.map { stopFeature(it, STOP_TYPE_COMMUTER) },
+                                    ).toJson()
+                                ),
+                                streetcarStops = GeoJsonData.JsonString(
+                                    FeatureCollection(
+                                        streetcarStops.map { stopFeature(it, STOP_TYPE_STREETCAR) },
+                                    ).toJson()
+                                ),
 
                                 blueFC = lineItems.filterIsInstance<RailSystemMapItem.Line.MaxBlue>().toGeoJsonDataJsonString(),
                                 greenFC = lineItems.filterIsInstance<RailSystemMapItem.Line.MaxGreen>().toGeoJsonDataJsonString(),
@@ -136,6 +142,8 @@ class PdxRailViewModel(
     val selectedStopPosition = _selectedStopPosition.asStateFlow()
 
     fun clearSelectedStop() {
+        // Stop polling arrivals for the deselected stop.
+        _flowRailSystemArrivalsJob = null
         _selectedStopPosition.value = null
         _stationText.value = ""
         _isDrawerOpen.value = false
@@ -162,7 +170,9 @@ class PdxRailViewModel(
     fun onClickCommuterStop(commuterStop: RailSystemMapItem.Marker.Stop.CommuterStop) {
         _stationText.value = commuterStop.stationText ?: ""
         _selectedStopPosition.value = commuterStop.position
-        flowArrivals(commuterStop.position, true)
+        // WES commuter rail is NOT streetcar: requesting with isStreetCar = true
+        // hits the streetcar API and filters out every commuter arrival.
+        flowArrivals(commuterStop.position, false)
     }
 
     private val _railSystemArrivals = MutableStateFlow<RailSystemArrivals>(RailSystemArrivals.Idle)
@@ -183,21 +193,27 @@ class PdxRailViewModel(
                     railSystemRepository.foreverGetArrivals(locIds, isStreetCar),
                     railSystemRepository.flowArrivalItems(locIds),
                     railSystemRepository.flowArrivalMarkers(locIds),
-                ) { _, itemData, markerData ->
-
-                    val mapItems = markerData.map { it.toRailSystemMapItem() }
-                    RailSystemArrivals.Display(
-                        details = itemData.map { it.toRailSystemArrivalItem() }.toImmutableList(),
-                        arrivalBlueFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxBlue>().toGeoJsonString()),
-                        arrivalGreenFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxGreen>().toGeoJsonString()),
-                        arrivalOrangeFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxOrange>().toGeoJsonString()),
-                        arrivalRedFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxRed>().toGeoJsonString()),
-                        arrivalYellowFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxYellow>().toGeoJsonString()),
-                        arrivalNSFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.NSLine>().toGeoJsonString()),
-                        arrivalALoopFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.ALoop>().toGeoJsonString()),
-                        arrivalBLoopFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.BLoop>().toGeoJsonString()),
-                        arrivalDefaultFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.Default>().toGeoJsonString()),
-                    )
+                ) { pollOk, itemData, markerData ->
+                    if (!pollOk && itemData.isEmpty()) {
+                        // The latest poll failed and there is no fresh data in the
+                        // database, so surface an explicit error state instead of a
+                        // misleading "no arrivals" one.
+                        RailSystemArrivals.Error
+                    } else {
+                        val mapItems = markerData.map { it.toRailSystemMapItem() }
+                        RailSystemArrivals.Display(
+                            details = itemData.map { it.toRailSystemArrivalItem() }.toImmutableList(),
+                            arrivalBlueFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxBlue>().toGeoJsonString()),
+                            arrivalGreenFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxGreen>().toGeoJsonString()),
+                            arrivalOrangeFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxOrange>().toGeoJsonString()),
+                            arrivalRedFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxRed>().toGeoJsonString()),
+                            arrivalYellowFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.MaxYellow>().toGeoJsonString()),
+                            arrivalNSFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.NSLine>().toGeoJsonString()),
+                            arrivalALoopFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.ALoop>().toGeoJsonString()),
+                            arrivalBLoopFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.BLoop>().toGeoJsonString()),
+                            arrivalDefaultFeatures = GeoJsonData.JsonString(mapItems.filterIsInstance<RailSystemMapItem.Marker.Arrival.Default>().toGeoJsonString()),
+                        )
+                    }
                 }.collect { display ->
                     withContext(Dispatchers.Main) {
                         _railSystemArrivals.value = display
@@ -218,9 +234,17 @@ class PdxRailViewModel(
 
     private val _mapViewport = MutableStateFlow<MapViewport?>(null)
     val mapViewport = _mapViewport.asStateFlow()
+
+    private var _mapRegionJob: Job? = null
+    private var lastMapBounds: MapBounds? = null
+
     fun updateMapViewport(viewport: MapViewport) {
         _mapViewport.value = viewport
-        viewport.bounds?.let { bounds ->
+        val bounds = viewport.bounds ?: return
+        _mapRegionJob?.cancel()
+        _mapRegionJob = viewModelScope.launch {
+            if (lastMapBounds != null && bounds == lastMapBounds) return@launch
+            lastMapBounds = bounds
             startFlowingMapData(
                 railSystemRepository.flowRailSystemMapDataByRegion(
                     north = bounds.north,
@@ -230,5 +254,22 @@ class PdxRailViewModel(
                 )
             )
         }
+    }
+
+    private fun stopFeature(
+        stop: RailSystemMapItem.Marker.Stop,
+        type: String,
+    ): Feature<Point, JsonObject> = Feature(
+        geometry = Point(stop.position.lon, stop.position.lat),
+        properties = buildJsonObject {
+            put("id", stop.uniqueId.uniqueIdString)
+            put("type", type)
+        },
+    )
+
+    companion object {
+        private const val STOP_TYPE_MAX = "max"
+        private const val STOP_TYPE_COMMUTER = "commuter"
+        private const val STOP_TYPE_STREETCAR = "streetcar"
     }
 }

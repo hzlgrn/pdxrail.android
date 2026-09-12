@@ -6,6 +6,7 @@
     <string name="arrival_scheduled_at">Scheduled at %1$s</string>
     <string name="arrival_estimated_at">Estimated at %1$s</string>
     <string name="arrival_none_incoming">No arrivals are on the way to this location.</string>
+    <string name="arrival_error">Arrivals are temporarily unavailable. They will appear automatically as soon as a new update is received.</string>
     <string name="version">version %1$s</string>
     <string name="action_review">Review</string>
     <string name="gratitude">Rate or request updates on the app store.</string>
@@ -16,7 +17,7 @@
     <string name="help_max_stop">Get real-time vehicle locations and arrivals for MAX Light Rail.</string>
     <string name="help_streetcar_stop">Get real-time arrivals for Portland Streetcar.</string>
     <string name="help_arrival">MAX arrivals show vehicle positions on the map. Portland Streetcar vehicle locations are unavailable.</string>
-    <string name="permission_location_reason">Allowing location services will display your current location on the map.</string>
+    <string name="permission_location_reason">Location is optional. Allowing it will show your current position on the map, but the app works fully without it.</string>
     <string name="cd_max_stop">MAX stop</string>
     <string name="cd_streetcar_stop">Streetcar stop</string>
     <string name="cd_vehicle_arrival">Vehicle arrival</string>

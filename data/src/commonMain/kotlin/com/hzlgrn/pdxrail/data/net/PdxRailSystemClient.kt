@@ -9,11 +9,18 @@ import io.ktor.client.request.parameter
 
 class PdxRailSystemClient(
     private val httpClient: HttpClient,
-    private val baseUrl: String,
+    baseUrl: String,
     private val apiKey: String,
 ) {
 
-    suspend fun wsV1Stops(
+    /**
+     * Base URL normalized to always end with a single trailing slash so endpoints
+     * can be appended uniformly, no matter how each platform supplies the value
+     * (Android BuildConfig vs iOS Info.plist).
+     */
+    private val baseUrl: String = baseUrl.trim().removeSuffix("/") + "/"
+
+    open suspend fun wsV1Stops(
         radiusInFeet: Long,
         lat: Double,
         lon: Double,
@@ -28,7 +35,7 @@ class PdxRailSystemClient(
         }.body()
     }
 
-    suspend fun wsV2Arrivals(
+    open suspend fun wsV2Arrivals(
         csvLocId: String,
         isStreetCar: Boolean,
     ): WsV2ArrivalsResponse {

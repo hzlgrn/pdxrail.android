@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.hzlgrn.pdxrail.generated.resources.Res
+import com.hzlgrn.pdxrail.generated.resources.arrival_error
 import com.hzlgrn.pdxrail.generated.resources.arrival_none_incoming
 import com.hzlgrn.pdxrail.generated.resources.cd_max_stop
 import com.hzlgrn.pdxrail.generated.resources.cd_streetcar_stop
@@ -104,6 +106,37 @@ fun ArrivalEmptyCard() {
                 Text(
                     style = MaterialTheme.typography.bodyMedium,
                     text = stringResource(Res.string.arrival_none_incoming),
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Shown when the latest arrivals poll failed and there is no fresh data to
+ * display. The 10 second poll loop retries automatically, so no action is
+ * needed from the user.
+ */
+@Composable
+fun ArrivalErrorViewCard() {
+    val dimens = LocalAppDimensions.current
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier.clickable { }.fillMaxWidth(),
+            shape = RoundedCornerShape(dimens.cornerRadiusSmall),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = dimens.paddingMedium, vertical = dimens.itemSpacing),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = null,
+                    modifier = Modifier.height(dimens.iconSize).width(dimens.iconSize),
+                )
+                Text(
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = stringResource(Res.string.arrival_error),
                 )
             }
         }

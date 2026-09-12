@@ -1,0 +1,2 @@
+"NSLocationWhenInUseUsageDescription" = "Your location is used only to show your position on the map. This is optional — PDX Rail works fully without it.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Your location is used only to show your position on the map. This is optional — PDX Rail works fully without it.";
